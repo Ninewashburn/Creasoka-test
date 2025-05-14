@@ -9,6 +9,9 @@ import CreationCard from "@/components/creation-card";
 import { notFound } from "next/navigation";
 import type { Creation } from "@/types/creation";
 
+// Définition du type pour les catégories valides
+type CategoryType = "bijoux" | "minis" | "halloween" | "pokemon" | "divers";
+
 export default function CategoryPage() {
   const params = useParams();
   const category = typeof params.category === "string" ? params.category : "";
@@ -37,8 +40,14 @@ export default function CategoryPage() {
     fetchCreations();
   }, []);
 
-  const validCategories = ["bijoux", "minis", "halloween", "pokemon", "divers"];
-  if (!validCategories.includes(category)) {
+  const validCategories: CategoryType[] = [
+    "bijoux",
+    "minis",
+    "halloween",
+    "pokemon",
+    "divers",
+  ];
+  if (!validCategories.includes(category as CategoryType)) {
     notFound();
   }
 
@@ -65,8 +74,9 @@ export default function CategoryPage() {
 
   const filteredCreations = creations.filter((creation) => {
     const matchesCategory =
-      (creation.categories && creation.categories.includes(category)) ||
-      creation.category === category; // Pour compatibilité avec l'ancien format
+      (creation.categories &&
+        creation.categories.includes(category as CategoryType)) ||
+      (creation as any).category === category;
 
     const matchesSearch =
       creation.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
