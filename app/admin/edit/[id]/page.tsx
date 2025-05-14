@@ -52,6 +52,7 @@ export default function EditCreationPage() {
     externalLink: "",
     status: "normal",
     customMessage: "",
+    details: [] as string[],
   });
   const [error, setError] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
