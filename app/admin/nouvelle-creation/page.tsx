@@ -180,7 +180,7 @@ export default function NouvelleCreationPage() {
       toast({
         title: "Erreur",
         description: "Une erreur est survenue lors de la création",
-        variant: "destructive",
+        variant: "error",
       });
     } finally {
       setIsSubmitting(false);
