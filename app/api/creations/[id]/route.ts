@@ -7,10 +7,10 @@ export const runtime = "nodejs";
 // Récupérer une création par son ID ou son slug
 export async function GET(
   request: NextRequest,
-  context: { params: { id: string } }
+  { params }: { params: { id: string } }
 ) {
   try {
-    const idOrSlug = context.params.id;
+    const idOrSlug = params.id;
     let creation;
 
     // D'abord, essayer de trouver par ID
@@ -44,10 +44,10 @@ export async function GET(
 // Mettre à jour une création
 export async function PUT(
   request: NextRequest,
-  context: { params: { id: string } }
+  { params }: { params: { id: string } }
 ) {
   try {
-    const idOrSlug = context.params.id;
+    const idOrSlug = params.id;
     const body = await request.json();
     let existingCreation;
 
@@ -112,10 +112,10 @@ export async function PUT(
 // Supprimer une création
 export async function DELETE(
   request: NextRequest,
-  context: { params: { id: string } }
+  { params }: { params: { id: string } }
 ) {
   try {
-    const idOrSlug = context.params.id;
+    const idOrSlug = params.id;
     let existingCreation;
     // D'abord, essayer de trouver par ID
     existingCreation = await db.creation.findUnique({
