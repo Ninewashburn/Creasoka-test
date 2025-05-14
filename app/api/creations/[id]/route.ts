@@ -5,10 +5,9 @@ import { slugify } from "../../../../lib/utils";
 // Récupérer une création par son ID ou son slug
 export async function GET(
   request: Request,
-  context: { params: { id: string } }
+  { params }: { params: { id: string } }
 ) {
   try {
-    const params = await context.params;
     const idOrSlug = params.id;
     let creation;
 
@@ -43,10 +42,9 @@ export async function GET(
 // Mettre à jour une création
 export async function PUT(
   request: Request,
-  context: { params: { id: string } }
+  { params }: { params: { id: string } }
 ) {
   try {
-    const params = await context.params;
     const idOrSlug = params.id;
     const body = await request.json();
     let existingCreation;
@@ -108,10 +106,9 @@ export async function PUT(
 // Supprimer une création
 export async function DELETE(
   request: Request,
-  context: { params: { id: string } }
+  { params }: { params: { id: string } }
 ) {
   try {
-    const params = await context.params;
     const idOrSlug = params.id;
     let existingCreation;
 
