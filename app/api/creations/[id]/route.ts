@@ -2,12 +2,17 @@ import { NextRequest, NextResponse } from "next/server";
 import { db } from "../../../../lib/db";
 import { slugify } from "../../../../lib/utils";
 
+// Définir une interface pour le contexte de la route
+interface RouteContext {
+  params: {
+    id: string;
+  };
+}
+
 // Récupérer une création par son ID ou son slug
-export async function GET(
-  request: NextRequest,
-  { params }: { params: { id: string } }
-) {
+export async function GET(request: NextRequest, context: RouteContext) {
   try {
+    const { params } = context;
     const idOrSlug = params.id;
     let creation;
 
@@ -40,11 +45,9 @@ export async function GET(
 }
 
 // Mettre à jour une création
-export async function PUT(
-  request: NextRequest,
-  { params }: { params: { id: string } }
-) {
+export async function PUT(request: NextRequest, context: RouteContext) {
   try {
+    const { params } = context;
     const idOrSlug = params.id;
     const body = await request.json();
     let existingCreation;
@@ -90,7 +93,11 @@ export async function PUT(
     } catch (updateError) {
       console.error("Erreur spécifique lors de la mise à jour:", updateError);
       return NextResponse.json(
-        { error: `Erreur lors de la mise à jour: ${updateError.message}` },
+        {
+          error: `Erreur lors de la mise à jour: ${
+            (updateError as Error).message
+          }`,
+        },
         { status: 500 }
       );
     }
@@ -104,11 +111,9 @@ export async function PUT(
 }
 
 // Supprimer une création
-export async function DELETE(
-  request: NextRequest,
-  { params }: { params: { id: string } }
-) {
+export async function DELETE(request: NextRequest, context: RouteContext) {
   try {
+    const { params } = context;
     const idOrSlug = params.id;
     let existingCreation;
 
