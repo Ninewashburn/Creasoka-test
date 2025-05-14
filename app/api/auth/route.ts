@@ -13,6 +13,8 @@ import {
 } from "../../../lib/auth";
 import { headers } from "next/headers";
 
+export const runtime = "nodejs";
+
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
@@ -101,7 +103,7 @@ export async function POST(request: NextRequest) {
 }
 
 // Vérification de l'état d'authentification
-export async function GET() {
+export async function GET(request: NextRequest) {
   try {
     // Récupérer le token depuis les cookies
     const token = await getTokenFromServerCookies();
@@ -146,7 +148,7 @@ export async function GET() {
 }
 
 // Déconnexion
-export async function DELETE() {
+export async function DELETE(request: NextRequest) {
   await removeAuthCookie();
   return NextResponse.json({ success: true });
 }

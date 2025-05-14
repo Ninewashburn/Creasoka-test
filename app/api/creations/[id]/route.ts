@@ -2,6 +2,8 @@ import { NextRequest, NextResponse } from "next/server";
 import { db } from "../../../../lib/db";
 import { slugify } from "../../../../lib/utils";
 
+export const runtime = "nodejs";
+
 // Récupérer une création par son ID ou son slug
 export async function GET(
   request: NextRequest,
