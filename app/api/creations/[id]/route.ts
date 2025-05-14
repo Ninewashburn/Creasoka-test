@@ -1,12 +1,15 @@
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { db } from "../../../../lib/db";
 import { slugify } from "../../../../lib/utils";
 
+type RouteParams = {
+  params: {
+    id: string;
+  };
+};
+
 // Récupérer une création par son ID ou son slug
-export async function GET(
-  request: Request,
-  { params }: { params: { id: string } }
-) {
+export async function GET(request: NextRequest, { params }: RouteParams) {
   try {
     const idOrSlug = params.id;
     let creation;
@@ -40,10 +43,7 @@ export async function GET(
 }
 
 // Mettre à jour une création
-export async function PUT(
-  request: Request,
-  { params }: { params: { id: string } }
-) {
+export async function PUT(request: NextRequest, { params }: RouteParams) {
   try {
     const idOrSlug = params.id;
     const body = await request.json();
@@ -104,10 +104,7 @@ export async function PUT(
 }
 
 // Supprimer une création
-export async function DELETE(
-  request: Request,
-  { params }: { params: { id: string } }
-) {
+export async function DELETE(request: NextRequest, { params }: RouteParams) {
   try {
     const idOrSlug = params.id;
     let existingCreation;
