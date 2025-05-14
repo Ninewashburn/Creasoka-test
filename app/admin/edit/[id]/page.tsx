@@ -342,7 +342,7 @@ export default function EditCreationPage() {
             <div>
               <UploadMultipleImages
                 label="Images additionnelles"
-                values={formData.images}
+                value={formData.images}
                 onChange={(values) =>
                   setFormData({ ...formData, images: values })
                 }
