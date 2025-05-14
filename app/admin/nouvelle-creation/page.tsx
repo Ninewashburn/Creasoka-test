@@ -168,10 +168,10 @@ export default function NouvelleCreationPage() {
         setError(errorData.error || "Erreur lors de l'ajout de la création");
 
         toast({
-          title: "Erreur",
+          title: "Erreur d'API",
           description:
             errorData.error || "Erreur lors de l'ajout de la création",
-          variant: "destructive",
+          variant: "error",
         });
       }
     } catch (error) {
