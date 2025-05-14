@@ -2,18 +2,13 @@ import { NextRequest, NextResponse } from "next/server";
 import { db } from "../../../../lib/db";
 import { slugify } from "../../../../lib/utils";
 
-// Définir une interface pour le contexte de la route
-interface RouteContext {
-  params: {
-    id: string;
-  };
-}
-
 // Récupérer une création par son ID ou son slug
-export async function GET(request: NextRequest, context: RouteContext) {
+export async function GET(
+  request: NextRequest,
+  context: { params: { id: string } }
+) {
   try {
-    const { params } = context;
-    const idOrSlug = params.id;
+    const idOrSlug = context.params.id;
     let creation;
 
     // D'abord, essayer de trouver par ID
@@ -45,10 +40,12 @@ export async function GET(request: NextRequest, context: RouteContext) {
 }
 
 // Mettre à jour une création
-export async function PUT(request: NextRequest, context: RouteContext) {
+export async function PUT(
+  request: NextRequest,
+  context: { params: { id: string } }
+) {
   try {
-    const { params } = context;
-    const idOrSlug = params.id;
+    const idOrSlug = context.params.id;
     const body = await request.json();
     let existingCreation;
 
@@ -111,12 +108,13 @@ export async function PUT(request: NextRequest, context: RouteContext) {
 }
 
 // Supprimer une création
-export async function DELETE(request: NextRequest, context: RouteContext) {
+export async function DELETE(
+  request: NextRequest,
+  context: { params: { id: string } }
+) {
   try {
-    const { params } = context;
-    const idOrSlug = params.id;
+    const idOrSlug = context.params.id;
     let existingCreation;
-
     // D'abord, essayer de trouver par ID
     existingCreation = await db.creation.findUnique({
       where: { id: idOrSlug },
