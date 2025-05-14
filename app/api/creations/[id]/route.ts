@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { db } from "../../../../lib/db";
 import { slugify } from "../../../../lib/utils";
+import type { Creation } from "../../../../types/creation";
 
 export const runtime = "nodejs";
 
@@ -21,7 +22,9 @@ export async function GET(
     // Si non trouvé, chercher par slug (titre slugifié)
     if (!creation) {
       const allCreations = await db.creation.findMany();
-      creation = allCreations.find((c) => slugify(c.title) === idOrSlug);
+      creation = allCreations.find(
+        (c: Creation) => slugify(c.title) === idOrSlug
+      );
     }
 
     if (!creation) {
@@ -60,7 +63,7 @@ export async function PUT(
     if (!existingCreation) {
       const allCreations = await db.creation.findMany();
       existingCreation = allCreations.find(
-        (c) => slugify(c.title) === idOrSlug
+        (c: Creation) => slugify(c.title) === idOrSlug
       );
     }
 
@@ -126,7 +129,7 @@ export async function DELETE(
     if (!existingCreation) {
       const allCreations = await db.creation.findMany();
       existingCreation = allCreations.find(
-        (c) => slugify(c.title) === idOrSlug
+        (c: Creation) => slugify(c.title) === idOrSlug
       );
     }
 
