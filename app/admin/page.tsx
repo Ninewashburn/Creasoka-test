@@ -358,7 +358,7 @@ export default function AdminPage() {
                     </td>
                     <td className="px-4 py-3">
                       <div className="flex flex-wrap gap-1">
-                        {(creation.categories || [creation.category])
+                        {(creation.categories || [])
                           .filter(Boolean)
                           .map((cat, index) => (
                             <Badge
@@ -498,7 +498,7 @@ export default function AdminPage() {
                         </p>
 
                         <div className="flex flex-wrap gap-1 mb-2">
-                          {(creation.categories || [creation.category])
+                          {(creation.categories || [])
                             .filter(Boolean)
                             .map((cat, index) => (
                               <Badge
