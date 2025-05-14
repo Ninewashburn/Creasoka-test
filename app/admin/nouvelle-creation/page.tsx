@@ -330,9 +330,17 @@ export default function NouvelleCreationPage() {
                   label="Image principale"
                   required
                   value={formData.image}
-                  onChange={(value) =>
-                    setFormData((prev) => ({ ...prev, image: value }))
-                  }
+                  onChange={(value) => {
+                    if (typeof value === "string") {
+                      setFormData((prev) => ({ ...prev, image: value }));
+                    } else if (Array.isArray(value) && value.length > 0) {
+                      // Prend la première image si c'est un tableau (ne devrait pas arriver pour l'image principale)
+                      setFormData((prev) => ({ ...prev, image: value[0] }));
+                    } else {
+                      // Cas par défaut ou tableau vide, mettre une chaîne vide
+                      setFormData((prev) => ({ ...prev, image: "" }));
+                    }
+                  }}
                   description="Choisissez une image principale pour votre création"
                 />
               </motion.div>
