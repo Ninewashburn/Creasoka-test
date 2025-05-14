@@ -324,7 +324,17 @@ export default function EditCreationPage() {
                 label="Image principale"
                 required={true}
                 value={formData.image}
-                onChange={(value) => handleSelectChange("image", value)}
+                onChange={(value) => {
+                  if (typeof value === "string") {
+                    handleSelectChange("image", value);
+                  } else if (Array.isArray(value) && value.length > 0) {
+                    // Prend la première image si c'est un tableau (ne devrait pas arriver pour l'image principale)
+                    handleSelectChange("image", value[0]);
+                  } else {
+                    // Cas par défaut ou tableau vide, mettre une chaîne vide
+                    handleSelectChange("image", "");
+                  }
+                }}
                 description="Choisissez une image principale"
               />
             </div>
