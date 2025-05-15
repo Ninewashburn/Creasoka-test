@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 import { getTokenFromRequest, verifyToken } from "./lib/auth";
-import { Action, Resource, hasPermission } from "./lib/permissions";
+import { Action, Resource, UserRole, hasPermission } from "./lib/permissions";
 
 // Middleware protégeant les routes admin et API sensibles
 export default function middleware(request: NextRequest) {
@@ -27,7 +27,7 @@ export default function middleware(request: NextRequest) {
     }
 
     // Vérifier les permissions avec le nouveau système
-    if (payload && hasPermission(payload, Resource.USER, Action.UPDATE)) {
+    if (payload && payload.role === UserRole.ADMIN) {
       return NextResponse.next();
     }
 
