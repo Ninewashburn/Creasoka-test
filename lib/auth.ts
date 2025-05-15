@@ -6,21 +6,21 @@ import { NextRequest } from "next/server";
 // IMPORTANT: En production, définissez ces valeurs dans .env.local
 // NEVER commit these values to version control
 
-const envJwtSecret = process.env.JWT_SECRET;
-if (!envJwtSecret) {
+// Grâce à types/env.d.ts, TypeScript devrait connaître le type de process.env.JWT_SECRET
+
+if (!process.env.JWT_SECRET) {
   console.error(
-    "ERREUR CRITIQUE: JWT_SECRET n'est pas défini dans les variables d'environnement"
+    "ERREUR CRITIQUE: JWT_SECRET n'est pas défini dans les variables d'environnement.\n" +
+      "Veuillez vous assurer qu'elle est définie dans votre fichier .env ou dans les paramètres de votre environnement d'hébergement."
   );
-  // En production, vous pourriez vouloir arrêter l'application ici ou lever une erreur.
-  // Pour les besoins du typage et éviter que jwt.sign échoue à la compilation si la var est absente,
-  // on assigne une chaîne non vide, mais le console.error ci-dessus est crucial.
+  // En production, il est fortement recommandé de lever une erreur ici pour arrêter l'application.
+  // throw new Error("Configuration manquante: JWT_SECRET n'est pas défini.");
 }
 
-// Assurer que JWT_SECRET est une chaîne non vide pour jwt.sign
-// La vérification ci-dessus garantit que le problème est signalé si elle est réellement manquante.
-const JWT_SECRET: string =
-  envJwtSecret || "fallback-secret-for-typing-only-dev-mode";
-const JWT_EXPIRES_IN: string = process.env.JWT_EXPIRES_IN || "7d";
+// Utilisation directe, TypeScript devrait maintenant comprendre que JWT_SECRET est une chaîne (s'il est défini).
+// La garde ci-dessus est pour l'exécution ; la déclaration .d.ts est pour la compilation.
+const JWT_SECRET = process.env.JWT_SECRET;
+const JWT_EXPIRES_IN = process.env.JWT_EXPIRES_IN || "7d";
 
 const COOKIE_NAME = "auth-token";
 
@@ -61,14 +61,17 @@ export async function verifyPassword(
  * Génère un token JWT
  */
 export function generateToken(payload: JwtPayload): string {
-  const secret: string = JWT_SECRET;
-  if (!secret) {
+  if (!JWT_SECRET) {
+    // Cette vérification est une sécurité supplémentaire au cas où la garde initiale serait contournée
+    // ou si process.env.JWT_SECRET était une chaîne vide, ce qui est indésirable.
     console.error(
-      "JWT_SECRET is undefined or empty when trying to sign token!"
+      "Tentative de génération de token JWT sans JWT_SECRET valide."
     );
-    throw new Error("JWT_SECRET is not configured properly for token signing.");
+    throw new Error(
+      "JWT_SECRET n'est pas configuré correctement pour la signature de token."
+    );
   }
-  return jwt.sign(payload, secret, {
+  return jwt.sign(payload, JWT_SECRET, {
     expiresIn: JWT_EXPIRES_IN,
   });
 }
@@ -78,14 +81,13 @@ export function generateToken(payload: JwtPayload): string {
  */
 export function verifyToken(token: string): JwtPayload | null {
   try {
-    const secret: string = JWT_SECRET;
-    if (!secret) {
+    if (!JWT_SECRET) {
       console.error(
-        "JWT_SECRET is undefined or empty when trying to verify token!"
+        "Tentative de vérification de token JWT sans JWT_SECRET valide."
       );
-      return null;
+      return null; // Ou lever une erreur, selon la politique de gestion des erreurs
     }
-    return jwt.verify(token, secret) as JwtPayload;
+    return jwt.verify(token, JWT_SECRET) as JwtPayload;
   } catch (error) {
     console.error("Error verifying token:", error);
     return null;
