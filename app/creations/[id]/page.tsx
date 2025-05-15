@@ -132,6 +132,7 @@ export default function CreationDetailPage() {
       minis: "Minis",
       halloween: "Halloween",
       pokemon: "Pokémon",
+      divers: "Divers",
     }[category] || category;
 
   return (
@@ -208,6 +209,7 @@ export default function CreationDetailPage() {
                     minis: "Minis",
                     halloween: "Halloween",
                     pokemon: "Pokémon",
+                    divers: "Divers",
                   }[cat] || cat;
 
                 return (
