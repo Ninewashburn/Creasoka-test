@@ -75,14 +75,10 @@ export default function CreationDetailPage() {
                 // Vérifier si l'article a au moins une catégorie en commun avec l'article actuel
                 const creationCategories = Array.isArray(creation.categories)
                   ? creation.categories
-                  : creation.category
-                  ? [creation.category]
                   : [];
 
                 const itemCategories = Array.isArray(c.categories)
                   ? c.categories
-                  : c.category
-                  ? [c.category]
                   : [];
 
                 if (!itemCategories.length || !creationCategories.length)
