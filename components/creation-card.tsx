@@ -48,13 +48,11 @@ export default function CreationCard({ creation }: CreationCardProps) {
       </div>
       <div className="p-4">
         <div className="flex flex-wrap gap-1 mb-2">
-          {(creation.categories || [creation.category])
-            .filter(Boolean)
-            .map((cat, index) => (
-              <Badge key={index} variant="outline" className="text-xs">
-                {cat.charAt(0).toUpperCase() + cat.slice(1)}
-              </Badge>
-            ))}
+          {(creation.categories || []).filter(Boolean).map((cat, index) => (
+            <Badge key={index} variant="outline" className="text-xs">
+              {cat.charAt(0).toUpperCase() + cat.slice(1)}
+            </Badge>
+          ))}
         </div>
         <h3 className="font-semibold text-lg mb-2 hover:text-creasoka transition-colors duration-300">
           {creation.title}
