@@ -269,7 +269,7 @@ export default function GalleryPage() {
                   <p className="text-sm text-gray-200 capitalize">
                     {creation.categories && creation.categories.length > 0
                       ? creation.categories[0]
-                      : creation.category || ""}
+                      : ""}
                   </p>
                 </div>
               </div>
@@ -334,7 +334,7 @@ export default function GalleryPage() {
                     <p className="text-sm text-gray-200 capitalize">
                       {creation.categories && creation.categories.length > 0
                         ? creation.categories[0]
-                        : creation.category || ""}
+                        : ""}
                     </p>
                   </div>
                 </div>
@@ -385,7 +385,7 @@ export default function GalleryPage() {
                     <p className="text-sm text-gray-200 capitalize">
                       {creation.categories && creation.categories.length > 0
                         ? creation.categories[0]
-                        : creation.category || ""}
+                        : ""}
                     </p>
                   </div>
                 </div>
