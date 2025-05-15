@@ -12,6 +12,15 @@ import { cn } from "@/lib/utils";
 import ZoomableImage from "@/components/zoomable-image";
 import type { Creation } from "@/types/creation";
 
+const categoryTypes = [
+  "bijoux",
+  "minis",
+  "halloween",
+  "pokemon",
+  "divers",
+] as const;
+type ValidCategory = (typeof categoryTypes)[number];
+
 export default function GalleryPage() {
   const [searchQuery, setSearchQuery] = useState("");
   const [activeCategory, setActiveCategory] = useState("tous");
@@ -47,8 +56,9 @@ export default function GalleryPage() {
       // Vérifier si la catégorie active correspond à une des catégories de la création
       const matchesCategory =
         activeCategory === "tous" ||
-        (creation.categories && creation.categories.includes(activeCategory)) ||
-        creation.category === activeCategory; // Compatibilité avec l'ancien format
+        (creation.categories &&
+          categoryTypes.includes(activeCategory as ValidCategory) &&
+          creation.categories.includes(activeCategory as ValidCategory));
 
       // Exclure les créations avec le statut "adopté" des résultats principaux
       const isNotAdopted = creation.status !== "adopté";
@@ -74,9 +84,11 @@ export default function GalleryPage() {
       // Vérifier si la création est adoptée et correspond à la catégorie active
       return (
         c.status === "adopté" &&
-        ((c.categories && c.categories.includes(activeCategory)) ||
-          c.category === activeCategory)
-      ); // Compatibilité avec l'ancien format
+        activeCategory !== "tous" &&
+        categoryTypes.includes(activeCategory as ValidCategory) &&
+        c.categories &&
+        c.categories.includes(activeCategory as ValidCategory)
+      );
     });
   }, [activeCategory, allCreations]);
 
