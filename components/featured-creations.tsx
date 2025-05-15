@@ -83,7 +83,11 @@ export default function FeaturedCreations() {
               <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-150 flex items-end p-4">
                 <div className="text-white">
                   <h3 className="font-semibold text-lg">{creation.title}</h3>
-                  <p className="text-sm text-gray-200">{creation.category}</p>
+                  <p className="text-sm text-gray-200">
+                    {creation.categories && creation.categories.length > 0
+                      ? creation.categories[0]
+                      : ""}
+                  </p>
                 </div>
               </div>
             </div>
@@ -91,7 +95,7 @@ export default function FeaturedCreations() {
               <div className="text-sm text-purple-500 mb-1">
                 {creation.categories && creation.categories.length > 0
                   ? creation.categories[0]
-                  : creation.category || ""}
+                  : ""}
               </div>
               <h3 className="font-semibold text-lg">{creation.title}</h3>
               <p className="text-gray-600 dark:text-gray-400 text-sm mt-1 line-clamp-2">
