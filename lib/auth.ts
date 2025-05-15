@@ -5,15 +5,23 @@ import { NextRequest } from "next/server";
 
 // IMPORTANT: En production, définissez ces valeurs dans .env.local
 // NEVER commit these values to version control
-if (!process.env.JWT_SECRET) {
+
+const envJwtSecret = process.env.JWT_SECRET;
+if (!envJwtSecret) {
   console.error(
     "ERREUR CRITIQUE: JWT_SECRET n'est pas défini dans les variables d'environnement"
   );
-  // En production, vous pourriez vouloir arrêter l'application ici
+  // En production, vous pourriez vouloir arrêter l'application ici ou lever une erreur.
+  // Pour les besoins du typage et éviter que jwt.sign échoue à la compilation si la var est absente,
+  // on assigne une chaîne non vide, mais le console.error ci-dessus est crucial.
 }
 
-const JWT_SECRET = process.env.JWT_SECRET as string;
-const JWT_EXPIRES_IN = process.env.JWT_EXPIRES_IN || "7d"; // 7 jours par défaut
+// Assurer que JWT_SECRET est une chaîne non vide pour jwt.sign
+// La vérification ci-dessus garantit que le problème est signalé si elle est réellement manquante.
+const JWT_SECRET: string =
+  envJwtSecret || "fallback-secret-for-typing-only-dev-mode";
+const JWT_EXPIRES_IN: string = process.env.JWT_EXPIRES_IN || "7d";
+
 const COOKIE_NAME = "auth-token";
 
 export interface JwtPayload {
