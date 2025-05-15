@@ -3,6 +3,8 @@ import { writeFile } from "fs/promises";
 import { join } from "path";
 import { v4 as uuidv4 } from "uuid";
 
+export const runtime = "nodejs";
+
 /**
  * API pour télécharger des images vers le dossier public
  */
