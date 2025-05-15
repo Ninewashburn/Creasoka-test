@@ -53,7 +53,14 @@ export async function verifyPassword(
  * Génère un token JWT
  */
 export function generateToken(payload: JwtPayload): string {
-  return jwt.sign(payload, JWT_SECRET, {
+  const secret: string = JWT_SECRET;
+  if (!secret) {
+    console.error(
+      "JWT_SECRET is undefined or empty when trying to sign token!"
+    );
+    throw new Error("JWT_SECRET is not configured properly for token signing.");
+  }
+  return jwt.sign(payload, secret, {
     expiresIn: JWT_EXPIRES_IN,
   });
 }
@@ -63,8 +70,16 @@ export function generateToken(payload: JwtPayload): string {
  */
 export function verifyToken(token: string): JwtPayload | null {
   try {
-    return jwt.verify(token, JWT_SECRET) as JwtPayload;
+    const secret: string = JWT_SECRET;
+    if (!secret) {
+      console.error(
+        "JWT_SECRET is undefined or empty when trying to verify token!"
+      );
+      return null;
+    }
+    return jwt.verify(token, secret) as JwtPayload;
   } catch (error) {
+    console.error("Error verifying token:", error);
     return null;
   }
 }
