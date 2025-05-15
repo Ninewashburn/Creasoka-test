@@ -1,4 +1,4 @@
-import jwt from "jsonwebtoken";
+import jwt, { SignOptions } from "jsonwebtoken";
 import bcrypt from "bcryptjs";
 import { cookies } from "next/headers";
 import { NextRequest } from "next/server";
@@ -71,9 +71,15 @@ export function generateToken(payload: JwtPayload): string {
       "JWT_SECRET n'est pas configuré correctement pour la signature de token."
     );
   }
-  return jwt.sign(payload, JWT_SECRET, {
-    expiresIn: JWT_EXPIRES_IN,
-  });
+
+  const options: SignOptions = {
+    expiresIn: JWT_EXPIRES_IN as any,
+    // Vous pourriez envisager d'expliciter l'algorithme si le problème persiste,
+    // bien que HS256 soit le défaut pour les secrets de type chaîne.
+    // algorithm: 'HS256'
+  };
+
+  return jwt.sign(payload, JWT_SECRET as string, options);
 }
 
 /**
@@ -87,7 +93,7 @@ export function verifyToken(token: string): JwtPayload | null {
       );
       return null; // Ou lever une erreur, selon la politique de gestion des erreurs
     }
-    return jwt.verify(token, JWT_SECRET) as JwtPayload;
+    return jwt.verify(token, JWT_SECRET as string) as JwtPayload;
   } catch (error) {
     console.error("Error verifying token:", error);
     return null;
