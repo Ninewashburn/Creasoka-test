@@ -1,0 +1,10 @@
+# robots.txt pour Creasoka
+User-agent: *
+Allow: /
+
+# Routes privées ou sensibles
+Disallow: /admin/
+Disallow: /api/
+
+# Sitemap
+Sitemap: https://creasoka.com/sitemap.xml 
