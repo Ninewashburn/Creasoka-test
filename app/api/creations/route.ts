@@ -66,7 +66,12 @@ export async function POST(request: NextRequest) {
     if (error && typeof error === "object") {
       // Vérifier si c'est une erreur Prisma
       if ("name" in error && error.name === "PrismaClientKnownRequestError") {
-        errorMessage = `Erreur de base de données: ${error.message || ""}`;
+        // Vérifier également l'existence de message
+        if ("message" in error && typeof error.message === "string") {
+          errorMessage = `Erreur de base de données: ${error.message}`;
+        } else {
+          errorMessage = "Erreur de base de données Prisma";
+        }
       }
 
       // Extraire les détails si disponibles
