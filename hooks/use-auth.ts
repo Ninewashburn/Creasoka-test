@@ -9,32 +9,68 @@ interface User {
   role: string;
 }
 
-// Pour le debugging uniquement - sera toujours authentifié
-const ALWAYS_AUTHENTICATED = true;
+// Utiliser l'environnement plutôt qu'une constante codée en dur
+const IS_DEVELOPMENT = process.env.NODE_ENV === "development";
 
 export function useAuth() {
-  const [isAuthenticated, setIsAuthenticated] = useState(ALWAYS_AUTHENTICATED);
-  const [isLoading, setIsLoading] = useState(false); // Éviter le chargement inutile
-  const [user, setUser] = useState<User | null>({
-    id: "admin",
-    email: "admin@creasoka.com",
-    role: "admin",
-  });
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
+  const [user, setUser] = useState<User | null>(null);
 
-  // Fonction de connexion (simplifiée)
+  // Vérifier l'authentification au chargement
+  useEffect(() => {
+    async function checkAuthStatus() {
+      if (IS_DEVELOPMENT) {
+        // En développement uniquement, auto-authentification
+        setIsAuthenticated(true);
+        setUser({
+          id: "admin",
+          email: "admin@creasoka.com",
+          role: "admin",
+        });
+      } else {
+        // En production, vérifier réellement l'authentification
+        try {
+          const response = await fetch("/api/auth/check");
+          if (response.ok) {
+            const data = await response.json();
+            setIsAuthenticated(data.authenticated);
+            if (data.authenticated) {
+              setUser(data.user);
+            }
+          } else {
+            setIsAuthenticated(false);
+            setUser(null);
+          }
+        } catch (error) {
+          console.error(
+            "Erreur lors de la vérification de l'authentification:",
+            error
+          );
+          setIsAuthenticated(false);
+          setUser(null);
+        }
+      }
+      setIsLoading(false);
+    }
+
+    checkAuthStatus();
+  }, []);
+
+  // Fonction de connexion
   const login = async (email: string, password: string): Promise<boolean> => {
-    // Accepter n'importe quelles identifiants en mode de débogage
-    setIsAuthenticated(true);
-    if (!user) {
+    if (IS_DEVELOPMENT) {
+      // En développement, accepter n'importe quels identifiants
+      setIsAuthenticated(true);
       setUser({
         id: "admin",
         email: email || "admin@creasoka.com",
         role: "admin",
       });
+      return true;
     }
-    return true;
 
-    /* Code original commenté
+    // En production, vérifier les identifiants
     try {
       const response = await fetch("/api/auth", {
         method: "POST",
@@ -59,15 +95,20 @@ export function useAuth() {
       console.error("Erreur lors de la connexion:", error);
       return false;
     }
-    */
   };
 
-  // Fonction de déconnexion (simplifiée)
+  // Fonction de déconnexion
   const logout = async (): Promise<void> => {
-    // En mode débogage, on ne fait pas de déconnexion réelle
-    console.log("Déconnexion simulée (mode débogage)");
+    if (IS_DEVELOPMENT) {
+      // En développement, simuler la déconnexion
+      console.log("Déconnexion simulée (mode développement)");
+      setIsAuthenticated(false);
+      setUser(null);
+      window.location.href = "/";
+      return;
+    }
 
-    /* Code original commenté
+    // En production, déconnexion réelle
     try {
       await fetch("/api/auth", {
         method: "DELETE",
@@ -81,7 +122,6 @@ export function useAuth() {
       // Rediriger vers la page d'accueil après la déconnexion
       window.location.href = "/";
     }
-    */
   };
 
   return { isAuthenticated, isLoading, user, login, logout };
