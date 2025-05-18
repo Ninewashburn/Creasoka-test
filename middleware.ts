@@ -35,7 +35,7 @@ export default function middleware(request: NextRequest) {
     const referer = request.headers.get("referer");
     if (
       referer &&
-      (referer.endsWith("/admin") || referer.includes("/admin?"))
+      (referer.includes("/admin") || referer.includes("/admin/"))
     ) {
       return NextResponse.next();
     }
