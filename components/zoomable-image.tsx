@@ -77,14 +77,14 @@ export default function ZoomableImage({
       </motion.div>
 
       {isOpen && galleryImages && galleryImages.length > 0 && (
-        <ImageModal
+      <ImageModal
           isOpen={isOpen}
           onClose={handleClose}
           images={galleryImages}
-          currentIndex={currentIndex}
+        currentIndex={currentIndex}
           titles={galleryTitles}
           onNavigate={handleNavigate}
-        />
+      />
       )}
     </>
   );
