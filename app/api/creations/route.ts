@@ -7,6 +7,8 @@ export const runtime = "nodejs";
 
 export async function POST(request: NextRequest) {
   try {
+    console.log("POST /api/creations - Début de la requête");
+
     const body = await request.json();
 
     // Vérifier les données requises
@@ -16,6 +18,7 @@ export async function POST(request: NextRequest) {
       !body.categories ||
       body.categories.length === 0
     ) {
+      console.log("POST /api/creations - Données manquantes:", body);
       return NextResponse.json(
         { error: "Titre, description et au moins une catégorie sont requis" },
         { status: 400 }
@@ -28,6 +31,8 @@ export async function POST(request: NextRequest) {
     // Définir les images et détails comme des tableaux vides s'ils ne sont pas fournis
     const images = body.images || [];
     const details = body.details || [];
+
+    console.log("POST /api/creations - Tentative de création:", id);
 
     // Créer une nouvelle création dans la base de données
     const creation = await db.creation.create({
@@ -48,11 +53,20 @@ export async function POST(request: NextRequest) {
     // Invalider le cache après création
     serverCache.invalidate("all-creations");
 
+    console.log("POST /api/creations - Création réussie:", id);
+
     return NextResponse.json(creation, { status: 201 });
   } catch (error) {
-    console.error("Erreur lors de la création:", error);
+    console.error("POST /api/creations - Erreur détaillée:", error);
+
+    // Déterminer si c'est une erreur Prisma ou autre
+    const isPrismaError = error.name === "PrismaClientKnownRequestError";
+    const errorMessage = isPrismaError
+      ? `Erreur de base de données: ${error.message}`
+      : "Erreur lors de la création";
+
     return NextResponse.json(
-      { error: "Erreur lors de la création" },
+      { error: errorMessage, details: error.message },
       { status: 500 }
     );
   }

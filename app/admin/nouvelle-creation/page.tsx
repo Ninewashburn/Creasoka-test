@@ -51,13 +51,15 @@ export default function NouvelleCreationPage() {
     let timer;
     // Ajouter un délai pour laisser le temps au hook useAuth de s'initialiser
     timer = setTimeout(() => {
-      if (!isAuthenticated) {
+      // Ne rediriger que si la vérification d'authentification est terminée
+      // ET que l'utilisateur n'est pas authentifié
+      if (!isAuthLoading && !isAuthenticated) {
         router.push("/admin");
       }
-    }, 500);
+    }, 1000); // Augmenter le délai pour être sûr que useAuth a eu le temps de s'initialiser
 
     return () => clearTimeout(timer);
-  }, [isAuthenticated, router]);
+  }, [isAuthenticated, isAuthLoading, router]);
 
   const handleInputChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
@@ -92,6 +94,22 @@ export default function NouvelleCreationPage() {
     // Empêcher les soumissions multiples
     if (isSubmitting) return;
 
+    // Vérifier que l'utilisateur est bien authentifié avant de soumettre
+    if (!isAuthenticated) {
+      setError("Vous devez être authentifié pour ajouter une création");
+      toast({
+        title: "Erreur d'authentification",
+        description: "Vous n'êtes pas authentifié. Veuillez vous reconnecter.",
+        variant: "error",
+      });
+
+      setTimeout(() => {
+        router.push("/admin");
+      }, 1500);
+
+      return;
+    }
+
     setIsSubmitting(true);
 
     try {
@@ -125,19 +143,25 @@ export default function NouvelleCreationPage() {
         customMessage: formData.customMessage || null,
       };
 
+      console.log("Envoi des données de création:", {
+        ...creationData,
+        description: creationData.description.substring(0, 30) + "...",
+      });
+
       // Envoyer à l'API
       const response = await fetch("/api/creations", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        credentials: "include",
+        credentials: "include", // Important pour envoyer les cookies d'authentification
         body: JSON.stringify(creationData),
       });
 
-      if (response.ok) {
-        const responseData = await response.json();
+      // Récupérer la réponse JSON, qu'elle soit succès ou erreur
+      const responseData = await response.json();
 
+      if (response.ok) {
         // Afficher une notification de succès
         toast({
           title: "Création ajoutée",
@@ -162,19 +186,40 @@ export default function NouvelleCreationPage() {
         // Rediriger vers la page d'administration
         setTimeout(() => {
           router.push("/admin");
-        }, 500);
+        }, 1000);
       } else {
-        const errorData = await response.json();
-        setError(errorData.error || "Erreur lors de l'ajout de la création");
+        // Gérer les erreurs HTTP
+        console.error("Erreur API:", responseData);
 
-        toast({
-          title: "Erreur d'API",
-          description:
-            errorData.error || "Erreur lors de l'ajout de la création",
-          variant: "error",
-        });
+        if (response.status === 401) {
+          setError("Authentification requise. Veuillez vous reconnecter.");
+
+          toast({
+            title: "Session expirée",
+            description: "Votre session a expiré. Veuillez vous reconnecter.",
+            variant: "error",
+          });
+
+          // Rediriger vers la page de connexion
+          setTimeout(() => {
+            router.push("/admin");
+          }, 1500);
+        } else {
+          // Autres erreurs
+          setError(
+            responseData.error || "Erreur lors de l'ajout de la création"
+          );
+
+          toast({
+            title: "Erreur d'API",
+            description:
+              responseData.error || "Erreur lors de l'ajout de la création",
+            variant: "error",
+          });
+        }
       }
     } catch (error) {
+      console.error("Erreur client:", error);
       setError("Erreur lors de l'envoi des données");
 
       toast({
