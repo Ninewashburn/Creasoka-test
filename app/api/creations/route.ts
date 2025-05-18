@@ -59,14 +59,25 @@ export async function POST(request: NextRequest) {
   } catch (error) {
     console.error("POST /api/creations - Erreur détaillée:", error);
 
-    // Déterminer si c'est une erreur Prisma ou autre
-    const isPrismaError = error.name === "PrismaClientKnownRequestError";
-    const errorMessage = isPrismaError
-      ? `Erreur de base de données: ${error.message}`
-      : "Erreur lors de la création";
+    // Vérifier le type d'erreur et extraire les détails de façon sécurisée
+    let errorMessage = "Erreur lors de la création";
+    let errorDetails = "";
+
+    if (error && typeof error === "object") {
+      // Vérifier si c'est une erreur Prisma
+      if ("name" in error && error.name === "PrismaClientKnownRequestError") {
+        errorMessage = `Erreur de base de données: ${error.message || ""}`;
+      }
+
+      // Extraire les détails si disponibles
+      errorDetails =
+        "message" in error && typeof error.message === "string"
+          ? error.message
+          : "Détails non disponibles";
+    }
 
     return NextResponse.json(
-      { error: errorMessage, details: error.message },
+      { error: errorMessage, details: errorDetails },
       { status: 500 }
     );
   }
@@ -90,9 +101,17 @@ export async function GET(request: NextRequest) {
     return NextResponse.json(creations);
   } catch (error) {
     console.error("Erreur lors de la récupération des créations:", error);
-    return NextResponse.json(
-      { error: "Erreur lors de la récupération des créations" },
-      { status: 500 }
-    );
+
+    let errorMessage = "Erreur lors de la récupération des créations";
+    if (
+      error &&
+      typeof error === "object" &&
+      "message" in error &&
+      typeof error.message === "string"
+    ) {
+      errorMessage += `: ${error.message}`;
+    }
+
+    return NextResponse.json({ error: errorMessage }, { status: 500 });
   }
 }
