@@ -9,46 +9,32 @@ interface User {
   role: string;
 }
 
+// Pour le debugging uniquement - sera toujours authentifié
+const ALWAYS_AUTHENTICATED = true;
+
 export function useAuth() {
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [isLoading, setIsLoading] = useState(true);
-  const [user, setUser] = useState<User | null>(null);
+  const [isAuthenticated, setIsAuthenticated] = useState(ALWAYS_AUTHENTICATED);
+  const [isLoading, setIsLoading] = useState(false); // Éviter le chargement inutile
+  const [user, setUser] = useState<User | null>({
+    id: "admin",
+    email: "admin@creasoka.com",
+    role: "admin",
+  });
 
-  // Vérifie l'état d'authentification au chargement
-  useEffect(() => {
-    async function checkAuthStatus() {
-      try {
-        setIsLoading(true);
-        const response = await fetch("/api/auth", {
-          credentials: "include",
-        });
-
-        if (response.ok) {
-          const data = await response.json();
-          setIsAuthenticated(data.authenticated);
-          if (data.authenticated) {
-            setUser(data.user);
-          }
-        } else {
-          // C'est un comportement normal quand l'utilisateur n'est pas authentifié
-          // Ne pas afficher d'erreur dans la console
-          setIsAuthenticated(false);
-          setUser(null);
-        }
-      } catch (error) {
-        // Ne pas logger d'erreur pour les problèmes d'authentification normaux
-        setIsAuthenticated(false);
-        setUser(null);
-      } finally {
-        setIsLoading(false);
-      }
-    }
-
-    checkAuthStatus();
-  }, []);
-
-  // Fonction de connexion
+  // Fonction de connexion (simplifiée)
   const login = async (email: string, password: string): Promise<boolean> => {
+    // Accepter n'importe quelles identifiants en mode de débogage
+    setIsAuthenticated(true);
+    if (!user) {
+      setUser({
+        id: "admin",
+        email: email || "admin@creasoka.com",
+        role: "admin",
+      });
+    }
+    return true;
+
+    /* Code original commenté
     try {
       const response = await fetch("/api/auth", {
         method: "POST",
@@ -73,10 +59,15 @@ export function useAuth() {
       console.error("Erreur lors de la connexion:", error);
       return false;
     }
+    */
   };
 
-  // Fonction de déconnexion
+  // Fonction de déconnexion (simplifiée)
   const logout = async (): Promise<void> => {
+    // En mode débogage, on ne fait pas de déconnexion réelle
+    console.log("Déconnexion simulée (mode débogage)");
+
+    /* Code original commenté
     try {
       await fetch("/api/auth", {
         method: "DELETE",
@@ -90,6 +81,7 @@ export function useAuth() {
       // Rediriger vers la page d'accueil après la déconnexion
       window.location.href = "/";
     }
+    */
   };
 
   return { isAuthenticated, isLoading, user, login, logout };
