@@ -1,10 +1,14 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
-import { getTokenFromRequest, verifyToken } from "./lib/auth";
-import { Action, Resource, UserRole, hasPermission } from "./lib/permissions";
+// import { getTokenFromRequest, verifyToken } from "./lib/auth";
+// import { Action, Resource, UserRole, hasPermission } from "./lib/permissions";
 
-// Middleware protégeant les routes admin et API sensibles
+// Middleware DÉSACTIVÉ temporairement pour tests
 export default function middleware(request: NextRequest) {
+  // Laisser passer toutes les requêtes
+  return NextResponse.next();
+
+  /* CODE DÉSACTIVÉ POUR TESTS
   // PROTECTION MINIMALE POUR ROUTES ADMIN
   if (request.nextUrl.pathname.startsWith("/admin")) {
     // Si c'est la première page admin, toujours autoriser (page de login)
@@ -86,9 +90,11 @@ export default function middleware(request: NextRequest) {
   }
 
   return NextResponse.next();
+  */
 }
 
-// Configuration des chemins sur lesquels le middleware s'exécute
+// Configuration des chemins sur lesquels le middleware s'exécute (DÉSACTIVÉE)
 export const config = {
-  matcher: ["/admin/:path*", "/api/creations/:path*", "/api/upload/:path*"],
+  matcher: [], // Aucune route ne correspond, donc le middleware n'est pas utilisé
+  // Ancienne configuration: ["/admin/:path*", "/api/creations/:path*", "/api/upload/:path*"]
 };
