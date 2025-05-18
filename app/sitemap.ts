@@ -59,28 +59,30 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   }));
 
   // Pages de créations
-  const creationPages = creations.map((creation) => {
-    // Transformer l'ID pour qu'il contienne le titre slugifié comme dans l'URL
-    const titleSlug = creation.title
-      .toLowerCase()
-      .normalize("NFD")
-      .replace(/[\u0300-\u036f]/g, "")
-      .replace(/[^a-z0-9]+/g, "-")
-      .replace(/^-+|-+$/g, "")
-      .replace(/-+/g, "-");
+  const creationPages = creations.map(
+    (creation: { id: string; title: string; updatedAt: Date }) => {
+      // Transformer l'ID pour qu'il contienne le titre slugifié comme dans l'URL
+      const titleSlug = creation.title
+        .toLowerCase()
+        .normalize("NFD")
+        .replace(/[\u0300-\u036f]/g, "")
+        .replace(/[^a-z0-9]+/g, "-")
+        .replace(/^-+|-+$/g, "")
+        .replace(/-+/g, "-");
 
-    // Vérifier si l'ID contient déjà le slug ou s'il s'agit d'un ancien format d'ID
-    const slug = creation.id.includes(titleSlug)
-      ? creation.id
-      : `${titleSlug}-${creation.id}`;
+      // Vérifier si l'ID contient déjà le slug ou s'il s'agit d'un ancien format d'ID
+      const slug = creation.id.includes(titleSlug)
+        ? creation.id
+        : `${titleSlug}-${creation.id}`;
 
-    return {
-      url: `${baseUrl}/creations/${slug}`,
-      lastModified: creation.updatedAt,
-      changeFrequency: "monthly",
-      priority: 0.7,
-    };
-  });
+      return {
+        url: `${baseUrl}/creations/${slug}`,
+        lastModified: creation.updatedAt,
+        changeFrequency: "monthly",
+        priority: 0.7,
+      };
+    }
+  );
 
   // Combiner toutes les pages pour le sitemap
   return [...staticPages, ...categoryPages, ...creationPages];
