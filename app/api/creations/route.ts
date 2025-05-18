@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { db } from "../../../lib/db";
 import { slugify } from "../../../lib/utils";
+import { serverCache } from "../../../lib/cache";
 
 export const runtime = "nodejs";
 
@@ -44,6 +45,9 @@ export async function POST(request: NextRequest) {
       },
     });
 
+    // Invalider le cache après création
+    serverCache.invalidate("all-creations");
+
     return NextResponse.json(creation, { status: 201 });
   } catch (error) {
     console.error("Erreur lors de la création:", error);
@@ -56,11 +60,18 @@ export async function POST(request: NextRequest) {
 
 export async function GET(request: NextRequest) {
   try {
-    const creations = await db.creation.findMany({
-      orderBy: {
-        createdAt: "desc",
+    // Utiliser le cache côté serveur avec une durée de 2 minutes
+    const creations = await serverCache.get(
+      "all-creations",
+      async () => {
+        return await db.creation.findMany({
+          orderBy: {
+            createdAt: "desc",
+          },
+        });
       },
-    });
+      2 * 60 * 1000 // 2 minutes
+    );
 
     return NextResponse.json(creations);
   } catch (error) {

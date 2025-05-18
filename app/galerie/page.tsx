@@ -11,6 +11,7 @@ import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { cn } from "@/lib/utils";
 import ZoomableImage from "@/components/zoomable-image";
 import type { Creation } from "@/types/creation";
+import { getFromCache, setToCache } from "@/lib/clientCache";
 
 const categoryTypes = [
   "bijoux",
@@ -32,14 +33,37 @@ export default function GalleryPage() {
     async function fetchCreations() {
       try {
         setIsLoading(true);
+
+        // Vérifier le cache d'abord
+        const cachedData = getFromCache<Creation[]>("allCreations");
+        if (cachedData) {
+          setAllCreations(cachedData);
+          setIsLoading(false);
+          // Mettre à jour les données en arrière-plan
+          fetchFromAPI();
+          return;
+        }
+
+        // Si pas de cache, récupérer depuis l'API
+        await fetchFromAPI();
+      } catch (error) {
+        console.error("Erreur lors du chargement des créations:", error);
+        setIsLoading(false);
+      }
+    }
+
+    async function fetchFromAPI() {
+      try {
         const response = await fetch("/api/creations");
         if (response.ok) {
           const data = await response.json();
           setAllCreations(data);
+          // Mettre en cache les données pour les utilisations futures
+          setToCache("allCreations", data);
+          setIsLoading(false);
         }
       } catch (error) {
-        console.error("Erreur lors du chargement des créations:", error);
-      } finally {
+        console.error("Erreur lors du chargement depuis l'API:", error);
         setIsLoading(false);
       }
     }

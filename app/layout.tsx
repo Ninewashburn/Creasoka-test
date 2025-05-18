@@ -9,6 +9,7 @@ import KeyboardShortcuts from "@/components/keyboard-shortcuts";
 import { Toaster } from "@/components/ui/toaster";
 import ScrollToTop from "@/components/scroll-to-top";
 import SchemaOrg from "@/components/seo/schema-org";
+import PreloadData from "@/components/preload-data";
 
 const quicksand = Quicksand({
   subsets: ["latin"],
@@ -138,6 +139,7 @@ export default function RootLayout({
           </div>
           <Toaster />
           <ScrollToTop />
+          <PreloadData />
         </ThemeProvider>
       </body>
     </html>

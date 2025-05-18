@@ -15,6 +15,7 @@ interface ZoomableImageProps {
   galleryIndex?: number;
   galleryTitles?: string[];
   onGalleryIndexChange?: (newIndex: number) => void;
+  priority?: boolean;
 }
 
 export default function ZoomableImage({
@@ -22,51 +23,69 @@ export default function ZoomableImage({
   alt,
   width,
   height,
-  className = "",
+  className,
   galleryImages,
   galleryIndex = 0,
   galleryTitles,
   onGalleryIndexChange,
+  priority = false,
 }: ZoomableImageProps) {
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [isZoomed, setIsZoomed] = useState(false);
+  const [isOpen, setIsOpen] = useState(false);
+  const [currentIndex, setCurrentIndex] = useState(galleryIndex);
 
-  // Si des images de galerie sont fournies, utilisez-les, sinon utilisez l'image actuelle
-  const images = galleryImages || [src];
-  const titles = galleryTitles || [alt];
-  const currentIndex = galleryIndex || 0;
+  // Mise à jour de l'index lorsque galleryIndex change
+  useEffect(() => {
+    setCurrentIndex(galleryIndex);
+  }, [galleryIndex]);
 
-  // Vérifier si l'URL est valide (ne contient pas "placeholder.svg" si src est défini)
-  const actualSrc =
-    src && !src.includes("placeholder.svg") && src.trim() !== ""
-      ? src
-      : "/placeholder.svg";
+  // Handler pour l'ouverture de la modale
+  const handleOpen = () => {
+    setIsOpen(true);
+  };
+
+  // Handler pour la fermeture de la modale
+  const handleClose = () => {
+    setIsOpen(false);
+  };
+
+  // Handler pour la navigation dans la galerie
+  const handleNavigate = (newIndex: number) => {
+    setCurrentIndex(newIndex);
+    if (onGalleryIndexChange) {
+      onGalleryIndexChange(newIndex);
+    }
+  };
 
   return (
     <>
       <motion.div
-        className="cursor-zoom-in overflow-hidden"
-        onClick={() => setIsModalOpen(true)}
         whileHover={{ scale: 1.02 }}
-        whileTap={{ scale: 0.98 }}
+        className="cursor-zoom-in relative"
+        onClick={handleOpen}
       >
         <Image
-          src={actualSrc}
+          src={src}
           alt={alt}
           width={width}
           height={height}
-          className={`${className} transition-transform duration-300 hover:scale-105`}
+          className={className || ""}
+          loading={priority ? "eager" : "lazy"}
+          fetchPriority={priority ? "high" : "auto"}
+          sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+          quality={80}
         />
       </motion.div>
 
-      <ImageModal
-        isOpen={isModalOpen}
-        onClose={() => setIsModalOpen(false)}
-        images={images}
-        currentIndex={currentIndex}
-        titles={titles}
-        onNavigate={onGalleryIndexChange}
-      />
+      {isOpen && galleryImages && galleryImages.length > 0 && (
+        <ImageModal
+          isOpen={isOpen}
+          onClose={handleClose}
+          images={galleryImages}
+          currentIndex={currentIndex}
+          titles={galleryTitles}
+          onNavigate={handleNavigate}
+        />
+      )}
     </>
   );
 }

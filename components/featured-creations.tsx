@@ -7,6 +7,10 @@ import { motion } from "framer-motion";
 import { useState, useEffect } from "react";
 import type { Creation } from "@/types/creation";
 import { slugify } from "@/lib/utils";
+import { getFromCache, setToCache } from "@/lib/clientCache";
+
+// Clé de cache pour les créations vedettes
+const CACHE_KEY = "featuredCreations";
 
 export default function FeaturedCreations() {
   const [featuredCreations, setFeaturedCreations] = useState<Creation[]>([]);
@@ -16,19 +20,45 @@ export default function FeaturedCreations() {
     async function fetchFeaturedCreations() {
       try {
         setIsLoading(true);
+
+        // Vérifier le cache
+        const cachedData = getFromCache<Creation[]>(CACHE_KEY);
+        if (cachedData) {
+          setFeaturedCreations(cachedData);
+          setIsLoading(false);
+          // Mettre à jour les données en arrière-plan
+          fetchDataFromAPI();
+          return;
+        }
+
+        // Si pas de cache ou cache expiré, charger les données normalement
+        await fetchDataFromAPI();
+      } catch (error) {
+        console.error(
+          "Erreur lors du chargement des créations vedettes:",
+          error
+        );
+        setIsLoading(false);
+      }
+    }
+
+    async function fetchDataFromAPI() {
+      try {
         const response = await fetch("/api/creations");
         if (response.ok) {
           const allCreations = await response.json();
           const featured = allCreations
             .filter((creation: Creation) => creation.status === "vedette")
             .slice(0, 3);
+
+          // Mettre à jour l'état
           setFeaturedCreations(featured);
+
+          // Mettre en cache les données
+          setToCache(CACHE_KEY, featured);
         }
       } catch (error) {
-        console.error(
-          "Erreur lors du chargement des créations vedettes:",
-          error
-        );
+        console.error("Erreur lors du chargement depuis l'API:", error);
       } finally {
         setIsLoading(false);
       }
@@ -79,6 +109,8 @@ export default function FeaturedCreations() {
                 width={400}
                 height={300}
                 className="w-full h-64 object-cover transition-transform duration-200 group-hover:scale-105"
+                loading="lazy"
+                sizes="(max-width: 768px) 100vw, (max-width: 1200px) 33vw, 400px"
               />
               <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-150 flex items-end p-4">
                 <div className="text-white">
