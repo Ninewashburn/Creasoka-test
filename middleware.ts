@@ -5,49 +5,32 @@ import { Action, Resource, UserRole, hasPermission } from "./lib/permissions";
 
 // Middleware protégeant les routes admin et API sensibles
 export default function middleware(request: NextRequest) {
-  // Protéger les routes admin
+  // PROTECTION MINIMALE POUR ROUTES ADMIN
   if (request.nextUrl.pathname.startsWith("/admin")) {
-    // Cas spécial: la page d'accueil admin est toujours autorisée pour authentification
+    // Si c'est la première page admin, toujours autoriser (page de login)
     if (request.nextUrl.pathname === "/admin") {
       return NextResponse.next();
     }
 
-    // Option 1: Le raccourci clavier est utilisé (combinaison de touches)
+    // Autoriser toute navigation si l'utilisateur vient d'une page admin
+    const referer = request.headers.get("referer");
+    if (referer && referer.includes("/admin")) {
+      return NextResponse.next();
+    }
+
+    // Autoriser l'accès s'il y a un token valide
+    const token = getTokenFromRequest(request);
+    if (token && verifyToken(token)) {
+      return NextResponse.next();
+    }
+
+    // Autoriser l'accès via raccourci clavier
     const accessKey = request.nextUrl.searchParams.get("access_key");
     if (accessKey === "keyboard_shortcut") {
       return NextResponse.next();
     }
 
-    // Option 2: Vérifier si l'utilisateur est déjà authentifié via le token JWT
-    const token = getTokenFromRequest(request);
-    let payload = null;
-
-    if (token) {
-      payload = verifyToken(token);
-      if (payload && payload.role === UserRole.ADMIN) {
-        return NextResponse.next();
-      }
-    }
-
-    // Option 3: SIMPLIFIÉE - Vérifier simplement si l'utilisateur vient de n'importe quelle page admin
-    const referer = request.headers.get("referer");
-    if (referer && referer.includes("/admin")) {
-      // Autoriser toute navigation entre pages admin
-      return NextResponse.next();
-    }
-
-    // Option 4: Autoriser la navigation vers des pages spécifiques même sans referer
-    // Ces pages sont considérées comme des "sous-pages sûres" du panel admin
-    const safePaths = ["/edit/", "/nouvelle-creation", "/images"];
-    const isAccessingSafePath = safePaths.some((path) =>
-      request.nextUrl.pathname.includes(`/admin${path}`)
-    );
-
-    if (isAccessingSafePath) {
-      return NextResponse.next();
-    }
-
-    // Si aucune des conditions n'est remplie, rediriger vers l'accueil
+    // Si aucune condition n'est remplie, rediriger vers l'accueil
     return NextResponse.redirect(new URL("/", request.url));
   }
 
