@@ -53,6 +53,7 @@ export default function Header() {
       label: "Articles",
       href: "#",
       dropdown: [
+        { label: "Toutes les créations", href: "/categories/toutes" },
         { label: "Bijoux", href: "/categories/bijoux" },
         { label: "Minis", href: "/categories/minis" },
         { label: "Halloween", href: "/categories/halloween" },

@@ -249,8 +249,21 @@ export default function CreationDetailPage() {
                 <Button
                   size="lg"
                   className="bg-creasoka hover:bg-creasoka/90 text-white"
+                  onClick={() => {
+                    if (creation.externalLink) {
+                      window.open(creation.externalLink, "_blank");
+                    }
+                  }}
+                  disabled={!creation.externalLink}
+                  title={
+                    creation.externalLink
+                      ? "Voir sur Vinted"
+                      : "Lien non disponible"
+                  }
                 >
-                  Adopter cette création
+                  {creation.externalLink
+                    ? "Adopter cette création"
+                    : "Non disponible à l'adoption"}
                 </Button>
                 <Button
                   variant="outline"
