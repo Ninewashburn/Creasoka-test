@@ -31,7 +31,12 @@ export function useAuth() {
       } else {
         // En production, vérifier réellement l'authentification
         try {
-          const response = await fetch("/api/auth/check");
+          // Utiliser la route existante avec GET au lieu de /api/auth/check
+          const response = await fetch("/api/auth", {
+            method: "GET",
+            credentials: "include", // Important pour envoyer les cookies
+          });
+
           if (response.ok) {
             const data = await response.json();
             setIsAuthenticated(data.authenticated);
