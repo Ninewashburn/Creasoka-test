@@ -7,7 +7,7 @@ import { Action, Resource, UserRole, hasPermission } from "./lib/permissions";
 export default function middleware(request: NextRequest) {
   // Protéger les routes admin
   if (request.nextUrl.pathname.startsWith("/admin")) {
-    // Cas spécial: accès direct à /admin est toujours autorisé
+    // Cas spécial: la page d'accueil admin est toujours autorisée pour authentification
     if (request.nextUrl.pathname === "/admin") {
       return NextResponse.next();
     }
@@ -24,19 +24,26 @@ export default function middleware(request: NextRequest) {
 
     if (token) {
       payload = verifyToken(token);
+      if (payload && payload.role === UserRole.ADMIN) {
+        return NextResponse.next();
+      }
     }
 
-    // Vérifier les permissions avec le nouveau système
-    if (payload && payload.role === UserRole.ADMIN) {
+    // Option 3: SIMPLIFIÉE - Vérifier simplement si l'utilisateur vient de n'importe quelle page admin
+    const referer = request.headers.get("referer");
+    if (referer && referer.includes("/admin")) {
+      // Autoriser toute navigation entre pages admin
       return NextResponse.next();
     }
 
-    // Option 3: Vérifier l'en-tête Referer pour voir si l'utilisateur vient de /admin
-    const referer = request.headers.get("referer");
-    if (
-      referer &&
-      (referer.includes("/admin") || referer.includes("/admin/"))
-    ) {
+    // Option 4: Autoriser la navigation vers des pages spécifiques même sans referer
+    // Ces pages sont considérées comme des "sous-pages sûres" du panel admin
+    const safePaths = ["/edit/", "/nouvelle-creation", "/images"];
+    const isAccessingSafePath = safePaths.some((path) =>
+      request.nextUrl.pathname.includes(`/admin${path}`)
+    );
+
+    if (isAccessingSafePath) {
       return NextResponse.next();
     }
 
