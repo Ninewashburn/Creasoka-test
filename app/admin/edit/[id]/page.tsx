@@ -20,7 +20,6 @@ import {
 import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
-import { creations } from "@/data/creations";
 import {
   Tooltip,
   TooltipContent,
@@ -70,7 +69,6 @@ export default function EditCreationPage() {
 
           if (response.ok) {
             const data = await response.json();
-            console.log("Création récupérée:", data);
             setCreation(data);
             setFormData({
               title: data.title || "",
@@ -86,46 +84,9 @@ export default function EditCreationPage() {
               details: data.details || [],
             });
           } else {
-            // Si l'API échoue, essayer les données locales
-            console.log(
-              "Recherche dans les données locales pour slug/ID:",
-              slugOrId
-            );
-            // Essayer de trouver par ID
-            let localCreation = creations.find((c) => c.id === slugOrId);
-
-            // Si non trouvé, essayer par slug
-            if (!localCreation) {
-              localCreation = creations.find(
-                (c) => slugify(c.title) === slugOrId
-              );
-            }
-
-            if (localCreation) {
-              console.log(
-                "Création trouvée dans les données locales:",
-                localCreation
-              );
-              setCreation(localCreation);
-              setFormData({
-                title: localCreation.title || "",
-                categories: localCreation.categories || [],
-                description: localCreation.description || "",
-                image: localCreation.image || "",
-                images: localCreation.images || [],
-                externalLink: localCreation.externalLink || "",
-                status: localCreation.status || "normal",
-                customMessage:
-                  localCreation.customMessage ||
-                  "Ce bijou est fait à la main avec soin. Chaque pièce est unique et peut présenter de légères variations par rapport aux photos, ce qui fait tout son charme artisanal.",
-                details: localCreation.details || [],
-              });
-            } else {
-              console.error(`Création avec slug/ID ${slugOrId} non trouvée`);
-            }
+            setError("Création non trouvée");
           }
         } catch (error) {
-          console.error("Erreur lors du chargement de la création:", error);
           setError("Erreur lors du chargement des données");
         } finally {
           setIsLoading(false);

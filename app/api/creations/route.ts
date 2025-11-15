@@ -2,12 +2,13 @@ import { NextRequest, NextResponse } from "next/server";
 import { db } from "../../../lib/db";
 import { slugify } from "../../../lib/utils";
 import { serverCache } from "../../../lib/cache";
+import { logger } from "../../../lib/logger";
 
 export const runtime = "nodejs";
 
 export async function POST(request: NextRequest) {
   try {
-    console.log("POST /api/creations - Début de la requête");
+    logger.debug("POST /api/creations - Début de la requête");
 
     const body = await request.json();
 
@@ -18,7 +19,7 @@ export async function POST(request: NextRequest) {
       !body.categories ||
       body.categories.length === 0
     ) {
-      console.log("POST /api/creations - Données manquantes:", body);
+      logger.debug("POST /api/creations - Données manquantes:", body);
       return NextResponse.json(
         { error: "Titre, description et au moins une catégorie sont requis" },
         { status: 400 }
@@ -32,7 +33,7 @@ export async function POST(request: NextRequest) {
     const images = body.images || [];
     const details = body.details || [];
 
-    console.log("POST /api/creations - Tentative de création:", id);
+    logger.debug("POST /api/creations - Tentative de création:", id);
 
     // Créer une nouvelle création dans la base de données
     const creation = await db.creation.create({
@@ -53,11 +54,11 @@ export async function POST(request: NextRequest) {
     // Invalider le cache après création
     serverCache.invalidate("all-creations");
 
-    console.log("POST /api/creations - Création réussie:", id);
+    logger.info("POST /api/creations - Création réussie:", id);
 
     return NextResponse.json(creation, { status: 201 });
   } catch (error) {
-    console.error("POST /api/creations - Erreur détaillée:", error);
+    logger.error("POST /api/creations - Erreur détaillée:", error);
 
     // Vérifier le type d'erreur et extraire les détails de façon sécurisée
     let errorMessage = "Erreur lors de la création";
@@ -105,7 +106,7 @@ export async function GET(request: NextRequest) {
 
     return NextResponse.json(creations);
   } catch (error) {
-    console.error("Erreur lors de la récupération des créations:", error);
+    logger.error("Erreur lors de la récupération des créations:", error);
 
     let errorMessage = "Erreur lors de la récupération des créations";
     if (
