@@ -4,13 +4,14 @@ import { useState, useMemo, useEffect } from "react";
 import { useParams, useRouter } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
-import { ArrowLeft, Share2 } from "lucide-react";
+import { ArrowLeft, Share2, Calendar, CheckCircle2, Info } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { motion } from "framer-motion";
 import { notFound } from "next/navigation";
 import ZoomableImage from "@/components/zoomable-image";
+import Breadcrumb from "@/components/breadcrumb";
 import { slugify, processMarkdownToHtml } from "@/lib/utils";
 import type { Creation } from "@/types/creation";
 
@@ -136,167 +137,228 @@ export default function CreationDetailPage() {
     }[category] || category;
 
   return (
-    <div className="container mx-auto px-4 py-8 creation-detail">
-      <button
-        onClick={() => router.back()}
-        className="inline-flex items-center text-creasoka hover:text-creasoka/80 mb-6 border-none bg-transparent cursor-pointer"
-      >
-        <ArrowLeft className="mr-2 h-4 w-4" />
-        Retour
-      </button>
+    <div className="container mx-auto px-4 py-8">
+      {/* Breadcrumb Navigation */}
+      <Breadcrumb
+        items={[
+          { label: "Créations", href: "/#creations" },
+          { label: categoryLabel, href: `/#creations?category=${category}` },
+          { label: creation.title },
+        ]}
+      />
 
-      <div className="grid md:grid-cols-3 gap-8 lg:gap-12">
-        <div className="md:col-span-2">
-          <div className="relative mb-4 rounded-lg overflow-hidden">
-            <ZoomableImage
-              src={galleryImages[selectedImage] || "/placeholder.svg"}
-              alt={creation.title}
-              width={600}
-              height={600}
-              className="w-full h-auto object-cover rounded-lg"
-              galleryImages={galleryImages}
-              galleryIndex={selectedImage}
-              galleryTitles={Array(galleryImages.length).fill(creation.title)}
-              onGalleryIndexChange={setSelectedImage}
-            />
-            {creation.status === "nouveau" && (
-              <Badge className="absolute top-4 left-4 bg-green-500">
-                Nouveau
-              </Badge>
-            )}
-            {creation.status === "vedette" && (
-              <Badge className="absolute top-4 left-4 bg-creasoka">
-                Vedette
-              </Badge>
-            )}
-            {creation.status === "adopté" && (
-              <Badge className="absolute top-4 left-4 bg-red-500">Adopté</Badge>
-            )}
-          </div>
+      <div className="grid md:grid-cols-[1fr,400px] gap-8 lg:gap-12">
+        {/* Section Gauche - Contenu Principal */}
+        <div className="space-y-6">
+          {/* En-tête avec titre et badges */}
+          <div>
+            <div className="flex items-start justify-between mb-3">
+              <div className="flex-1">
+                <h1 className="text-4xl font-bold mb-3 text-gray-900 dark:text-white">
+                  {creation.title}
+                </h1>
+                <div className="flex flex-wrap gap-2">
+                  {creation.categories &&
+                    creation.categories.map((cat, index) => {
+                      const catLabel =
+                        {
+                          bijoux: "Bijoux",
+                          minis: "Minis",
+                          halloween: "Halloween",
+                          pokemon: "Pokémon",
+                          divers: "Divers",
+                        }[cat] || cat;
 
-          {galleryImages.length > 1 && (
-            <div className="grid grid-cols-3 gap-2">
-              {galleryImages.map((image: string, index: number) => (
-                <button
-                  key={index}
-                  onClick={() => setSelectedImage(index)}
-                  className={`rounded-md overflow-hidden border-2 ${
-                    selectedImage === index
-                      ? "border-creasoka"
-                      : "border-transparent"
-                  }`}
-                >
-                  <Image
-                    src={image || "/placeholder.svg"}
-                    alt={`${creation.title} - vue ${index + 1}`}
-                    width={100}
-                    height={100}
-                    className="w-full h-24 object-cover"
-                  />
-                </button>
-              ))}
+                      return (
+                        <Badge key={index} variant="outline" className="text-sm">
+                          {catLabel}
+                        </Badge>
+                      );
+                    })}
+                  {creation.status === "nouveau" && (
+                    <Badge className="bg-green-500 text-white">Nouveau</Badge>
+                  )}
+                  {creation.status === "vedette" && (
+                    <Badge className="bg-creasoka text-white">Vedette</Badge>
+                  )}
+                  {creation.status === "adopté" && (
+                    <Badge className="bg-red-500 text-white">Adopté</Badge>
+                  )}
+                </div>
+              </div>
             </div>
-          )}
-        </div>
 
-        <div>
-          <div className="flex flex-wrap gap-2 mb-2">
-            {creation.categories &&
-              creation.categories.map((cat, index) => {
-                const catLabel =
-                  {
-                    bijoux: "Bijoux",
-                    minis: "Minis",
-                    halloween: "Halloween",
-                    pokemon: "Pokémon",
-                    divers: "Divers",
-                  }[cat] || cat;
-
-                return (
-                  <Badge key={index} variant="outline" className="badge">
-                    {catLabel}
-                  </Badge>
-                );
-              })}
+            {/* Métadonnées */}
+            <div className="flex items-center gap-4 text-sm text-gray-600 dark:text-gray-400">
+              <div className="flex items-center gap-1">
+                <Calendar className="h-4 w-4" />
+                <span>
+                  Créé le{" "}
+                  {new Date(creation.createdAt).toLocaleDateString("fr-FR", {
+                    day: "numeric",
+                    month: "long",
+                    year: "numeric",
+                  })}
+                </span>
+              </div>
+            </div>
           </div>
-          <h1>{creation.title}</h1>
 
-          <div
-            className="description text-gray-700 dark:text-gray-300 mb-6 prose dark:prose-invert max-w-none"
-            dangerouslySetInnerHTML={{
-              __html: processMarkdownToHtml(creation.description),
-            }}
-          ></div>
+          <Separator />
 
-          {creation.details && creation.details.length > 0 && (
-            <div className="mb-6 details">
-              <ul className="space-y-3">
-                {creation.details.map((detail: string, index: number) => (
-                  <li key={index} className="flex items-start">
-                    <span className="text-creasoka mr-2">•</span>
-                    <span>{detail}</span>
-                  </li>
+          {/* Galerie d'images */}
+          <div>
+            <div className="relative mb-4 rounded-lg overflow-hidden bg-gray-100 dark:bg-gray-800">
+              <ZoomableImage
+                src={galleryImages[selectedImage] || "/placeholder.svg"}
+                alt={creation.title}
+                width={800}
+                height={600}
+                className="w-full h-auto object-contain rounded-lg"
+                galleryImages={galleryImages}
+                galleryIndex={selectedImage}
+                galleryTitles={Array(galleryImages.length).fill(creation.title)}
+                onGalleryIndexChange={setSelectedImage}
+              />
+            </div>
+
+            {galleryImages.length > 1 && (
+              <div className="grid grid-cols-4 sm:grid-cols-5 md:grid-cols-6 gap-2">
+                {galleryImages.map((image: string, index: number) => (
+                  <button
+                    key={index}
+                    onClick={() => setSelectedImage(index)}
+                    className={`rounded-md overflow-hidden border-2 transition-all hover:scale-105 ${
+                      selectedImage === index
+                        ? "border-creasoka ring-2 ring-creasoka ring-offset-2"
+                        : "border-gray-200 dark:border-gray-700"
+                    }`}
+                  >
+                    <Image
+                      src={image || "/placeholder.svg"}
+                      alt={`${creation.title} - vue ${index + 1}`}
+                      width={120}
+                      height={120}
+                      className="w-full h-20 object-cover"
+                    />
+                  </button>
                 ))}
-              </ul>
-            </div>
-          )}
-
-          <Separator className="my-6" />
-
-          <div className="flex flex-wrap gap-4">
-            {creation.status !== "adopté" ? (
-              <>
-                <Button
-                  size="lg"
-                  className="bg-creasoka hover:bg-creasoka/90 text-white"
-                  onClick={() => {
-                    if (creation.externalLink) {
-                      window.open(creation.externalLink, "_blank");
-                    }
-                  }}
-                  disabled={!creation.externalLink}
-                  title={
-                    creation.externalLink
-                      ? "Voir sur Vinted"
-                      : "Lien non disponible"
-                  }
-                >
-                  {creation.externalLink
-                    ? "Adopter cette création"
-                    : "Non disponible à l'adoption"}
-                </Button>
-                <Button
-                  variant="outline"
-                  size="lg"
-                  className="flex items-center"
-                  onClick={() => {
-                    navigator.clipboard.writeText(window.location.href);
-                  }}
-                >
-                  <Share2 className="mr-2 h-4 w-4" /> Partager
-                </Button>
-              </>
-            ) : (
-              <Button size="lg" variant="destructive" disabled>
-                Déjà adopté
-              </Button>
+              </div>
             )}
           </div>
-        </div>
-      </div>
 
-      {/* Section du texte explicatif générique */}
-      <div className="mt-10 p-6 bg-gray-50 dark:bg-gray-800 rounded-lg shadow-sm">
-        <p className="text-lg text-gray-700 dark:text-gray-300 leading-relaxed">
-          Chaque création est réalisée à la main avec passion et soin. Les
-          pièces artisanales peuvent présenter de légères variations par rapport
-          aux photos, ce qui fait tout leur charme et leur caractère unique.
-        </p>
+          <Separator />
+
+          {/* Description */}
+          <div>
+            <h2 className="text-2xl font-semibold mb-4 flex items-center gap-2">
+              <Info className="h-5 w-5 text-creasoka" />
+              Description
+            </h2>
+            <div
+              className="text-gray-700 dark:text-gray-300 prose dark:prose-invert max-w-none"
+              dangerouslySetInnerHTML={{
+                __html: processMarkdownToHtml(creation.description),
+              }}
+            ></div>
+          </div>
+
+          {/* Détails avec icônes */}
+          {creation.details && creation.details.length > 0 && (
+            <div>
+              <h2 className="text-2xl font-semibold mb-4 flex items-center gap-2">
+                <CheckCircle2 className="h-5 w-5 text-creasoka" />
+                Caractéristiques
+              </h2>
+              <div className="bg-gray-50 dark:bg-gray-800/50 rounded-lg p-6">
+                <ul className="space-y-3">
+                  {creation.details.map((detail: string, index: number) => (
+                    <li key={index} className="flex items-start gap-3">
+                      <CheckCircle2 className="h-5 w-5 text-creasoka flex-shrink-0 mt-0.5" />
+                      <span className="text-gray-700 dark:text-gray-300">
+                        {detail}
+                      </span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            </div>
+          )}
+        </div>
+
+        {/* Section Droite - Actions Sticky */}
+        <div className="md:sticky md:top-8 h-fit">
+          <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg p-6 shadow-lg">
+            <h3 className="text-lg font-semibold mb-4">
+              {creation.status === "adopté"
+                ? "Cette création a été adoptée"
+                : "Intéressé(e) ?"}
+            </h3>
+
+            <div className="space-y-3">
+              {creation.status !== "adopté" ? (
+                <>
+                  <Button
+                    size="lg"
+                    className="w-full bg-creasoka hover:bg-creasoka/90 text-white"
+                    onClick={() => {
+                      if (creation.externalLink) {
+                        window.open(creation.externalLink, "_blank");
+                      }
+                    }}
+                    disabled={!creation.externalLink}
+                    title={
+                      creation.externalLink
+                        ? "Voir sur Vinted"
+                        : "Lien non disponible"
+                    }
+                  >
+                    {creation.externalLink
+                      ? "Adopter cette création"
+                      : "Non disponible à l'adoption"}
+                  </Button>
+                  <Button
+                    variant="outline"
+                    size="lg"
+                    className="w-full flex items-center justify-center"
+                    onClick={() => {
+                      navigator.clipboard.writeText(window.location.href);
+                    }}
+                  >
+                    <Share2 className="mr-2 h-4 w-4" /> Partager
+                  </Button>
+                </>
+              ) : (
+                <Button size="lg" variant="destructive" disabled className="w-full">
+                  Déjà adopté
+                </Button>
+              )}
+            </div>
+
+            {creation.customMessage && (
+              <div className="mt-6 pt-6 border-t border-gray-200 dark:border-gray-700">
+                <p className="text-sm text-gray-600 dark:text-gray-400 italic">
+                  {creation.customMessage}
+                </p>
+              </div>
+            )}
+
+            <div className="mt-6 pt-6 border-t border-gray-200 dark:border-gray-700">
+              <button
+                onClick={() => router.back()}
+                className="inline-flex items-center text-gray-600 dark:text-gray-400 hover:text-creasoka transition-colors text-sm"
+              >
+                <ArrowLeft className="mr-2 h-4 w-4" />
+                Retour aux créations
+              </button>
+            </div>
+          </div>
+        </div>
       </div>
 
       {similarCreations.length > 0 && (
         <div className="mt-16">
-          <h2 className="text-3xl font-bold mb-8">Vous aimerez aussi</h2>
+          <h2 className="text-2xl font-bold mb-6">Vous aimerez aussi</h2>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
             {similarCreations.map((similar) => (
               <motion.div
