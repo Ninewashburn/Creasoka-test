@@ -79,6 +79,32 @@
   }
 }
 
+/* Classes pour les détails de création */
+.creation-detail h1 {
+  @apply text-4xl font-bold mb-4;
+}
+
+.creation-detail h2 {
+  @apply text-3xl font-bold mb-6;
+}
+
+.creation-detail p,
+.creation-detail li {
+  @apply text-lg leading-relaxed;
+}
+
+.creation-detail .badge {
+  @apply text-base;
+}
+
+.creation-detail .description {
+  @apply text-lg;
+}
+
+.creation-detail .details li {
+  @apply my-2 text-lg;
+}
+
 .text-creasoka {
   color: #d8a2ff;
 }

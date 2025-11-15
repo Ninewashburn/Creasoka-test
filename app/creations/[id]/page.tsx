@@ -136,7 +136,7 @@ export default function CreationDetailPage() {
     }[category] || category;
 
   return (
-    <div className="container mx-auto px-4 py-8">
+    <div className="container mx-auto px-4 py-8 creation-detail">
       <button
         onClick={() => router.back()}
         className="inline-flex items-center text-creasoka hover:text-creasoka/80 mb-6 border-none bg-transparent cursor-pointer"
@@ -145,8 +145,8 @@ export default function CreationDetailPage() {
         Retour
       </button>
 
-      <div className="grid md:grid-cols-2 gap-8 lg:gap-12">
-        <div>
+      <div className="grid md:grid-cols-3 gap-8 lg:gap-12">
+        <div className="md:col-span-2">
           <div className="relative mb-4 rounded-lg overflow-hidden">
             <ZoomableImage
               src={galleryImages[selectedImage] || "/placeholder.svg"}
@@ -213,24 +213,24 @@ export default function CreationDetailPage() {
                   }[cat] || cat;
 
                 return (
-                  <Badge key={index} variant="outline">
+                  <Badge key={index} variant="outline" className="badge">
                     {catLabel}
                   </Badge>
                 );
               })}
           </div>
-          <h1 className="text-3xl font-bold mb-2">{creation.title}</h1>
+          <h1>{creation.title}</h1>
 
           <div
-            className="text-gray-700 dark:text-gray-300 mb-6 prose dark:prose-invert max-w-none"
+            className="description text-gray-700 dark:text-gray-300 mb-6 prose dark:prose-invert max-w-none"
             dangerouslySetInnerHTML={{
               __html: processMarkdownToHtml(creation.description),
             }}
           ></div>
 
           {creation.details && creation.details.length > 0 && (
-            <div className="mb-6">
-              <ul className="space-y-2">
+            <div className="mb-6 details">
+              <ul className="space-y-3">
                 {creation.details.map((detail: string, index: number) => (
                   <li key={index} className="flex items-start">
                     <span className="text-creasoka mr-2">•</span>
@@ -285,9 +285,18 @@ export default function CreationDetailPage() {
         </div>
       </div>
 
+      {/* Section du texte explicatif générique */}
+      <div className="mt-10 p-6 bg-gray-50 dark:bg-gray-800 rounded-lg shadow-sm">
+        <p className="text-lg text-gray-700 dark:text-gray-300 leading-relaxed">
+          Chaque création est réalisée à la main avec passion et soin. Les
+          pièces artisanales peuvent présenter de légères variations par rapport
+          aux photos, ce qui fait tout leur charme et leur caractère unique.
+        </p>
+      </div>
+
       {similarCreations.length > 0 && (
         <div className="mt-16">
-          <h2 className="text-2xl font-bold mb-6">Vous aimerez aussi</h2>
+          <h2 className="text-3xl font-bold mb-8">Vous aimerez aussi</h2>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
             {similarCreations.map((similar) => (
               <motion.div
