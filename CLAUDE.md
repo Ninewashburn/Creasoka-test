@@ -91,6 +91,7 @@
 │   ├── cache.ts                 # Server-side caching (5min TTL)
 │   ├── clientCache.ts           # Client-side localStorage caching
 │   ├── cropImage.ts             # Image cropping utilities
+│   ├── logger.ts                # Logging utility (dev/prod aware)
 │   └── generated/               # Prisma generated client
 │
 ├── prisma/                       # Database
@@ -106,9 +107,6 @@
 │   ├── use-toast.ts             # Toast notifications
 │   ├── use-media-query.ts       # Responsive breakpoints
 │   └── use-upload-image.ts      # Image upload logic
-│
-├── data/                         # Data files
-│   └── creations.ts             # Legacy file (now uses database)
 │
 ├── public/                       # Static assets
 │   └── images/creations/        # Uploaded creation images
@@ -258,6 +256,32 @@ import { getCachedData, setCachedData } from '@/lib/clientCache';
 - Frequently accessed, rarely changing data (e.g., creation lists)
 - Default TTL: 5 minutes (300 seconds)
 - Clear cache on mutations (create/update/delete)
+
+### Logging System
+
+**Production-Safe Logging (lib/logger.ts):**
+```typescript
+import { logger } from '@/lib/logger';
+
+// Debug logs (dev only)
+logger.debug('Debug information', data);
+
+// Info logs (dev only)
+logger.info('Operation completed', result);
+
+// Warnings (always shown)
+logger.warn('Deprecated API used');
+
+// Errors (always shown)
+logger.error('Failed to process', error);
+```
+
+**Best Practices:**
+- Use `logger.debug()` for development debugging
+- Use `logger.info()` for informational messages
+- Use `logger.warn()` for warnings that should be visible in production
+- Use `logger.error()` for errors that need attention
+- Never use `console.log` directly in production code
 
 ## Authentication and Security
 
@@ -721,15 +745,16 @@ JWT_EXPIRES_IN=7d
 1. **`/middleware.ts`** - Route protection, authentication checks
 2. **`/lib/auth.ts`** - Complete authentication implementation
 3. **`/lib/permissions.ts`** - Authorization and role-based access
-4. **`/prisma/schema.prisma`** - Database schema
-5. **`/app/layout.tsx`** - Root layout, SEO, global providers
-6. **`/lib/utils.ts`** - Utility functions (slugify, cn, markdown)
-7. **`/hooks/use-auth.ts`** - Auth hook with dev/prod mode
-8. **`/app/api/creations/route.ts`** - Example API route pattern
+4. **`/lib/logger.ts`** - Production-safe logging system
+5. **`/prisma/schema.prisma`** - Database schema
+6. **`/app/layout.tsx`** - Root layout, SEO, global providers
+7. **`/lib/utils.ts`** - Utility functions (slugify, cn, markdown)
+8. **`/hooks/use-auth.ts`** - Auth hook with dev/prod mode
+9. **`/app/api/creations/route.ts`** - Example API route pattern
 
 ### Configuration Files
 
-- **`next.config.js`** - Next.js configuration
+- **`next.config.mjs`** - Next.js configuration
 - **`tailwind.config.ts`** - Tailwind CSS configuration
 - **`tsconfig.json`** - TypeScript configuration
 - **`components.json`** - shadcn/ui configuration
@@ -930,7 +955,7 @@ When working on this codebase:
 **Key Files to Reference:**
 - Authentication: `/lib/auth.ts`, `/middleware.ts`
 - Database: `/prisma/schema.prisma`, `/lib/db.ts`
-- Utilities: `/lib/utils.ts`, `/lib/permissions.ts`
+- Utilities: `/lib/utils.ts`, `/lib/permissions.ts`, `/lib/logger.ts`
 - Components: `/components/creation-card.tsx`, `/components/ui/*`
 - API: `/app/api/creations/route.ts`
 
