@@ -33,7 +33,7 @@ export async function sendPasswordResetEmail(
         }
         .container {
           max-width: 600px;
-          margin: 0 auto;
+          margin: 0px auto;
           padding: 20px;
         }
         .header {
@@ -41,12 +41,12 @@ export async function sendPasswordResetEmail(
           color: white;
           padding: 20px;
           text-align: center;
-          border-radius: 8px 8px 0 0;
+          border-radius: 8px 8px 0px 0px;
         }
         .content {
           background-color: #f9f9f9;
           padding: 30px;
-          border-radius: 0 0 8px 8px;
+          border-radius: 0px 0px 8px 8px;
         }
         .button {
           display: inline-block;
@@ -55,7 +55,7 @@ export async function sendPasswordResetEmail(
           color: white;
           text-decoration: none;
           border-radius: 6px;
-          margin: 20px 0;
+          margin: 20px 0px;
         }
         .footer {
           text-align: center;
