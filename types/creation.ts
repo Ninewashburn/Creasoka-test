@@ -9,4 +9,6 @@ export interface Creation {
   status: "nouveau" | "vedette" | "normal" | "adopté";
   externalLink?: string;
   customMessage?: string;
+  createdAt: string | Date;
+  updatedAt: string | Date;
 }
