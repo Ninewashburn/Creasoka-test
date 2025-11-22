@@ -31,15 +31,32 @@ export default function ContactPage() {
     e.preventDefault()
     setIsSubmitting(true)
 
-    // Simulate form submission
-    await new Promise((resolve) => setTimeout(resolve, 1000))
+    try {
+      const response = await fetch("/api/contact", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(formData),
+      })
 
-    setIsSubmitting(false)
-    setIsSubmitted(true)
-    setFormData({ name: "", email: "", message: "" })
+      const data = await response.json()
 
-    // Reset success message after 5 seconds
-    setTimeout(() => setIsSubmitted(false), 5000)
+      if (!response.ok) {
+        throw new Error(data.error || "Une erreur est survenue")
+      }
+
+      setIsSubmitted(true)
+      setFormData({ name: "", email: "", message: "" })
+
+      // Reset success message after 5 seconds
+      setTimeout(() => setIsSubmitted(false), 5000)
+    } catch (error) {
+      console.error("Erreur d'envoi:", error)
+      // Ici on pourrait ajouter une notification d'erreur (toast)
+    } finally {
+      setIsSubmitting(false)
+    }
   }
 
   // Animation variants
@@ -95,7 +112,7 @@ export default function ContactPage() {
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.6, delay: 0.2 }}
       >
-        Vous avez des questions ou souhaitez passer une commande personnalisée ? N'hésitez pas à me contacter !
+        Vous avez des questions ou souhaitez passer une commande personnalisée ? N&apos;hésitez pas à me contacter !
       </motion.p>
 
       <motion.div
@@ -107,7 +124,15 @@ export default function ContactPage() {
         <motion.div variants={itemVariants}>
           <h2 className="text-xl font-semibold mb-6">Informations de contact</h2>
           <p className="mb-6 text-gray-600 dark:text-gray-400">
-            N'hésitez pas à me contacter pour toute question ou demande de création personnalisée.
+            N&apos;hésitez pas à me contacter pour toute question ou demande de création personnalisée.
+            <br />
+            <span className="text-sm mt-2 block">
+              Envie d&apos;en savoir plus sur mon travail ?{" "}
+              <a href="/a-propos" className="text-creasoka hover:underline font-medium">
+                Découvrez mon histoire
+              </a>
+              .
+            </span>
           </p>
 
           <div className="space-y-4">

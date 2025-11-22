@@ -1,3 +1,4 @@
+// Force TS refresh
 export interface Creation {
   id: string;
   title: string;
@@ -6,9 +7,11 @@ export interface Creation {
   image: string;
   images?: string[];
   details?: string[];
-  status: "nouveau" | "vedette" | "normal" | "adopté";
+  status: "nouveau" | "vedette" | "normal" | "adopté" | "précommande" | "promotion";
   externalLink?: string;
   customMessage?: string;
+  price: number;
+  stock: number;
   createdAt: string | Date;
   updatedAt: string | Date;
 }

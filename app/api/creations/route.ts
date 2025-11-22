@@ -1,8 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
-import { db } from "../../../lib/db";
-import { slugify } from "../../../lib/utils";
-import { serverCache } from "../../../lib/cache";
-import { logger } from "../../../lib/logger";
+import { prisma } from "@/lib/prisma";
+import { serverCache } from "@/lib/cache";
+import { logger } from "@/lib/logger";
 
 export const runtime = "nodejs";
 
@@ -19,26 +18,21 @@ export async function POST(request: NextRequest) {
       !body.categories ||
       body.categories.length === 0
     ) {
-      logger.debug("POST /api/creations - Données manquantes:", body);
       return NextResponse.json(
         { error: "Titre, description et au moins une catégorie sont requis" },
         { status: 400 }
       );
     }
 
-    // Créer un nouvel ID unique basé sur le titre slugifié
-    const id = body.id || `${slugify(body.title)}-${Date.now()}`;
-
     // Définir les images et détails comme des tableaux vides s'ils ne sont pas fournis
     const images = body.images || [];
     const details = body.details || [];
 
-    logger.debug("POST /api/creations - Tentative de création:", id);
+    logger.debug("POST /api/creations - Tentative de création");
 
     // Créer une nouvelle création dans la base de données
-    const creation = await db.creation.create({
+    const creation = await prisma.creation.create({
       data: {
-        id,
         title: body.title,
         description: body.description,
         categories: body.categories,
@@ -46,62 +40,41 @@ export async function POST(request: NextRequest) {
         images,
         details,
         status: body.status || "normal",
-        externalLink: body.externalLink || null,
-        customMessage: body.customMessage || null,
+        externalLink: body.externalLink || undefined,
+        customMessage: body.customMessage || undefined,
+        price: body.price || 0,
+        stock: body.stock || 0,
       },
     });
 
     // Invalider le cache après création
     serverCache.invalidate("all-creations");
 
-    logger.info("POST /api/creations - Création réussie:", id);
+    logger.info("POST /api/creations - Création réussie:", creation.id);
 
     return NextResponse.json(creation, { status: 201 });
   } catch (error) {
-    logger.error("POST /api/creations - Erreur détaillée:", error);
-
-    // Vérifier le type d'erreur et extraire les détails de façon sécurisée
-    let errorMessage = "Erreur lors de la création";
-    let errorDetails = "";
-
-    if (error && typeof error === "object") {
-      // Vérifier si c'est une erreur Prisma
-      if ("name" in error && error.name === "PrismaClientKnownRequestError") {
-        // Vérifier également l'existence de message
-        if ("message" in error && typeof error.message === "string") {
-          errorMessage = `Erreur de base de données: ${error.message}`;
-        } else {
-          errorMessage = "Erreur de base de données Prisma";
-        }
-      }
-
-      // Extraire les détails si disponibles
-      errorDetails =
-        "message" in error && typeof error.message === "string"
-          ? error.message
-          : "Détails non disponibles";
-    }
-
+    logger.error("POST /api/creations - Erreur:", error);
     return NextResponse.json(
-      { error: errorMessage, details: errorDetails },
+      { error: "Erreur lors de la création" },
       { status: 500 }
     );
   }
 }
 
-export async function GET(request: NextRequest) {
+export async function GET() {
   try {
-    // Utiliser le cache côté serveur avec une durée de 2 minutes
+    // Utiliser le cache serveur pour optimiser les performances
     const creations = await serverCache.get(
       "all-creations",
       async () => {
-        return await db.creation.findMany({
+        return await prisma.creation.findMany({
           orderBy: {
             createdAt: "desc",
           },
         });
       },
-      2 * 60 * 1000 // 2 minutes
+      5 * 60 * 1000 // Cache de 5 minutes
     );
 
     return NextResponse.json(creations);

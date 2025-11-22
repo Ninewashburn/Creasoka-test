@@ -13,21 +13,24 @@ Application web pour un site d'artisanat créatif permettant de présenter et g�
 
 ## 📋 Fonctionnalités
 
-- **Galerie de créations** : Affichage des créations avec système de filtrage par catégories
-- **Administration sécurisée** : Interface pour gérer les créations
-- **URLs optimisées** : Format d'URL incluant le titre slugifié pour un meilleur référencement
-- **Système de sécurité complet** :
-  - Protection des routes admin et API via middleware
-  - Gestion des permissions basée sur les rôles (admin, user, guest)
-  - Protection contre les attaques par force brute
-  - Gestion sécurisée des tokens JWT
-  - Protection CSRF
-- **SEO optimisé** :
-  - Métadonnées enrichies pour chaque page
-  - Génération automatique du sitemap XML
-  - Données structurées Schema.org
-  - Tags OpenGraph et Twitter Cards
-  - URLs optimisées avec slugs
+- **Galerie Interactive** :
+  - Affichage des créations avec filtrage par catégories
+  - **Modale immersive** : Zoom sur les images, navigation fluide, et détails essentiels
+  - **Section "Les Adoptés"** : Mise en valeur des créations vendues avec un style distinctif
+- **Boutique & Panier** :
+  - Gestion du panier d'achat
+  - Processus de commande (Checkout)
+  - **Gestion des stocks** : Désactivation automatique du bouton "Ajouter au panier" pour les articles adoptés
+- **Administration** : Interface sécurisée pour gérer le portfolio et les stocks
+- **URLs optimisées** : Slugs basés sur les titres pour un SEO performant
+- **Sécurité** :
+  - Protection des routes admin et API
+  - Authentification JWT robuste
+  - Rôles : Admin, User, Guest
+- **SEO Technique** :
+  - Métadonnées dynamiques et OpenGraph
+  - Sitemap XML automatique
+  - Données structurées (Schema.org)
 
 ## 🔧 Installation
 
@@ -64,25 +67,22 @@ JWT_EXPIRES_IN="7d"
 
 ```
 creasoka/
-├── app/                # Routes et pages Next.js
-│   ├── api/            # Routes API
-│   ├── admin/          # Interface d'administration
-│   ├── sitemap.ts      # Générateur de sitemap XML
-│   └── ...             # Autres pages
-├── components/         # Composants React réutilisables
-│   ├── seo/            # Composants pour le SEO
-│   └── ...             # Autres composants
-├── hooks/              # Custom React hooks
-├── lib/                # Utilitaires et fonctions
-│   ├── auth.ts         # Authentification et sécurité
-│   ├── permissions.ts  # Système de permissions
-│   └── prisma.js       # Configuration de Prisma
-├── prisma/             # Configuration Prisma et migrations
-│   └── schema.prisma   # Schéma de la base de données
-├── public/             # Fichiers statiques
-│   ├── robots.txt      # Configuration pour les robots
-│   └── ...             # Autres fichiers statiques
-└── styles/             # Feuilles de style
+├── app/                # App Router (Pages & API)
+│   ├── admin/          # Dashboard administrateur
+│   ├── api/            # Endpoints API (CRUD, Auth, Upload)
+│   ├── galerie/        # Page Galerie avec filtrage
+│   └── ...
+├── components/         # Composants React
+│   ├── ui/             # Composants UI réutilisables (Shadcn/ui)
+│   ├── zoomable-image.tsx # Gestion de la modale image
+│   └── ...
+├── lib/                # Logique métier et utilitaires
+│   ├── prisma.js       # Client Prisma (Singleton)
+│   ├── utils.ts        # Fonctions utilitaires (cn, slugify...)
+│   └── ...
+├── prisma/             # Schéma DB et migrations
+├── public/             # Assets statiques
+└── ...
 ```
 
 ## 🔒 Système de permissions

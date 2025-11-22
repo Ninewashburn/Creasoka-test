@@ -3,12 +3,18 @@
 import { useState, useEffect } from "react";
 import { Input } from "@/components/ui/input";
 import { Search } from "lucide-react";
+import AdvancedSearch from "@/components/advanced-search";
 import { motion, AnimatePresence } from "framer-motion";
 import CreationCard from "@/components/creation-card";
 import type { Creation } from "@/types/creation";
 
 export default function AllCreationsPage() {
-  const [searchQuery, setSearchQuery] = useState("");
+  const [filters, setFilters] = useState({
+    query: "",
+    minPrice: 0,
+    maxPrice: 200,
+    sort: "newest" as "newest" | "oldest" | "price-asc" | "price-desc",
+  });
   const [mounted, setMounted] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [creations, setCreations] = useState<Creation[]>([]);
@@ -33,16 +39,34 @@ export default function AllCreationsPage() {
     fetchCreations();
   }, []);
 
-  const filteredCreations = creations.filter((creation) => {
-    const matchesSearch =
-      creation.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      creation.description.toLowerCase().includes(searchQuery.toLowerCase());
+  const filteredCreations = creations
+    .filter((creation) => {
+      const matchesSearch =
+        creation.title.toLowerCase().includes(filters.query.toLowerCase()) ||
+        creation.description.toLowerCase().includes(filters.query.toLowerCase());
 
-    // Exclure les créations avec le statut "adopté"
-    const isNotAdopted = creation.status !== "adopté";
+      const matchesPrice =
+        (creation.price || 0) >= filters.minPrice &&
+        (creation.price || 0) <= filters.maxPrice;
 
-    return matchesSearch && isNotAdopted;
-  });
+      // Exclure les créations avec le statut "adopté"
+      const isNotAdopted = creation.status !== "adopté";
+
+      return matchesSearch && matchesPrice && isNotAdopted;
+    })
+    .sort((a, b) => {
+      switch (filters.sort) {
+        case "price-asc":
+          return (a.price || 0) - (b.price || 0);
+        case "price-desc":
+          return (b.price || 0) - (a.price || 0);
+        case "oldest":
+          return new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime();
+        case "newest":
+        default:
+          return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
+      }
+    });
 
   // Animation variants
   const containerVariants = {
@@ -127,32 +151,26 @@ export default function AllCreationsPage() {
           <span className="text-purple-500">Créations</span>
         </h1>
         <p className="text-gray-600 dark:text-gray-400 max-w-2xl mx-auto">
-          Découvrez l'ensemble de notre collection de créations artisanales. Des
+          Découvrez l&apos;ensemble de notre collection de créations artisanales. Des
           bijoux aux figurines, explorez toutes nos pièces uniques faites avec
           passion.
         </p>
       </motion.div>
 
       <motion.div
-        className="relative max-w-md mx-auto mb-8"
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.6, delay: 0.2 }}
       >
-        <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
-
-        <Input
-          type="text"
-          placeholder="Rechercher une création..."
-          className="pl-10 transition-all duration-300 focus:ring-2 focus:ring-creasoka focus:border-creasoka hover:border-creasoka"
-          value={searchQuery}
-          onChange={(e) => setSearchQuery(e.target.value)}
+        <AdvancedSearch
+          onSearch={(newFilters) => setFilters(newFilters)}
+          initialFilters={filters}
         />
       </motion.div>
 
       <AnimatePresence mode="wait">
         <motion.div
-          key={searchQuery}
+          key={filters.query + filters.sort}
           className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6"
           variants={containerVariants}
           initial="hidden"

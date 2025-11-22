@@ -51,7 +51,7 @@ export function invalidateAllCache(): void {
       if (item && item.includes('"timestamp":')) {
         localStorage.removeItem(key);
       }
-    } catch (e) {
+    } catch {
       // Ignorer les erreurs pour les clés qui ne sont pas accessibles
     }
   });

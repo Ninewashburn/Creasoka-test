@@ -5,7 +5,7 @@ import "./globals.css";
 import { ThemeProvider } from "@/components/theme-provider";
 import Header from "@/components/header";
 import Footer from "@/components/footer";
-import KeyboardShortcuts from "@/components/keyboard-shortcuts";
+
 import { Toaster } from "@/components/ui/toaster";
 import ScrollToTop from "@/components/scroll-to-top";
 import SchemaOrg from "@/components/seo/schema-org";
@@ -105,6 +105,11 @@ export const metadata: Metadata = {
   },
 };
 
+import { CartProvider } from "@/lib/cart-context";
+import { AuthProvider } from "@/lib/auth-context";
+import QueryProvider from "@/components/providers/query-provider";
+import { cn } from "@/lib/utils";
+
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -112,34 +117,39 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="fr" suppressHydrationWarning>
-      <head>
-        <link rel="canonical" href="https://creasoka.com" />
-      </head>
       <body
-        className={`${quicksand.className} ${quicksand.variable} scroll-smooth`}
+        className={cn(
+          "min-h-screen bg-background font-sans antialiased",
+          quicksand.variable
+        )}
       >
         <ThemeProvider
           attribute="class"
           defaultTheme="system"
           enableSystem
-          disableTransitionOnChange={false}
-          storageKey="creasoka-theme"
+          disableTransitionOnChange
         >
-          <SchemaOrg
-            url="https://creasoka.com"
-            title="Crea'Soka - Créations Artisanales Uniques"
-            description="Découvrez des créations artisanales uniques et pleines de charme pour ajouter une touche de magie à votre quotidien."
-            type="Organization"
-          />
-          <KeyboardShortcuts />
-          <div className="flex min-h-screen flex-col">
-            <Header />
-            <main className="flex-1">{children}</main>
-            <Footer />
-          </div>
-          <Toaster />
-          <ScrollToTop />
-          <PreloadData />
+          <AuthProvider>
+            <QueryProvider>
+              <CartProvider>
+                <SchemaOrg
+                  url="https://creasoka.com"
+                  title="Crea'Soka - Créations Artisanales Uniques"
+                  description="Découvrez des créations artisanales uniques et pleines de charme pour ajouter une touche de magie à votre quotidien."
+                  type="Organization"
+                />
+
+                <PreloadData />
+                <div className="flex min-h-screen flex-col">
+                  <Header />
+                  <main className="flex-1">{children}</main>
+                  <Footer />
+                </div>
+                <Toaster />
+                <ScrollToTop />
+              </CartProvider>
+            </QueryProvider>
+          </AuthProvider>
         </ThemeProvider>
       </body>
     </html>

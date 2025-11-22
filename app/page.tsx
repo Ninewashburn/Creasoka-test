@@ -8,42 +8,21 @@ import FeaturedCreations from "@/components/featured-creations";
 import CategorySection from "@/components/category-section";
 import { motion } from "framer-motion";
 
-const testimonials = [
-  {
-    author: "JesstheWitch",
-    creationName: "Goupix",
-    creationSlug: "goupix",
-    imageUrl: "/images/creations/717f2de2-d4ae-439a-b917-d75b9587013e.jpeg",
-    comment: "Superbe objet, trop mignon, personne sérieuse, envoi parfait.",
-  },
-  {
-    author: "Mlle_Malefoy",
-    creationName: "Psykokwak",
-    creationSlug: "psykokwak",
-    imageUrl: "/images/creations/79445423-b089-4c52-882c-b7293e7d1ed0.jpeg",
-    comment:
-"Bonjour, j'ai bien reçu le colis rien n'est casser et c'est très choupi, j'ai hâte de lui offrir, je sais qu'il va adorer et je sais que ça va aller dans notre déco ! Merci beaucoup"  },
-  {
-    author: "El_Rsl",
-    creationName: "Ronflex",
-    creationSlug: "ronflex",
-    imageUrl: "/images/creations/71f44914-9612-4a9c-8eca-163b3c51cc52.jpeg",
-    comment: "C'est magnifique ce que vous faites !",
-  },
-];
+import { testimonials } from "@/lib/data/testimonials";
 
 export default function Home() {
   return (
     <div className="flex flex-col min-h-screen">
       {/* Hero Section */}
       <section className="relative w-full h-[500px] md:h-[600px] overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-r from-purple-500/70 to-purple-700/70 z-10" />
+        <div className="absolute inset-0 bg-gradient-to-r from-purple-900/40 to-purple-900/40 z-10" />
         <Image
-          src="/placeholder.svg?height=600&width=1200"
-          alt="Créations artisanales"
+          src="/images/creasoka_banner.jpg"
+          alt="Créations artisanales Crea'Soka"
           fill
           className="object-cover"
           priority
+          sizes="100vw"
         />
         <div className="relative z-20 container mx-auto px-4 h-full flex flex-col justify-center items-center text-center text-white">
           <motion.h1
@@ -120,6 +99,7 @@ export default function Home() {
                 alt="Créations Crea'Soka"
                 width={600}
                 height={400}
+                style={{ width: "100%", height: "auto" }}
                 className="rounded-lg shadow-lg hover:shadow-xl transition-all duration-100"
               />
             </motion.div>
@@ -130,16 +110,16 @@ export default function Home() {
               transition={{ duration: 0.3 }}
             >
               <h2 className="text-2xl md:text-3xl font-bold mb-6">
-                À propos de <span className="text-purple-500">Crea'Soka</span>
+                À propos de <span className="text-purple-500">Crea&apos;Soka</span>
               </h2>
               <p className="mb-4 text-gray-700 dark:text-gray-300">
-                Chez Crea'Soka, je crée des pièces artisanales uniques. Chaque
+                Chez Crea&apos;Soka, je crée des pièces artisanales uniques. Chaque
                 pièce est minutieusement conçue et fabriquée à la main dans mon
                 atelier, avec une attention particulière portée aux détails et à
                 la qualité.
               </p>
               <p className="mb-6 text-gray-700 dark:text-gray-300">
-                Je m'inspire de mes passions et j'utilise ma touche personnelle,
+                Je m&apos;inspire de mes passions et j&apos;utilise ma touche personnelle,
                 pour créer des objets qui racontent une histoire et apportent
                 chaleur et originalité à votre intérieur ou à vos tenues.
               </p>
@@ -211,7 +191,7 @@ export default function Home() {
                   </div>
                 </div>
                 <p className="text-gray-600 dark:text-gray-400 italic flex-grow">
-                  "{testimonial.comment}"
+                  &quot;{testimonial.comment}&quot;
                 </p>
                 <Link
                   href={`/creations/${testimonial.creationSlug}`}

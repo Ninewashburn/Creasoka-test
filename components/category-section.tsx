@@ -27,7 +27,7 @@ export default function CategorySection() {
       id: "pokemon",
       title: "Pokémon",
       description: "Attrapez-les tous, version artisanale !",
-      image: "/placeholder.svg?height=300&width=400",
+      image: "/images/creations/categorie_minis.webp",
     },
     {
       id: "divers",
@@ -39,7 +39,7 @@ export default function CategorySection() {
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-5 gap-6">
-      {categories.map((category, index) => (
+      {categories.map((category) => (
         <Link key={category.id} href={`/categories/${category.id}`}>
           <div className="relative overflow-hidden rounded-lg group cursor-pointer shadow-md hover:shadow-xl transition-all duration-150">
             <div className="transform transition-transform duration-150 hover:scale-105">

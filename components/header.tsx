@@ -6,9 +6,13 @@ import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { Menu, X, ChevronDown } from "lucide-react";
 import { Button } from "@/components/ui/button";
+
+import { CartSheet } from "@/components/cart/cart-sheet";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { motion } from "framer-motion";
 import { cn } from "@/lib/utils";
+import { useAuth } from "@/lib/auth-context";
+import { useClickOutside } from "@/hooks/use-click-outside";
 
 export default function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -27,21 +31,9 @@ export default function Header() {
   }, []);
 
   // Gérer les clics en dehors du dropdown pour le fermer
-  useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      if (
-        dropdownRef.current &&
-        !dropdownRef.current.contains(event.target as Node)
-      ) {
-        setIsDropdownOpen(false);
-      }
-    };
-
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
-    };
-  }, []);
+  useClickOutside(dropdownRef, () => {
+    setIsDropdownOpen(false);
+  });
 
   const closeMenu = () => {
     setIsMenuOpen(false);
@@ -62,6 +54,7 @@ export default function Header() {
       ],
     },
     { label: "Galerie", href: "/galerie" },
+    { label: "À Propos", href: "/a-propos" },
     { label: "Contact", href: "/contact" },
   ];
 
@@ -87,7 +80,7 @@ export default function Header() {
                   className="object-cover"
                 />
               </div>
-              <span className="text-xl font-bold text-creasoka">Crea'Soka</span>
+              <span className="text-xl font-bold text-creasoka">Crea&apos;Soka</span>
             </Link>
           </div>
 
@@ -179,108 +172,183 @@ export default function Header() {
             )}
           </nav>
 
-          <div className="flex items-center space-x-4">
+          <div className="flex items-center gap-2">
+            <CartSheet />
             <ThemeToggle />
-
-            {/* Mobile Menu Button */}
-            <Button
-              variant="ghost"
-              size="icon"
-              className="md:hidden w-10 h-10 flex items-center justify-center"
-              onClick={() => setIsMenuOpen(!isMenuOpen)}
-            >
-              <Menu className="h-6 w-6" />
-              <span className="sr-only">Toggle menu</span>
-            </Button>
+            {/* Auth Button (Mock) */}
+            <AuthButton />
           </div>
+          {/* Mobile Menu Button */}
+          <Button
+            variant="ghost"
+            size="icon"
+            className="md:hidden w-10 h-10 flex items-center justify-center"
+            onClick={() => setIsMenuOpen(!isMenuOpen)}
+          >
+            <Menu className="h-6 w-6" />
+            <span className="sr-only">Toggle menu</span>
+          </Button>
         </div>
       </div>
 
       {/* Mobile Navigation */}
-      {isMenuOpen && (
-        <div className="fixed inset-0 z-[150] bg-white dark:bg-gray-900 md:hidden overflow-y-auto">
-          <div className="container mx-auto px-4 py-6">
-            <div className="flex items-center justify-between mb-8">
-              <Link
-                href="/"
-                className="flex items-center space-x-2"
-                onClick={closeMenu}
-              >
-                <div className="w-10 h-10 rounded-full overflow-hidden">
-                  <Image
-                    src="/images/creations/creasoka_logo.webp"
-                    alt="Crea'Soka Logo"
-                    width={40}
-                    height={40}
-                    className="object-cover"
-                  />
-                </div>
-                <span className="text-xl font-bold text-creasoka">
-                  Crea'Soka
-                </span>
-              </Link>
-              <div className="flex items-center space-x-4">
-                <div className="w-10 h-10 flex items-center justify-center">
-                  <ThemeToggle />
-                </div>
-                <Button
-                  variant="ghost"
-                  size="icon"
+      {
+        isMenuOpen && (
+          <div className="fixed inset-0 z-[150] bg-white dark:bg-gray-900 md:hidden overflow-y-auto">
+            <div className="container mx-auto px-4 py-6">
+              <div className="flex items-center justify-between mb-8">
+                <Link
+                  href="/"
+                  className="flex items-center space-x-2"
                   onClick={closeMenu}
-                  className="bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 text-gray-800 dark:text-white w-10 h-10 flex items-center justify-center"
                 >
-                  <X className="h-6 w-6" />
-                  <span className="sr-only">Fermer le menu</span>
-                </Button>
-              </div>
-            </div>
-
-            <nav className="flex flex-col space-y-6 pb-8">
-              {navItems.map((item) =>
-                item.dropdown ? (
-                  <div key={item.label} className="space-y-4">
-                    <div className="font-medium text-lg flex items-center text-gray-800 dark:text-white">
-                      {item.label}
-                      <ChevronDown className="ml-1 h-4 w-4" />
-                    </div>
-                    <div className="pl-4 space-y-4 border-l-2 border-gray-200 dark:border-gray-600">
-                      {item.dropdown.map((dropdownItem) => (
-                        <Link
-                          key={dropdownItem.label}
-                          href={dropdownItem.href}
-                          className={cn(
-                            "block py-1 text-gray-600 dark:text-gray-300 hover:text-creasoka dark:hover:text-creasoka transition-colors",
-                            pathname === dropdownItem.href
-                              ? "text-creasoka font-medium"
-                              : ""
-                          )}
-                          onClick={closeMenu}
-                        >
-                          {dropdownItem.label}
-                        </Link>
-                      ))}
-                    </div>
+                  <div className="w-10 h-10 rounded-full overflow-hidden">
+                    <Image
+                      src="/images/creations/creasoka_logo.webp"
+                      alt="Crea'Soka Logo"
+                      width={40}
+                      height={40}
+                      className="object-cover"
+                    />
                   </div>
-                ) : (
-                  <Link
-                    key={item.label}
-                    href={item.href}
-                    className={cn(
-                      "font-medium text-lg py-1",
-                      pathname === item.href
-                        ? "text-creasoka"
-                        : "text-gray-800 dark:text-white hover:text-creasoka dark:hover:text-creasoka transition-colors"
-                    )}
+                  <span className="text-xl font-bold text-creasoka">
+                    Crea&apos;Soka
+                  </span>
+                </Link>
+                <div className="flex items-center space-x-2">
+                  <AuthButton />
+                  <div className="w-10 h-10 flex items-center justify-center">
+                    <ThemeToggle />
+                  </div>
+                  <Button
+                    variant="ghost"
+                    size="icon"
                     onClick={closeMenu}
+                    className="bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 text-gray-800 dark:text-white w-10 h-10 flex items-center justify-center"
                   >
-                    {item.label}
-                  </Link>
-                )
-              )}
-            </nav>
+                    <X className="h-6 w-6" />
+                    <span className="sr-only">Fermer le menu</span>
+                  </Button>
+                </div>
+              </div>
+
+              <nav className="flex flex-col space-y-6 pb-8">
+                {navItems.map((item) =>
+                  item.dropdown ? (
+                    <div key={item.label} className="space-y-4">
+                      <div className="font-medium text-lg flex items-center text-gray-800 dark:text-white">
+                        {item.label}
+                        <ChevronDown className="ml-1 h-4 w-4" />
+                      </div>
+                      <div className="pl-4 space-y-4 border-l-2 border-gray-200 dark:border-gray-600">
+                        {item.dropdown.map((dropdownItem) => (
+                          <Link
+                            key={dropdownItem.label}
+                            href={dropdownItem.href}
+                            className={cn(
+                              "block py-1 text-gray-600 dark:text-gray-300 hover:text-creasoka dark:hover:text-creasoka transition-colors",
+                              pathname === dropdownItem.href
+                                ? "text-creasoka font-medium"
+                                : ""
+                            )}
+                            onClick={closeMenu}
+                          >
+                            {dropdownItem.label}
+                          </Link>
+                        ))}
+                      </div>
+                    </div>
+                  ) : (
+                    <Link
+                      key={item.label}
+                      href={item.href}
+                      className={cn(
+                        "font-medium text-lg py-1",
+                        pathname === item.href
+                          ? "text-creasoka"
+                          : "text-gray-800 dark:text-white hover:text-creasoka dark:hover:text-creasoka transition-colors"
+                      )}
+                      onClick={closeMenu}
+                    >
+                      {item.label}
+                    </Link>
+                  )
+                )}
+              </nav>
+            </div>
           </div>
-        </div>
-      )}
-    </header>
+        )
+      }
+    </header >
+  );
+}
+
+// AuthButton component connected to AuthContext
+function AuthButton() {
+  const { isAuthenticated, user, logout } = useAuth();
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const dropdownRef = useRef<HTMLDivElement>(null);
+
+  // Close dropdown when clicking outside
+  useClickOutside(dropdownRef, () => {
+    setIsDropdownOpen(false);
+  });
+
+  if (isAuthenticated && user) {
+    return (
+      <div className="relative" ref={dropdownRef}>
+        <Button
+          variant="ghost"
+          className="text-sm font-medium flex items-center gap-2"
+          onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+        >
+          <div className="w-6 h-6 rounded-full bg-creasoka/20 flex items-center justify-center text-creasoka text-xs">
+            {(user.name || "U").charAt(0)}
+          </div>
+          <span className="hidden sm:inline">{(user.name || "Utilisateur").split(" ")[0]}</span>
+          <ChevronDown className="h-4 w-4" />
+        </Button>
+
+        {isDropdownOpen && (
+          <div className="absolute right-0 mt-2 w-48 rounded-md shadow-lg bg-white dark:bg-gray-800 ring-1 ring-black ring-opacity-5 z-50">
+            <div className="py-1">
+              <Link
+                href="/profile"
+                className="block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700"
+                onClick={() => setIsDropdownOpen(false)}
+              >
+                Mon Profil
+              </Link>
+              {user.role === "admin" && (
+                <Link
+                  href="/admin"
+                  className="block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700"
+                  onClick={() => setIsDropdownOpen(false)}
+                >
+                  Administration
+                </Link>
+              )}
+              <button
+                onClick={() => {
+                  logout();
+                  setIsDropdownOpen(false);
+                }}
+                className="block w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-gray-100 dark:hover:bg-gray-700"
+              >
+                Déconnexion
+              </button>
+            </div>
+          </div>
+        )}
+      </div>
+    );
+  }
+
+  return (
+    <Link href="/login">
+      <Button variant="ghost" className="text-sm font-medium">
+        Connexion
+      </Button>
+    </Link>
   );
 }

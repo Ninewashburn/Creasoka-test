@@ -13,7 +13,7 @@ generator client {
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
-  directUrl = env("DIRECT_URL")
+  // directUrl = env("DIRECT_URL")  // Temporarily commented - using pooler only
 }
 
 model Creation {
@@ -27,8 +27,41 @@ model Creation {
   status      String
   externalLink String?
   customMessage String?
+  price       Float    @default(0)
+  stock       Int      @default(0)
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
+  orderItems  OrderItem[]
+}
+
+model Order {
+  id        String      @id @default(uuid())
+  userId    String?
+  user      User?       @relation(fields: [userId], references: [id])
+  items     OrderItem[]
+  total     Float
+  status    String      @default("pending") // pending, paid, shipped, delivered, cancelled
+  createdAt DateTime    @default(now())
+  updatedAt DateTime    @updatedAt
+  
+  // Shipping info
+  firstName String
+  lastName  String
+  email     String
+  address   String
+  city      String
+  postalCode String
+  country   String
+}
+
+model OrderItem {
+  id         String   @id @default(uuid())
+  orderId    String
+  order      Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  creationId String
+  creation   Creation @relation(fields: [creationId], references: [id])
+  quantity   Int
+  price      Float    // Price at time of purchase
 }
 
 model User {
@@ -37,9 +70,15 @@ model User {
   password    String
   name        String?
   role        String   @default("user")
+  address     String?
+  city        String?
+  postalCode  String?
+  country     String?
+  phone       String?
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
   passwordResetTokens PasswordResetToken[]
+  orders      Order[]
 }
 
 model PasswordResetToken {

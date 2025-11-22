@@ -71,7 +71,7 @@ export default function SchemaOrg({
     : null;
 
   // Choisir le schéma approprié en fonction du type
-  let schema: Record<string, any>;
+  let schema: Record<string, unknown>;
   switch (type) {
     case "Organization":
       schema = organizationSchema;

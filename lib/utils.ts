@@ -1,5 +1,6 @@
 import { clsx, type ClassValue } from "clsx";
 import { twMerge } from "tailwind-merge";
+import type { Creation } from "@/types/creation";
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -7,18 +8,29 @@ export function cn(...inputs: ClassValue[]) {
 
 export function slugify(text: string): string {
   return text
+    .toString()
     .toLowerCase()
-    .normalize("NFD")
-    .replace(/[\u0300-\u036f]/g, "")
-    .replace(/[^a-z0-9]+/g, "-")
-    .replace(/^-+|-+$/g, "")
-    .replace(/-+/g, "-");
+    .replace(/œ/g, "oe") // Replace œ with oe
+    .normalize("NFD") // Normalize to decompose accents
+    .replace(/[\u0300-\u036f]/g, "") // Remove accents
+    .replace(/\s+/g, "-") // Replace spaces with -
+    .replace(/[^\w\-]+/g, "") // Remove all non-word chars
+    .replace(/\-\-+/g, "-") // Replace multiple - with single -
+    .replace(/^-+/, "") // Trim - from start of text
+    .replace(/-+$/, ""); // Trim - from end of text
+}
+
+export function formatPrice(price: number): string {
+  return new Intl.NumberFormat("fr-FR", {
+    style: "currency",
+    currency: "EUR",
+  }).format(price);
 }
 
 export function findCreationBySlug(
-  creations: any[],
+  creations: Creation[],
   slug: string
-): any | undefined {
+): Creation | undefined {
   return creations.find((creation) => slugify(creation.title) === slug);
 }
 

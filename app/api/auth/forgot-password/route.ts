@@ -1,9 +1,7 @@
 import { NextResponse } from "next/server";
-import { PrismaClient } from "@/lib/generated/prisma";
+import { prisma } from "@/lib/prisma";
 import { sendPasswordResetEmail } from "@/lib/email";
 import crypto from "crypto";
-
-const prisma = new PrismaClient();
 
 export async function POST(request: Request) {
   try {
@@ -94,7 +92,5 @@ export async function POST(request: Request) {
       { error: "Une erreur est survenue" },
       { status: 500 }
     );
-  } finally {
-    await prisma.$disconnect();
   }
 }

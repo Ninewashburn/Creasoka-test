@@ -1,5 +1,5 @@
 import { MetadataRoute } from "next";
-import prisma from "@/lib/prisma";
+import { prisma } from "@/lib/prisma";
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   // Récupérer toutes les créations depuis la base de données
@@ -15,7 +15,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const baseUrl = "https://creasoka.com";
 
   // Pages statiques avec leur date de dernière modification
-  const staticPages = [
+  const staticPages: MetadataRoute.Sitemap = [
     {
       url: baseUrl,
       lastModified: new Date(),
@@ -54,13 +54,13 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const categoryPages = categories.map((category) => ({
     url: `${baseUrl}/categories/${category}`,
     lastModified: new Date(),
-    changeFrequency: "weekly",
+    changeFrequency: "weekly" as const,
     priority: 0.8,
   }));
 
   // Pages de créations
   const creationPages = creations.map(
-    (creation: { id: string; title: string; updatedAt: Date }) => {
+    (creation: { id: string; title: string; updatedAt: string | Date }) => {
       // Transformer l'ID pour qu'il contienne le titre slugifié comme dans l'URL
       const titleSlug = creation.title
         .toLowerCase()
@@ -78,7 +78,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       return {
         url: `${baseUrl}/creations/${slug}`,
         lastModified: creation.updatedAt,
-        changeFrequency: "monthly",
+        changeFrequency: "monthly" as const,
         priority: 0.7,
       };
     }

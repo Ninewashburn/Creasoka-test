@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import Image from "next/image";
 import { motion } from "framer-motion";
-import ImageModal from "./image-modal";
+import ImageModal, { type GalleryItem } from "./image-modal";
 
 interface ZoomableImageProps {
   src: string;
@@ -14,6 +14,7 @@ interface ZoomableImageProps {
   galleryImages?: string[];
   galleryIndex?: number;
   galleryTitles?: string[];
+  galleryItems?: GalleryItem[];
   onGalleryIndexChange?: (newIndex: number) => void;
   priority?: boolean;
 }
@@ -27,6 +28,7 @@ export default function ZoomableImage({
   galleryImages,
   galleryIndex = 0,
   galleryTitles,
+  galleryItems,
   onGalleryIndexChange,
   priority = false,
 }: ZoomableImageProps) {
@@ -77,14 +79,15 @@ export default function ZoomableImage({
       </motion.div>
 
       {isOpen && galleryImages && galleryImages.length > 0 && (
-      <ImageModal
+        <ImageModal
           isOpen={isOpen}
           onClose={handleClose}
           images={galleryImages}
-        currentIndex={currentIndex}
+          currentIndex={currentIndex}
           titles={galleryTitles}
+          items={galleryItems}
           onNavigate={handleNavigate}
-      />
+        />
       )}
     </>
   );

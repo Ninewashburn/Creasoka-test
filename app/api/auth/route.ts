@@ -1,16 +1,16 @@
 import { NextRequest, NextResponse } from "next/server";
-import { db } from "../../../lib/db";
+import { prisma } from "@/lib/prisma";
 import {
   generateToken,
-  verifyPassword,
   setAuthCookie,
   removeAuthCookie,
   getTokenFromServerCookies,
   verifyToken,
+  verifyPassword,
   checkLoginAttempts,
   recordFailedLoginAttempt,
   resetLoginAttempts,
-} from "../../../lib/auth";
+} from "@/lib/auth";
 import { headers } from "next/headers";
 
 export const runtime = "nodejs";
@@ -43,15 +43,13 @@ export async function POST(request: NextRequest) {
     }
 
     // Rechercher l'utilisateur dans la base de données
-    const user = await db.user.findUnique({
+    const user = await prisma.user.findUnique({
       where: { email },
     });
 
     // Vérifier si l'utilisateur existe
     if (!user) {
-      // Enregistrer la tentative échouée
       recordFailedLoginAttempt(clientIp);
-
       return NextResponse.json(
         { success: false, message: "Identifiants incorrects" },
         { status: 401 }
@@ -61,9 +59,7 @@ export async function POST(request: NextRequest) {
     // Vérifier le mot de passe
     const isPasswordValid = await verifyPassword(password, user.password);
     if (!isPasswordValid) {
-      // Enregistrer la tentative échouée
       recordFailedLoginAttempt(clientIp);
-
       return NextResponse.json(
         { success: false, message: "Identifiants incorrects" },
         { status: 401 }
@@ -83,7 +79,7 @@ export async function POST(request: NextRequest) {
     // Définir le cookie d'authentification
     await setAuthCookie(token);
 
-    // Retourner les informations de l'utilisateur (sans le mot de passe)
+    // Retourner les informations de l'utilisateur
     return NextResponse.json({
       success: true,
       user: {
@@ -103,7 +99,7 @@ export async function POST(request: NextRequest) {
 }
 
 // Vérification de l'état d'authentification
-export async function GET(request: NextRequest) {
+export async function GET() {
   try {
     // Récupérer le token depuis les cookies
     const token = await getTokenFromServerCookies();
@@ -121,12 +117,19 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ authenticated: false }, { status: 401 });
     }
 
-    // Vérifier que l'utilisateur existe toujours dans la base de données
-    const user = await db.user.findUnique({
+    // Vérifier que l'utilisateur existe toujours en base de données
+    const user = await prisma.user.findUnique({
       where: { id: payload.id },
+      select: {
+        id: true,
+        email: true,
+        name: true,
+        role: true,
+      },
     });
 
     if (!user) {
+      // L'utilisateur n'existe plus
       await removeAuthCookie();
       return NextResponse.json({ authenticated: false }, { status: 401 });
     }
@@ -148,7 +151,7 @@ export async function GET(request: NextRequest) {
 }
 
 // Déconnexion
-export async function DELETE(request: NextRequest) {
+export async function DELETE() {
   await removeAuthCookie();
   return NextResponse.json({ success: true });
 }

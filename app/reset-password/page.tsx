@@ -71,7 +71,7 @@ function ResetPasswordForm() {
       setTimeout(() => {
         router.push("/admin");
       }, 3000);
-    } catch (err) {
+    } catch {
       setError("Une erreur est survenue. Veuillez réessayer.");
     } finally {
       setIsLoading(false);

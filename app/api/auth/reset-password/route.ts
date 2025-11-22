@@ -1,8 +1,6 @@
 import { NextResponse } from "next/server";
-import { PrismaClient } from "@/lib/generated/prisma";
-import bcrypt from "bcryptjs";
-
-const prisma = new PrismaClient();
+import { prisma } from "@/lib/prisma";
+import { hashPassword } from "@/lib/auth";
 
 export async function POST(request: Request) {
   try {
@@ -67,7 +65,7 @@ export async function POST(request: Request) {
     }
 
     // Hasher le nouveau mot de passe
-    const hashedPassword = await bcrypt.hash(password, 10);
+    const hashedPassword = await hashPassword(password);
 
     // Mettre à jour le mot de passe de l'utilisateur
     await prisma.user.update({
@@ -99,7 +97,5 @@ export async function POST(request: Request) {
       { error: "Une erreur est survenue" },
       { status: 500 }
     );
-  } finally {
-    await prisma.$disconnect();
   }
 }

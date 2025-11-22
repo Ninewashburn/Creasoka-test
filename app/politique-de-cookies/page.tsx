@@ -16,7 +16,7 @@ export default function PolitiqueCookiesPage() {
       <div className="max-w-3xl mx-auto prose dark:prose-invert">
         <section className="mb-8">
           <h2 className="text-2xl font-semibold mb-4">
-            1. Qu'est-ce qu'un cookie ?
+            1. Qu&apos;est-ce qu&apos;un cookie ?
           </h2>
           <p>
             Un cookie est un petit fichier texte déposé sur votre terminal
@@ -27,7 +27,7 @@ export default function PolitiqueCookiesPage() {
           </p>
           <p className="mt-4">
             Les cookies sont gérés par votre navigateur internet et seul
-            l'émetteur d'un cookie est susceptible de lire ou de modifier les
+            l&apos;émetteur d&apos;un cookie est susceptible de lire ou de modifier les
             informations qui y sont contenues.
           </p>
         </section>
@@ -46,18 +46,18 @@ export default function PolitiqueCookiesPage() {
             2.1. Cookies strictement nécessaires au fonctionnement du site
           </h3>
           <p>
-            Ces cookies permettent d'utiliser les principales fonctionnalités du
-            site (par exemple l'accès à votre compte). Sans ces cookies, vous ne
+            Ces cookies permettent d&apos;utiliser les principales fonctionnalités du
+            site (par exemple l&apos;accès à votre compte). Sans ces cookies, vous ne
             pourrez pas utiliser notre site normalement.
           </p>
 
           <h3 className="text-xl font-medium mt-6 mb-3">
-            2.2. Cookies de mesure d'audience
+            2.2. Cookies de mesure d&apos;audience
           </h3>
           <p>
-            Ces cookies permettent d'établir des statistiques de fréquentation
+            Ces cookies permettent d&apos;établir des statistiques de fréquentation
             de notre site et de détecter des problèmes de navigation afin de
-            suivre et d'améliorer la qualité de nos services.
+            suivre et d&apos;améliorer la qualité de nos services.
           </p>
 
           <h3 className="text-xl font-medium mt-6 mb-3">
@@ -79,7 +79,7 @@ export default function PolitiqueCookiesPage() {
           </p>
           <p className="mt-4">
             La configuration de chaque navigateur est différente. Elle est
-            décrite dans le menu d'aide de votre navigateur, qui vous permettra
+            décrite dans le menu d&apos;aide de votre navigateur, qui vous permettra
             de savoir de quelle manière modifier vos souhaits en matière de
             cookies.
           </p>
@@ -93,7 +93,7 @@ export default function PolitiqueCookiesPage() {
           <h3 className="text-xl font-medium mt-4 mb-3">Firefox</h3>
           <p>
             Menu → Options → Vie privée → Historique → Paramètres pour
-            l'historique → Cookies
+            l&apos;historique → Cookies
           </p>
 
           <h3 className="text-xl font-medium mt-4 mb-3">Safari</h3>
@@ -109,7 +109,7 @@ export default function PolitiqueCookiesPage() {
           </h2>
           <p>
             Les cookies sont conservés pour une durée maximale de 13 mois. À
-            l'expiration de ce délai, votre consentement sera à nouveau
+            l&apos;expiration de ce délai, votre consentement sera à nouveau
             nécessaire.
           </p>
         </section>

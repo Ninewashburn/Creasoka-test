@@ -1,31 +1,22 @@
 import { NextRequest, NextResponse } from "next/server";
-import { db } from "../../../../lib/db";
-import { slugify } from "../../../../lib/utils";
-import type { Creation } from "../../../../types/creation";
+import { prisma } from "@/lib/prisma";
+import { serverCache } from "@/lib/cache";
+import { logger } from "@/lib/logger";
 
 export const runtime = "nodejs";
 
-// Récupérer une création par son ID ou son slug
+// Récupérer une création par son ID
 export async function GET(
   request: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
+  props: { params: Promise<{ id: string }> }
 ) {
+  const params = await props.params;
   try {
-    const { id: idOrSlug } = await params;
-    let creation;
+    const { id } = params;
 
-    // D'abord, essayer de trouver par ID
-    creation = await db.creation.findUnique({
-      where: { id: idOrSlug },
+    const creation = await prisma.creation.findUnique({
+      where: { id },
     });
-
-    // Si non trouvé, chercher par slug (titre slugifié)
-    if (!creation) {
-      const allCreations = await db.creation.findMany();
-      creation = allCreations.find(
-        (c: Creation) => slugify(c.title) === idOrSlug
-      );
-    }
 
     if (!creation) {
       return NextResponse.json(
@@ -36,7 +27,7 @@ export async function GET(
 
     return NextResponse.json(creation);
   } catch (error) {
-    console.error("Erreur lors de la récupération de la création:", error);
+    logger.error("Erreur lors de la récupération de la création:", error);
     return NextResponse.json(
       { error: "Erreur lors de la récupération de la création" },
       { status: 500 }
@@ -47,25 +38,19 @@ export async function GET(
 // Mettre à jour une création
 export async function PUT(
   request: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
+  props: { params: Promise<{ id: string }> }
 ) {
+  const params = await props.params;
   try {
-    const { id: idOrSlug } = await params;
+    const { id } = params;
     const body = await request.json();
-    let existingCreation;
 
-    // D'abord, essayer de trouver par ID
-    existingCreation = await db.creation.findUnique({
-      where: { id: idOrSlug },
+    logger.debug(`PUT /api/creations/${id} - Mise à jour`);
+
+    // Vérifier si la création existe
+    const existingCreation = await prisma.creation.findUnique({
+      where: { id },
     });
-
-    // Si non trouvé, chercher par slug (titre slugifié)
-    if (!existingCreation) {
-      const allCreations = await db.creation.findMany();
-      existingCreation = allCreations.find(
-        (c: Creation) => slugify(c.title) === idOrSlug
-      );
-    }
 
     if (!existingCreation) {
       return NextResponse.json(
@@ -74,39 +59,34 @@ export async function PUT(
       );
     }
 
-    try {
-      // Mettre à jour la création en utilisant l'ID réel
-      const updatedCreation = await db.creation.update({
-        where: { id: existingCreation.id },
-        data: {
-          title: body.title,
-          description: body.description,
-          categories: body.categories || [],
-          image: body.image,
-          images: body.images || [],
-          details: body.details || [],
-          status: body.status,
-          externalLink: body.externalLink || null,
-          customMessage: body.customMessage || null,
-        },
-      });
+    // Mettre à jour la création
+    const updatedCreation = await prisma.creation.update({
+      where: { id },
+      data: {
+        title: body.title,
+        description: body.description,
+        categories: body.categories,
+        image: body.image,
+        images: body.images || [],
+        details: body.details || [],
+        status: body.status,
+        externalLink: body.externalLink || undefined,
+        customMessage: body.customMessage || undefined,
+        price: body.price,
+        stock: body.stock,
+      },
+    });
 
-      return NextResponse.json(updatedCreation);
-    } catch (updateError) {
-      console.error("Erreur spécifique lors de la mise à jour:", updateError);
-      return NextResponse.json(
-        {
-          error: `Erreur lors de la mise à jour: ${
-            (updateError as Error).message
-          }`,
-        },
-        { status: 500 }
-      );
-    }
+    // Invalider le cache
+    serverCache.invalidate("all-creations");
+
+    logger.info(`PUT /api/creations/${id} - Mise à jour réussie`);
+
+    return NextResponse.json(updatedCreation);
   } catch (error) {
-    console.error("Erreur lors de la mise à jour de la création:", error);
+    logger.error("Erreur lors de la mise à jour:", error);
     return NextResponse.json(
-      { error: "Erreur lors de la mise à jour de la création" },
+      { error: "Erreur lors de la mise à jour" },
       { status: 500 }
     );
   }
@@ -115,23 +95,18 @@ export async function PUT(
 // Supprimer une création
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
+  props: { params: Promise<{ id: string }> }
 ) {
+  const params = await props.params;
   try {
-    const { id: idOrSlug } = await params;
-    let existingCreation;
-    // D'abord, essayer de trouver par ID
-    existingCreation = await db.creation.findUnique({
-      where: { id: idOrSlug },
-    });
+    const { id } = params;
 
-    // Si non trouvé, chercher par slug (titre slugifié)
-    if (!existingCreation) {
-      const allCreations = await db.creation.findMany();
-      existingCreation = allCreations.find(
-        (c: Creation) => slugify(c.title) === idOrSlug
-      );
-    }
+    logger.debug(`DELETE /api/creations/${id} - Suppression`);
+
+    // Vérifier si la création existe
+    const existingCreation = await prisma.creation.findUnique({
+      where: { id },
+    });
 
     if (!existingCreation) {
       return NextResponse.json(
@@ -140,16 +115,21 @@ export async function DELETE(
       );
     }
 
-    // Supprimer la création en utilisant l'ID réel
-    await db.creation.delete({
-      where: { id: existingCreation.id },
+    // Supprimer la création
+    await prisma.creation.delete({
+      where: { id },
     });
+
+    // Invalider le cache
+    serverCache.invalidate("all-creations");
+
+    logger.info(`DELETE /api/creations/${id} - Suppression réussie`);
 
     return NextResponse.json({ success: true });
   } catch (error) {
-    console.error("Erreur lors de la suppression de la création:", error);
+    logger.error("Erreur lors de la suppression:", error);
     return NextResponse.json(
-      { error: "Erreur lors de la suppression de la création" },
+      { error: "Erreur lors de la suppression" },
       { status: 500 }
     );
   }

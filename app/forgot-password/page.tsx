@@ -36,7 +36,7 @@ export default function ForgotPasswordPage() {
       }
 
       setIsSuccess(true);
-    } catch (err) {
+    } catch {
       setError("Une erreur est survenue. Veuillez réessayer.");
     } finally {
       setIsLoading(false);
@@ -63,7 +63,7 @@ export default function ForgotPasswordPage() {
             </h1>
 
             <p className="text-gray-600 dark:text-gray-400 text-center mb-6">
-              Si un compte existe avec l'adresse <strong>{email}</strong>, vous
+              Si un compte existe avec l&apos;adresse <strong>{email}</strong>, vous
               recevrez un email avec les instructions pour réinitialiser votre
               mot de passe.
             </p>
@@ -71,7 +71,7 @@ export default function ForgotPasswordPage() {
             <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-4 mb-6">
               <p className="text-sm text-blue-800 dark:text-blue-300">
                 💡 <strong>Astuce :</strong> Vérifiez également votre dossier
-                spam si vous ne recevez pas l'email dans les prochaines minutes.
+                spam si vous ne recevez pas l&apos;email dans les prochaines minutes.
               </p>
             </div>
 

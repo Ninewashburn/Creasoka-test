@@ -11,7 +11,7 @@ import { NextRequest } from "next/server";
 if (!process.env.JWT_SECRET) {
   console.error(
     "ERREUR CRITIQUE: JWT_SECRET n'est pas défini dans les variables d'environnement.\n" +
-      "Veuillez vous assurer qu'elle est définie dans votre fichier .env ou dans les paramètres de votre environnement d'hébergement."
+    "Veuillez vous assurer qu'elle est définie dans votre fichier .env ou dans les paramètres de votre environnement d'hébergement."
   );
   // En production, il est fortement recommandé de lever une erreur ici pour arrêter l'application.
   // throw new Error("Configuration manquante: JWT_SECRET n'est pas défini.");
@@ -73,7 +73,8 @@ export function generateToken(payload: JwtPayload): string {
   }
 
   const options: SignOptions = {
-    expiresIn: JWT_EXPIRES_IN as any,
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    expiresIn: JWT_EXPIRES_IN as SignOptions['expiresIn'],
     // Vous pourriez envisager d'expliciter l'algorithme si le problème persiste,
     // bien que HS256 soit le défaut pour les secrets de type chaîne.
     // algorithm: 'HS256'

@@ -4,7 +4,7 @@ type CacheItem<T> = {
 };
 
 class ServerCache {
-  private cache: Map<string, CacheItem<any>> = new Map();
+  private cache: Map<string, CacheItem<unknown>> = new Map();
 
   // Durée par défaut : 5 minutes
   async get<T>(
@@ -16,11 +16,9 @@ class ServerCache {
     const cachedItem = this.cache.get(key);
 
     if (cachedItem && cachedItem.expiry > now) {
-      console.log(`Utilisation des données en cache pour: ${key}`);
-      return cachedItem.data;
+      return cachedItem.data as T;
     }
 
-    console.log(`Récupération des données depuis la source pour: ${key}`);
     const data = await fetcher();
     this.cache.set(key, {
       data,

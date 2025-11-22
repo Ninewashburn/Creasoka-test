@@ -87,7 +87,7 @@ export default function UploadImage({
       // Mode multiple
       const filesArray = Array.from(files);
       const currentValues = Array.isArray(value) ? [...value] : [];
-      let updatedValues = [...currentValues];
+      const updatedValues = [...currentValues];
 
       for (const file of filesArray) {
         const filePath = await uploadImage(file);
@@ -219,7 +219,7 @@ export default function UploadImage({
               {description}
             </p>
             <p className="text-xs text-gray-500 dark:text-gray-500 mb-4">
-              PNG, JPG, WebP jusqu'à 5MB
+              PNG, JPG, WebP jusqu&apos;à 5MB
             </p>
             <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
               <Button
@@ -295,21 +295,20 @@ export default function UploadImage({
         </div>
       ) : (
         // Mode multiple
-        <div className="mt-1 border-2 border-dashed border-gray-300 dark:border-gray-700 rounded-lg p-6 text-center hover:border-creasoka hover:bg-creasoka/5 transition-all duration-300">
+        <div className="mt-1 border-2 border-dashed border-violet-300 bg-violet-50/30 rounded-lg p-8 text-center hover:border-violet-400 hover:bg-violet-50/50 transition-all duration-300">
           <div className="flex flex-col items-center">
-            <Upload className="h-12 w-12 text-gray-400 mb-2" />
-            <p className="text-sm text-gray-600 dark:text-gray-400 mb-2">
+            <Upload className="h-10 w-10 text-gray-400 mb-3" />
+            <p className="text-sm text-gray-600 dark:text-gray-400 mb-1 font-medium">
               {description}
             </p>
-            <p className="text-xs text-gray-500 dark:text-gray-500 mb-4">
-              PNG, JPG, WebP jusqu'à 5MB
+            <p className="text-xs text-gray-400 dark:text-gray-500 mb-6">
+              PNG, JPG, WebP jusqu&apos;à 5MB
             </p>
-            <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+            <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
               <Button
                 type="button"
                 variant="outline"
-                size="sm"
-                className="transition-all duration-300 hover:bg-creasoka/10 hover:text-creasoka"
+                className="bg-white border-gray-200 text-gray-700 hover:bg-gray-50 transition-all duration-300 shadow-sm"
                 onClick={() => fileInputRef.current?.click()}
               >
                 <Upload className="h-4 w-4 mr-2" />
@@ -328,43 +327,42 @@ export default function UploadImage({
           </div>
 
           {Array.isArray(value) && value.length > 0 && (
-            <div className="mt-4 grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6 gap-2">
+            <div className="mt-8 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 text-left">
               {value.map((img, index) => (
                 <div
                   key={index}
-                  className="relative group border rounded-md overflow-hidden"
+                  className="relative group rounded-lg overflow-hidden aspect-square bg-gray-100"
                 >
                   <Image
                     src={img || "/placeholder.svg"}
                     alt={`Image ${index + 1}`}
-                    width={150}
-                    height={150 / aspectRatio}
-                    className="w-full h-auto object-cover"
-                    style={{ aspectRatio: `${aspectRatio} / 1` }}
+                    fill
+                    className="object-cover"
                   />
-                  <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 flex flex-col items-center justify-center transition-opacity duration-200 p-1">
-                    <Button
+                  {/* Overlay */}
+                  <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex flex-col items-center justify-center gap-2">
+                    <button
                       type="button"
-                      variant="ghost"
-                      size="sm"
-                      className="text-white hover:bg-white/20 w-full h-auto py-1 px-2 text-xs mb-1"
-                      onClick={() => handleOpenCropper(index)}
-                      title="Recadrer l'image"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleOpenCropper(index);
+                      }}
+                      className="flex items-center text-white text-xs font-medium hover:text-creasoka transition-colors"
                     >
-                      <Crop className="h-3 w-3 mr-1" />
+                      <Crop className="h-3 w-3 mr-1.5" />
                       Recadrer
-                    </Button>
-                    <Button
+                    </button>
+                    <button
                       type="button"
-                      variant="ghost"
-                      size="sm"
-                      className="text-red-400 hover:bg-red-500/20 w-full h-auto py-1 px-2 text-xs"
-                      onClick={() => handleRemoveImage(index)}
-                      title="Supprimer l'image"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleRemoveImage(index);
+                      }}
+                      className="flex items-center text-red-400 text-xs font-medium hover:text-red-300 transition-colors"
                     >
-                      <X className="h-3 w-3 mr-1" />
+                      <X className="h-3 w-3 mr-1.5" />
                       Supprimer
-                    </Button>
+                    </button>
                   </div>
                 </div>
               ))}

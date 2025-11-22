@@ -16,7 +16,7 @@ export default function MentionsLegalesPage() {
         <section className="mb-8">
           <h2 className="text-2xl font-semibold mb-4">1. Édition du site</h2>
           <p>
-            Le présent site, accessible à l'URL <strong>www.creasoka.fr</strong>{" "}
+            Le présent site, accessible à l&apos;URL <strong>www.creasoka.fr</strong>{" "}
             (le « Site »), est édité par :
           </p>
           <p>
@@ -59,18 +59,18 @@ export default function MentionsLegalesPage() {
           </p>
           <ul>
             <li>Informations de connexion (adresse IP, horodatage)</li>
-            <li>Données de contact (email) si fournies par l'utilisateur</li>
+            <li>Données de contact (email) si fournies par l&apos;utilisateur</li>
           </ul>
 
           <p className="mt-4">
             Le responsable du traitement est : [Prénom Nom], joignable à
-            l'adresse email suivante :{" "}
+            l&apos;adresse email suivante :{" "}
             <a href="mailto:contact@creasoka.fr">contact@creasoka.fr</a>
           </p>
 
           <p className="mt-4">
-            L'utilisateur est informé qu'il dispose d'un droit d'accès,
-            d'interrogation, de modification, d'opposition et de rectification
+            L&apos;utilisateur est informé qu&apos;il dispose d&apos;un droit d&apos;accès,
+            d&apos;interrogation, de modification, d&apos;opposition et de rectification
             sur les données personnelles le concernant.
           </p>
         </section>
@@ -82,23 +82,23 @@ export default function MentionsLegalesPage() {
           <p>
             Tous les éléments de ce Site, y compris les textes, images,
             photographies, logos, marques, vidéos et architecture du Site, sont
-            la propriété exclusive de Crea'Soka ou de ses partenaires.
+            la propriété exclusive de Crea&apos;Soka ou de ses partenaires.
           </p>
           <p className="mt-4">
             Toute reproduction, représentation, modification, publication,
             transmission, dénaturation, totale ou partielle du Site ou de son
             contenu, par quelque procédé que ce soit, et sur quelque support que
-            ce soit est interdite sans l'autorisation écrite préalable de
-            Crea'Soka.
+            ce soit est interdite sans l&apos;autorisation écrite préalable de
+            Crea&apos;Soka.
           </p>
         </section>
 
         <section className="mb-8">
           <h2 className="text-2xl font-semibold mb-4">7. Liens hypertextes</h2>
           <p>
-            Le Site peut contenir des liens hypertextes vers d'autres sites
-            internet ou applications. Crea'Soka n'exerce aucun contrôle sur ces
-            sites et applications et n'assume aucune responsabilité quant à leur
+            Le Site peut contenir des liens hypertextes vers d&apos;autres sites
+            internet ou applications. Crea&apos;Soka n&apos;exerce aucun contrôle sur ces
+            sites et applications et n&apos;assume aucune responsabilité quant à leur
             contenu.
           </p>
         </section>

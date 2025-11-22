@@ -30,52 +30,10 @@ export default function RichTextEditor({
     setText(value || '');
   }, [value]);
 
-  // Convertir le texte en HTML simple
-  const processTextToHtml = (text: string): string => {
-    // Balises supportées : **bold**, *italic*, - list item
-    let html = text;
-    
-    // Convertir les astérisques doubles en balises strong
-    html = html.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
-    
-    // Convertir les astérisques simples en balises em
-    html = html.replace(/\*(.*?)\*/g, '<em>$1</em>');
-    
-    // Convertir les lignes commençant par "- " en items de liste
-    html = html.replace(/^- (.*?)$/gm, '<li>$1</li>');
-    
-    // Entourer les balises li consécutives avec ul
-    if (html.includes('<li>')) {
-      html = html.replace(/(<li>.*?<\/li>)+/g, '<ul>$&</ul>');
-    }
-    
-    // Convertir les sauts de ligne en <br>
-    html = html.replace(/\n/g, '<br>');
-    
-    return html;
-  };
+
 
   // Convertir l'HTML simple en texte formaté
-  const processHtmlToText = (html: string): string => {
-    let text = html;
-    
-    // Convertir les balises strong en **bold**
-    text = text.replace(/<strong>(.*?)<\/strong>/g, '**$1**');
-    
-    // Convertir les balises em en *italic*
-    text = text.replace(/<em>(.*?)<\/em>/g, '*$1*');
-    
-    // Convertir les balises li en "- item"
-    text = text.replace(/<li>(.*?)<\/li>/g, '- $1\n');
-    
-    // Supprimer les balises ul
-    text = text.replace(/<\/?ul>/g, '');
-    
-    // Convertir <br> en sauts de ligne
-    text = text.replace(/<br>/g, '\n');
-    
-    return text;
-  };
+
 
   const handleChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     const newText = e.target.value;

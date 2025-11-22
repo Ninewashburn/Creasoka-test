@@ -1,11 +1,13 @@
 "use client";
 
 import { useState, useMemo, useEffect } from "react";
+
+
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Search } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
-import { useMediaQuery } from "@/hooks/use-media-query";
+
 import { motion } from "framer-motion";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { cn } from "@/lib/utils";
@@ -27,7 +29,6 @@ export default function GalleryPage() {
   const [activeCategory, setActiveCategory] = useState("tous");
   const [allCreations, setAllCreations] = useState<Creation[]>([]);
   const [isLoading, setIsLoading] = useState(true);
-  const isMobile = useMediaQuery("(max-width: 768px)");
 
   useEffect(() => {
     async function fetchCreations() {
@@ -91,58 +92,48 @@ export default function GalleryPage() {
     });
   }, [allCreations, searchQuery, activeCategory]);
 
-  // Préparer les données pour la galerie
-  const galleryImages = useMemo(
-    () => filteredCreations.map((c) => c.image || "/placeholder.svg"),
-    [filteredCreations]
-  );
-  const galleryTitles = useMemo(
-    () => filteredCreations.map((c) => c.title),
-    [filteredCreations]
-  );
-
-  // Préparer les données pour la section "Les Adoptés" par catégorie
-  const adoptedByCategory = useMemo(() => {
-    if (activeCategory === "tous") return [];
+  // Préparer les données pour la section "Les Adoptés"
+  // Filtrer par statut, recherche et catégorie active
+  const adoptedCreations = useMemo(() => {
     return allCreations.filter((c) => {
-      // Vérifier si la création est adoptée et correspond à la catégorie active
-      return (
-        c.status === "adopté" &&
-        activeCategory !== "tous" &&
-        categoryTypes.includes(activeCategory as ValidCategory) &&
-        c.categories &&
-        c.categories.includes(activeCategory as ValidCategory)
-      );
+      const isAdopted = c.status === "adopté";
+      const matchesSearch =
+        searchQuery === "" ||
+        c.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        c.description.toLowerCase().includes(searchQuery.toLowerCase());
+
+      const matchesCategory =
+        activeCategory === "tous" ||
+        (c.categories &&
+          categoryTypes.includes(activeCategory as ValidCategory) &&
+          c.categories.includes(activeCategory as ValidCategory));
+
+      return isAdopted && matchesSearch && matchesCategory;
     });
-  }, [activeCategory, allCreations]);
+  }, [allCreations, searchQuery, activeCategory]);
 
-  const adoptedImages = useMemo(
-    () => adoptedByCategory.map((c) => c.image || "/placeholder.svg"),
-    [adoptedByCategory]
-  );
-  const adoptedTitles = useMemo(
-    () => adoptedByCategory.map((c) => c.title),
-    [adoptedByCategory]
+  // Combiner toutes les créations visibles pour la navigation dans la modale
+  const allVisibleCreations = useMemo(() => {
+    return [...filteredCreations, ...adoptedCreations];
+  }, [filteredCreations, adoptedCreations]);
+
+  // Préparer les données pour la galerie (images et titres pour la modale)
+  const galleryImages = useMemo(
+    () => allVisibleCreations.map((c) => c.image || "/placeholder.svg"),
+    [allVisibleCreations]
   );
 
-  // Préparer les données pour la section "Les Adoptés" globale
-  // Filtrer également par recherche pour que les adoptés correspondent à la recherche
-  const allAdopted = useMemo(() => {
-    return allCreations.filter(
-      (c) =>
-        c.status === "adopté" &&
-        (searchQuery === "" ||
-          c.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-          c.description.toLowerCase().includes(searchQuery.toLowerCase()))
-    );
-  }, [searchQuery, allCreations]);
-  const allAdoptedImages = useMemo(
-    () => allAdopted.map((c) => c.image || "/placeholder.svg"),
-    [allAdopted]
-  );
-  const allAdoptedTitles = useMemo(
-    () => allAdopted.map((c) => c.title),
-    [allAdopted]
+  const galleryItems = useMemo(
+    () => allVisibleCreations.map((c) => ({
+      id: c.id,
+      title: c.title,
+      image: c.image || "/placeholder.svg",
+      status: c.status,
+      price: c.price,
+      stock: c.stock,
+      categories: c.categories
+    })),
+    [allVisibleCreations]
   );
 
   const categories = [
@@ -209,22 +200,44 @@ export default function GalleryPage() {
           Galerie de <span className="text-creasoka">Créations</span>
         </h1>
         <p className="text-gray-600 dark:text-gray-400 max-w-2xl mx-auto">
-          Explorez l'ensemble de mes créations artisanales, des bijoux délicats
+          Explorez l&apos;ensemble de mes créations artisanales, des bijoux délicats
           aux figurines miniatures. Chaque pièce est unique et réalisée avec
           passion.
         </p>
       </div>
 
       <div className="mb-12">
-        <div className="relative max-w-md mx-auto mb-6">
-          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
+        <div className="relative w-full md:w-96 mx-auto mb-6">
+          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
           <Input
             type="text"
             placeholder="Rechercher une création..."
-            className="pl-10"
+            className="pl-10 pr-10"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
           />
+          {searchQuery && (
+            <button
+              onClick={() => setSearchQuery("")}
+              className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600"
+            >
+              <span className="sr-only">Effacer</span>
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="16"
+                height="16"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
+                <line x1="18" y1="6" x2="6" y2="18"></line>
+                <line x1="6" y1="6" x2="18" y2="18"></line>
+              </svg>
+            </button>
+          )}
         </div>
 
         <Tabs
@@ -271,6 +284,11 @@ export default function GalleryPage() {
                   Vedette
                 </Badge>
               )}
+              {creation.status === "précommande" && (
+                <Badge className="absolute top-2 left-2 z-10 bg-blue-500">
+                  Précommande
+                </Badge>
+              )}
               {creation.status === "adopté" && (
                 <Badge className="absolute top-2 left-2 z-10 bg-red-500">
                   Adopté
@@ -286,11 +304,11 @@ export default function GalleryPage() {
                   className="w-full h-72 object-cover transition-transform duration-300 group-hover:scale-105"
                   galleryImages={galleryImages}
                   galleryIndex={index}
-                  galleryTitles={galleryTitles}
+                  galleryItems={galleryItems}
                 />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent flex flex-col justify-end p-4 text-white pointer-events-none">
+                <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent flex flex-col justify-end p-4 text-white pointer-events-none group-hover:opacity-100 transition-opacity">
                   <h3 className="font-semibold text-lg">{creation.title}</h3>
-                  <p className="text-sm text-gray-200 capitalize">
+                  <p className="text-sm text-gray-200 capitalize mb-3">
                     {creation.categories && creation.categories.length > 0
                       ? creation.categories[0]
                       : ""}
@@ -299,7 +317,7 @@ export default function GalleryPage() {
               </div>
             </div>
           ))
-        ) : filteredCreations.length === 0 && allAdopted.length === 0 ? (
+        ) : filteredCreations.length === 0 && adoptedCreations.length === 0 ? (
           <div className="col-span-full text-center py-12">
             <h3 className="text-xl font-semibold mb-2">
               Aucun résultat trouvé
@@ -317,7 +335,7 @@ export default function GalleryPage() {
               Réinitialiser les filtres
             </Button>
           </div>
-        ) : filteredCreations.length === 0 && allAdopted.length > 0 ? (
+        ) : filteredCreations.length === 0 && adoptedCreations.length > 0 ? (
           <div className="col-span-full text-center py-12">
             <h3 className="text-xl font-semibold mb-2">
               Aucune création disponible
@@ -330,62 +348,25 @@ export default function GalleryPage() {
         ) : null}
       </motion.div>
 
-      {activeCategory !== "tous" && adoptedByCategory.length > 0 && (
-        <div className="mt-12">
-          <h2 className="text-2xl font-bold mb-4">Les Adoptés</h2>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            {adoptedByCategory.map((creation, index) => (
-              <div
-                key={creation.id}
-                className="relative overflow-hidden rounded-lg group"
-              >
-                <Badge className="absolute top-2 left-2 z-10 bg-red-500">
-                  Adopté
-                </Badge>
-                <div className="relative">
-                  <ZoomableImage
-                    src={creation.image || "/placeholder.svg"}
-                    alt={creation.title}
-                    width={400}
-                    height={400}
-                    className="w-full h-72 object-cover transition-transform duration-300 group-hover:scale-105 brightness-90"
-                    galleryImages={adoptedImages}
-                    galleryIndex={index}
-                    galleryTitles={adoptedTitles}
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent flex flex-col justify-end p-4 text-white pointer-events-none">
-                    <h3 className="font-semibold text-lg">{creation.title}</h3>
-                    <p className="text-sm text-gray-200 capitalize">
-                      {creation.categories && creation.categories.length > 0
-                        ? creation.categories[0]
-                        : ""}
-                    </p>
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      )}
-
-      {/* Section Les Adoptés globale */}
-      {allAdopted.length > 0 && (
+      {adoptedCreations.length > 0 && (
         <div className="mt-16">
-          <h2 className="text-3xl font-bold mb-6">
-            Les <span className="text-creasoka">Adoptés</span>
-            {searchQuery && (
-              <span className="text-base font-normal ml-2">
-                correspondant à votre recherche
-              </span>
-            )}
-          </h2>
-          <p className="text-gray-600 dark:text-gray-400 max-w-2xl mx-auto mb-8">
-            Ces créations ont déjà trouvé leur foyer. Découvrez les pièces qui
-            ont fait le bonheur d'autres passionnés.
-          </p>
+          <div className="text-center mb-8">
+            <h2 className="text-3xl font-bold mb-4">
+              Les <span className="text-creasoka">Adoptés</span>
+              {searchQuery && (
+                <span className="text-base font-normal ml-2">
+                  correspondant à votre recherche
+                </span>
+              )}
+            </h2>
+            <p className="text-gray-600 dark:text-gray-400 max-w-2xl mx-auto">
+              Ces créations ont déjà trouvé leur foyer. Découvrez les pièces qui
+              ont fait le bonheur d&apos;autres passionnés.
+            </p>
+          </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            {allAdopted.map((creation, index) => (
+            {adoptedCreations.map((creation, index) => (
               <div
                 key={creation.id}
                 className="relative overflow-hidden rounded-lg group"
@@ -400,18 +381,10 @@ export default function GalleryPage() {
                     width={400}
                     height={400}
                     className="w-full h-72 object-cover transition-transform duration-300 group-hover:scale-105 brightness-90"
-                    galleryImages={allAdoptedImages}
-                    galleryIndex={index}
-                    galleryTitles={allAdoptedTitles}
+                    galleryImages={galleryImages}
+                    galleryIndex={filteredCreations.length + index}
+                    galleryItems={galleryItems}
                   />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent flex flex-col justify-end p-4 text-white pointer-events-none">
-                    <h3 className="font-semibold text-lg">{creation.title}</h3>
-                    <p className="text-sm text-gray-200 capitalize">
-                      {creation.categories && creation.categories.length > 0
-                        ? creation.categories[0]
-                        : ""}
-                    </p>
-                  </div>
                 </div>
               </div>
             ))}

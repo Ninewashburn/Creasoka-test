@@ -25,3 +25,7 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# Task files
+Codebase Cleanup and About Page.md
+Refactor Admin OrderList.md

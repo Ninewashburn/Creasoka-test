@@ -7,7 +7,7 @@ export default function Footer() {
       <div className="container mx-auto px-4 py-8">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           <div>
-            <h3 className="text-lg font-semibold text-creasoka mb-4">Crea'Soka</h3>
+            <h3 className="text-lg font-semibold text-creasoka mb-4">Crea&apos;Soka</h3>
             <p className="text-gray-600 dark:text-gray-400 mb-4">
               Des créations artisanales uniques et pleines de charme pour ajouter une touche de magie à votre quotidien.
             </p>
@@ -63,13 +63,13 @@ export default function Footer() {
               </a>
             </div>
             <p className="text-gray-600 dark:text-gray-400">
-              Pour toute question ou commande personnalisée, n'hésitez pas à me contacter.
+              Pour toute question ou commande personnalisée, n&apos;hésitez pas à me contacter.
             </p>
           </div>
         </div>
 
         <div className="border-t border-gray-200 dark:border-gray-800 mt-8 pt-6 flex flex-col md:flex-row justify-between items-center text-sm text-gray-500 dark:text-gray-400">
-          <p>© {new Date().getFullYear()} Crea'Soka. Tous droits réservés.</p>
+          <p>© {new Date().getFullYear()} Crea&apos;Soka. Tous droits réservés.</p>
           <div className="flex space-x-4 mt-4 md:mt-0">
             <Link href="/mentions-legales" className="hover:text-creasoka">
               Mentions légales

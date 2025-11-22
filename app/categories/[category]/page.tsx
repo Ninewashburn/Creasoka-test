@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { useParams } from "next/navigation";
 import { Input } from "@/components/ui/input";
 import { Search } from "lucide-react";
+import AdvancedSearch from "@/components/advanced-search";
 import { motion, AnimatePresence } from "framer-motion";
 import CreationCard from "@/components/creation-card";
 import { notFound } from "next/navigation";
@@ -15,7 +16,12 @@ type CategoryType = "bijoux" | "minis" | "halloween" | "pokemon" | "divers";
 export default function CategoryPage() {
   const params = useParams();
   const category = typeof params.category === "string" ? params.category : "";
-  const [searchQuery, setSearchQuery] = useState("");
+  const [filters, setFilters] = useState({
+    query: "",
+    minPrice: 0,
+    maxPrice: 200,
+    sort: "newest" as "newest" | "oldest" | "price-asc" | "price-desc",
+  });
   const [mounted, setMounted] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [creations, setCreations] = useState<Creation[]>([]);
@@ -72,18 +78,36 @@ export default function CategoryPage() {
       "Découvrez mes autres créations variées. Une collection diverse d'objets originaux et uniques faits main avec passion.",
   };
 
-  const filteredCreations = creations.filter((creation) => {
-    const matchesCategory =
-      (creation.categories &&
-        creation.categories.includes(category as CategoryType)) ||
-      (creation as any).category === category;
+  const filteredCreations = creations
+    .filter((creation) => {
+      const matchesCategory =
+        (creation.categories &&
+          creation.categories.includes(category as CategoryType)) ||
+        (creation as { category?: string }).category === category;
 
-    const matchesSearch =
-      creation.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      creation.description.toLowerCase().includes(searchQuery.toLowerCase());
+      const matchesSearch =
+        creation.title.toLowerCase().includes(filters.query.toLowerCase()) ||
+        creation.description.toLowerCase().includes(filters.query.toLowerCase());
 
-    return matchesCategory && matchesSearch;
-  });
+      const matchesPrice =
+        (creation.price || 0) >= filters.minPrice &&
+        (creation.price || 0) <= filters.maxPrice;
+
+      return matchesCategory && matchesSearch && matchesPrice;
+    })
+    .sort((a, b) => {
+      switch (filters.sort) {
+        case "price-asc":
+          return (a.price || 0) - (b.price || 0);
+        case "price-desc":
+          return (b.price || 0) - (a.price || 0);
+        case "oldest":
+          return new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime();
+        case "newest":
+        default:
+          return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
+      }
+    });
 
   // Animation variants
   const containerVariants = {
@@ -177,31 +201,19 @@ export default function CategoryPage() {
       </motion.div>
 
       <motion.div
-        className="relative max-w-md mx-auto mb-8"
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.6, delay: 0.2 }}
       >
-        <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
-
-        <Input
-          type="text"
-          placeholder={`Rechercher une ${
-            category === "minis"
-              ? "figurine"
-              : category === "bijoux"
-              ? "bijou"
-              : "décoration"
-          }...`}
-          className="pl-10 transition-all duration-300 focus:ring-2 focus:ring-creasoka focus:border-creasoka hover:border-creasoka"
-          value={searchQuery}
-          onChange={(e) => setSearchQuery(e.target.value)}
+        <AdvancedSearch
+          onSearch={(newFilters) => setFilters(newFilters)}
+          initialFilters={filters}
         />
       </motion.div>
 
       <AnimatePresence mode="wait">
         <motion.div
-          key={category + searchQuery}
+          key={category + filters.query + filters.sort}
           className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6"
           variants={containerVariants}
           initial="hidden"

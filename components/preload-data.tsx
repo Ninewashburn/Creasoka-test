@@ -2,13 +2,14 @@
 
 import { useEffect } from "react";
 import { setToCache } from "@/lib/clientCache";
+import type { Creation } from "@/types/creation";
 
 export default function PreloadData() {
   useEffect(() => {
     // Fonction pour précharger les données importantes
     const preloadImportantData = () => {
       // Préchargement de la liste des créations
-      console.log("Préchargement des données importantes...");
+
 
       fetch("/api/creations")
         .then((response) => {
@@ -18,11 +19,11 @@ export default function PreloadData() {
         .then((data) => {
           // Stocker dans le cache client pour une utilisation ultérieure
           setToCache("allCreations", data);
-          console.log("Préchargement des créations terminé");
+
 
           // Précharger les créations vedettes
           const featured = data
-            .filter((creation: any) => creation.status === "vedette")
+            .filter((creation: Creation) => creation.status === "vedette")
             .slice(0, 3);
 
           setToCache("featuredCreations", featured);
