@@ -1,5 +1,8 @@
 import { NextResponse } from "next/server";
+import { prisma } from "@/lib/prisma";
 import { z } from "zod";
+
+export const runtime = "nodejs";
 
 // Schema de validation pour la commande
 const orderSchema = z.object({
@@ -22,74 +25,58 @@ const orderSchema = z.object({
     total: z.number().min(0),
 });
 
-interface Order {
-    id: string;
-    status: string;
-    total: number;
-    trackingNumber?: string;
-    items: {
-        creationId: string;
-        quantity: number;
-        price: number;
-    }[];
-    shipping: {
-        firstName: string;
-        lastName: string;
-        email: string;
-        address: string;
-        city: string;
-        postalCode: string;
-        country: string;
-    };
-    createdAt: string;
-}
-
-// Simulation de base de données en mémoire (se réinitialise au redémarrage du serveur)
-const MOCK_ORDERS: Order[] = [
-    {
-        id: "ord_1732190000000",
-        status: "pending",
-        total: 45.00,
-        items: [
-            { creationId: "bracelet-perles-rose-01", quantity: 1, price: 18.00 },
-            { creationId: "collier-resine-fleurs-02", quantity: 1, price: 27.00 }
-        ],
-        shipping: {
-            firstName: "Sophie",
-            lastName: "Martin",
-            email: "sophie@example.com",
-            address: "12 Rue des Fleurs",
-            city: "Lyon",
-            postalCode: "69000",
-            country: "France"
-        },
-        createdAt: new Date("2024-11-20T14:30:00Z").toISOString(),
-    },
-    {
-        id: "ord_1732100000000",
-        status: "shipped",
-        total: 22.00,
-        trackingNumber: "1Z999AA10123456784",
-        items: [
-            { creationId: "pikachu-clin-oeil-03", quantity: 1, price: 22.00 }
-        ],
-        shipping: {
-            firstName: "Thomas",
-            lastName: "Dubois",
-            email: "thomas@example.com",
-            address: "8 Avenue Jean Jaurès",
-            city: "Paris",
-            postalCode: "75011",
-            country: "France"
-        },
-        createdAt: new Date("2024-11-19T09:15:00Z").toISOString(),
-    }
-];
-
 export async function GET() {
-    // Simulation: Récupérer toutes les commandes (pour l'admin) ou les commandes de l'utilisateur
-    // Ici on renvoie tout pour la démo admin
-    return NextResponse.json({ orders: MOCK_ORDERS });
+    try {
+        const orders = await prisma.order.findMany({
+            include: {
+                items: {
+                    include: {
+                        creation: {
+                            select: {
+                                title: true,
+                                image: true,
+                            },
+                        },
+                    },
+                },
+            },
+            orderBy: {
+                createdAt: "desc",
+            },
+        });
+
+        // Transformer les données pour correspondre au format attendu par le front-end
+        const formattedOrders = orders.map((order) => ({
+            id: order.id,
+            status: order.status,
+            total: order.total,
+            createdAt: order.createdAt.toISOString(),
+            items: order.items.map((item) => ({
+                creationId: item.creationId,
+                quantity: item.quantity,
+                price: item.price,
+                title: item.creation.title,
+                image: item.creation.image,
+            })),
+            shipping: {
+                firstName: order.firstName,
+                lastName: order.lastName,
+                email: order.email,
+                address: order.address,
+                city: order.city,
+                postalCode: order.postalCode,
+                country: order.country,
+            },
+        }));
+
+        return NextResponse.json({ orders: formattedOrders });
+    } catch (error) {
+        console.error("Erreur lors de la récupération des commandes:", error);
+        return NextResponse.json(
+            { error: "Erreur lors de la récupération des commandes" },
+            { status: 500 }
+        );
+    }
 }
 
 export async function POST(request: Request) {
@@ -108,31 +95,65 @@ export async function POST(request: Request) {
 
         const { items, shipping, total } = result.data;
 
-        const newOrder = {
-            id: `ord_${Date.now()}`,
-            status: "pending",
-            total,
-            items,
-            shipping,
-            createdAt: new Date().toISOString(),
-        };
+        // Utiliser une transaction pour assurer l'intégrité des données (stock)
+        const order = await prisma.$transaction(async (tx) => {
+            // 1. Vérifier le stock pour chaque article
+            for (const item of items) {
+                const creation = await tx.creation.findUnique({
+                    where: { id: item.creationId },
+                });
 
-        // Ajouter à la "base de données" en mémoire
-        MOCK_ORDERS.unshift(newOrder);
+                if (!creation) {
+                    throw new Error(`Création introuvable: ${item.creationId}`);
+                }
 
+                if (creation.stock < item.quantity) {
+                    throw new Error(`Stock insuffisant pour: ${creation.title}`);
+                }
 
+                // 2. Décrémenter le stock
+                await tx.creation.update({
+                    where: { id: item.creationId },
+                    data: { stock: creation.stock - item.quantity },
+                });
+            }
 
-        // Simulation d'un délai réseau
-        await new Promise((resolve) => setTimeout(resolve, 1000));
+            // 3. Créer la commande
+            const newOrder = await tx.order.create({
+                data: {
+                    total,
+                    status: "pending",
+                    firstName: shipping.firstName,
+                    lastName: shipping.lastName,
+                    email: shipping.email,
+                    address: shipping.address,
+                    city: shipping.city,
+                    postalCode: shipping.postalCode,
+                    country: shipping.country,
+                    items: {
+                        create: items.map((item) => ({
+                            creationId: item.creationId,
+                            quantity: item.quantity,
+                            price: item.price,
+                        })),
+                    },
+                },
+                include: {
+                    items: true,
+                },
+            });
+
+            return newOrder;
+        });
 
         return NextResponse.json(
-            { success: true, order: newOrder, message: "Commande créée avec succès" },
+            { success: true, order, message: "Commande créée avec succès" },
             { status: 201 }
         );
-    } catch (error) {
+    } catch (error: any) {
         console.error("Erreur lors de la création de la commande:", error);
         return NextResponse.json(
-            { error: "Une erreur est survenue lors de la création de la commande" },
+            { error: error.message || "Une erreur est survenue lors de la création de la commande" },
             { status: 500 }
         );
     }
@@ -143,29 +164,28 @@ export async function PATCH(request: Request) {
         const body = await request.json();
         const { orderId, status, trackingNumber } = body;
 
-        const orderIndex = MOCK_ORDERS.findIndex(o => o.id === orderId);
-
-        if (orderIndex === -1) {
+        if (!orderId) {
             return NextResponse.json(
-                { error: "Commande non trouvée" },
-                { status: 404 }
+                { error: "ID de commande requis" },
+                { status: 400 }
             );
         }
 
-        // Mise à jour de la commande
-        MOCK_ORDERS[orderIndex] = {
-            ...MOCK_ORDERS[orderIndex],
-            status: status || MOCK_ORDERS[orderIndex].status,
-            trackingNumber: trackingNumber || MOCK_ORDERS[orderIndex].trackingNumber,
-        };
+        const updatedOrder = await prisma.order.update({
+            where: { id: orderId },
+            data: {
+                status: status || undefined,
+                // trackingNumber n'existe pas encore dans le schéma Prisma, on l'ignore pour l'instant
+            },
+        });
 
         return NextResponse.json({
             success: true,
-            order: MOCK_ORDERS[orderIndex],
-            message: "Commande mise à jour"
+            order: updatedOrder,
+            message: "Commande mise à jour",
         });
-
-    } catch {
+    } catch (error) {
+        console.error("Erreur lors de la mise à jour de la commande:", error);
         return NextResponse.json(
             { error: "Erreur lors de la mise à jour" },
             { status: 500 }

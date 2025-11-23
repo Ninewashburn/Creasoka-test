@@ -2,21 +2,17 @@ import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { sendPasswordResetEmail } from "@/lib/email";
 import crypto from "crypto";
+import { z } from "zod";
 
 export async function POST(request: Request) {
   try {
     const { email } = await request.json();
 
-    // Validation de l'email
-    if (!email || typeof email !== "string") {
-      return NextResponse.json(
-        { error: "Email requis" },
-        { status: 400 }
-      );
-    }
+    // Validation de l'email avec Zod
+    const emailSchema = z.string().email("Email invalide");
+    const result = emailSchema.safeParse(email);
 
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(email)) {
+    if (!result.success) {
       return NextResponse.json(
         { error: "Email invalide" },
         { status: 400 }
