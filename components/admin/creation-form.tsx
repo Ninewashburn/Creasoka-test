@@ -16,8 +16,9 @@ import UploadImageInput from "@/components/upload-image-input";
 import RichTextEditor from "@/components/rich-text-editor";
 import { slugify } from "@/lib/utils";
 import Link from "next/link";
+import { invalidateCache } from "@/lib/clientCache";
 
-type CategoryType = "bijoux" | "minis" | "halloween" | "pokemon" | "divers";
+type CategoryType = "bijoux" | "minis" | "chibi" | "halloween" | "pokemon" | "divers";
 
 interface CreationFormProps {
     mode: "create" | "edit";
@@ -137,6 +138,9 @@ export default function CreationForm({ mode, creationId, initialData }: Creation
             const responseData = await response.json();
 
             if (response.ok) {
+                // Invalider le cache client pour forcer le rechargement des données
+                invalidateCache("allCreations");
+
                 toast({
                     title: mode === "create" ? "Création ajoutée" : "Création mise à jour",
                     description:
@@ -200,7 +204,7 @@ export default function CreationForm({ mode, creationId, initialData }: Creation
                     Catégories <span className="text-red-500 ml-1">*</span>
                 </Label>
                 <div className="grid grid-cols-2 gap-4">
-                    {(["bijoux", "minis", "halloween", "pokemon", "divers"] as const).map((cat) => (
+                    {(["bijoux", "minis", "chibi", "halloween", "pokemon", "divers"] as const).map((cat) => (
                         <div key={cat} className="flex items-center space-x-2">
                             <Checkbox
                                 id={`cat${cat}`}

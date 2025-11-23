@@ -161,7 +161,7 @@ export default function CreationDetailPage() {
 
   const category = creation.categories && creation.categories.length > 0 ? creation.categories[0] : "bijoux";
   const categoryLabel = {
-    bijoux: "Bijoux", minis: "Minis", halloween: "Halloween", pokemon: "Pokémon", divers: "Divers",
+    bijoux: "Bijoux", minis: "Minis", chibi: "Chibi", halloween: "Halloween", pokemon: "Pokémon", divers: "Divers",
   }[category] || category;
 
   return (
@@ -216,7 +216,7 @@ export default function CreationDetailPage() {
                   <h1 className="text-4xl font-bold mb-3 text-gray-900 dark:text-white">{creation.title}</h1>
                   <div className="flex flex-wrap gap-2">
                     {creation.categories && creation.categories.map((cat, index) => (
-                      <Badge key={index} variant="outline" className="text-sm">{{ bijoux: "Bijoux", minis: "Minis", halloween: "Halloween", pokemon: "Pokémon", divers: "Divers" }[cat] || cat}</Badge>
+                      <Badge key={index} variant="outline" className="text-sm">{{ bijoux: "Bijoux", minis: "Minis", chibi: "Chibi", halloween: "Halloween", pokemon: "Pokémon", divers: "Divers" }[cat] || cat}</Badge>
                     ))}
                     {creation.status === "nouveau" && <Badge className="bg-green-500 text-white">Nouveau</Badge>}
                     {creation.status === "vedette" && (
@@ -322,14 +322,26 @@ export default function CreationDetailPage() {
                   </Button>
                 </>
               ) : (
-                <Button
-                  size="lg"
-                  variant="destructive"
-                  disabled
-                  className="w-full"
-                >
-                  Déjà adopté
-                </Button>
+                <>
+                  <Button
+                    size="lg"
+                    variant="destructive"
+                    disabled
+                    className="w-full opacity-70 cursor-not-allowed"
+                  >
+                    Déjà adopté
+                  </Button>
+                  <p className="text-sm text-gray-500 dark:text-gray-400 italic text-center mt-2">
+                    Cette création a été adoptée. Il est possible de repasser commande d&apos;un article similaire, mais étant une fabrication manuelle, le résultat peut varier légèrement.
+                  </p>
+                  <Button
+                    asChild
+                    variant="outline"
+                    className="w-full mt-2 border-purple-200 text-purple-700 hover:bg-purple-50"
+                  >
+                    <Link href="/contact">Me contacter pour une commande</Link>
+                  </Button>
+                </>
               )}
             </div>
             {creation.customMessage && (

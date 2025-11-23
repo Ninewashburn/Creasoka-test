@@ -3,7 +3,7 @@ export interface Creation {
   id: string;
   title: string;
   description: string;
-  categories: ("bijoux" | "minis" | "halloween" | "pokemon" | "divers")[];
+  categories: ("bijoux" | "minis" | "chibi" | "halloween" | "pokemon" | "divers")[];
   image: string;
   images?: string[];
   details?: string[];

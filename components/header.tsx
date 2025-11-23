@@ -48,6 +48,7 @@ export default function Header() {
         { label: "Toutes les créations", href: "/categories/toutes" },
         { label: "Bijoux", href: "/categories/bijoux" },
         { label: "Minis", href: "/categories/minis" },
+        { label: "Chibi", href: "/categories/chibi" },
         { label: "Halloween", href: "/categories/halloween" },
         { label: "Pokémon", href: "/categories/pokemon" },
         { label: "Divers", href: "/categories/divers" },

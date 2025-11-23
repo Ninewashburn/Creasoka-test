@@ -159,6 +159,8 @@ export default function AdminCreationList() {
                             <TableHead className="w-[100px]">Image</TableHead>
                             <TableHead>Titre</TableHead>
                             <TableHead>Catégorie</TableHead>
+                            <TableHead>Prix</TableHead>
+                            <TableHead>Stock</TableHead>
                             <TableHead>Statut</TableHead>
                             <TableHead className="text-right">Actions</TableHead>
                         </TableRow>
@@ -166,7 +168,7 @@ export default function AdminCreationList() {
                     <TableBody>
                         {creations.length === 0 ? (
                             <TableRow>
-                                <TableCell colSpan={5} className="text-center py-12 text-gray-500">
+                                <TableCell colSpan={7} className="text-center py-12 text-gray-500">
                                     <div className="flex flex-col items-center gap-2">
                                         <p>Aucune création trouvée</p>
                                         <Link href="/admin/nouvelle-creation">
@@ -206,6 +208,14 @@ export default function AdminCreationList() {
                                                 </Badge>
                                             ))}
                                         </div>
+                                    </TableCell>
+                                    <TableCell>
+                                        <span className="font-medium">{new Intl.NumberFormat('fr-FR', { style: 'currency', currency: 'EUR' }).format(creation.price)}</span>
+                                    </TableCell>
+                                    <TableCell>
+                                        <span className={`${creation.stock === 0 ? 'text-red-500 font-medium' : 'text-gray-700'}`}>
+                                            {creation.stock}
+                                        </span>
                                     </TableCell>
                                     <TableCell>
                                         <Badge 

@@ -18,6 +18,7 @@ import { getFromCache, setToCache } from "@/lib/clientCache";
 const categoryTypes = [
   "bijoux",
   "minis",
+  "chibi",
   "halloween",
   "pokemon",
   "divers",
@@ -78,14 +79,19 @@ export default function GalleryPage() {
         creation.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
         creation.description.toLowerCase().includes(searchQuery.toLowerCase());
 
-      // Vérifier si la catégorie active correspond à une des catégories de la création
+      // Si la catégorie active est "adoptes", on ne montre que les adoptés
+      if (activeCategory === "adoptes") {
+        return matchesSearch && creation.status === "adopté";
+      }
+
+      // Pour les autres catégories
       const matchesCategory =
         activeCategory === "tous" ||
         (creation.categories &&
           categoryTypes.includes(activeCategory as ValidCategory) &&
           creation.categories.includes(activeCategory as ValidCategory));
 
-      // Exclure les créations avec le statut "adopté" des résultats principaux
+      // Exclure les créations avec le statut "adopté" des autres onglets
       const isNotAdopted = creation.status !== "adopté";
 
       return matchesSearch && matchesCategory && isNotAdopted;
@@ -95,6 +101,9 @@ export default function GalleryPage() {
   // Préparer les données pour la section "Les Adoptés"
   // Filtrer par statut, recherche et catégorie active
   const adoptedCreations = useMemo(() => {
+    // Si on est déjà sur l'onglet "Adoptés", on ne veut pas de doublons en bas
+    if (activeCategory === "adoptes") return [];
+
     return allCreations.filter((c) => {
       const isAdopted = c.status === "adopté";
       const matchesSearch =
@@ -140,9 +149,11 @@ export default function GalleryPage() {
     { id: "tous", label: "Tous" },
     { id: "bijoux", label: "Bijoux" },
     { id: "minis", label: "Minis" },
+    { id: "chibi", label: "Chibi" },
     { id: "halloween", label: "Halloween" },
     { id: "pokemon", label: "Pokémon" },
     { id: "divers", label: "Divers" },
+    { id: "adoptes", label: "Adoptés" },
   ];
 
   // Afficher un squelette de chargement
@@ -169,11 +180,11 @@ export default function GalleryPage() {
           </div>
 
           <div className="flex justify-center">
-            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-2">
+            <div className="flex flex-wrap justify-center gap-2">
               {categories.map((category) => (
                 <div
                   key={category.id}
-                  className="animate-pulse bg-gray-200 dark:bg-gray-700 h-10 w-full rounded"
+                  className="animate-pulse bg-gray-200 dark:bg-gray-700 h-10 w-24 rounded"
                 ></div>
               ))}
             </div>
@@ -200,9 +211,9 @@ export default function GalleryPage() {
           Galerie de <span className="text-creasoka">Créations</span>
         </h1>
         <p className="text-gray-600 dark:text-gray-400 max-w-2xl mx-auto">
-          Explorez l&apos;ensemble de mes créations artisanales, des bijoux délicats
-          aux figurines miniatures. Chaque pièce est unique et réalisée avec
-          passion.
+          {activeCategory === "adoptes"
+            ? "Retrouvez ici toutes les créations ayant rejoint leur famille. Si l'une d'entre elles vous plaît, n'hésitez pas à me contacter. Prenez en compte que chaque création reste unique et s'il peut s'en approcher, ça ne sera jamais vraiment le même."
+            : "Explorez l'ensemble de mes créations artisanales, des bijoux délicats aux figurines miniatures. Chaque pièce est unique et réalisée avec passion."}
         </p>
       </div>
 
@@ -242,17 +253,17 @@ export default function GalleryPage() {
 
         <Tabs
           defaultValue="tous"
-          className="w-full justify-center"
+          className="w-full flex justify-center"
           onValueChange={setActiveCategory}
           value={activeCategory}
         >
-          <TabsList className="grid grid-cols-3 sm:grid-cols-6 gap-2">
+          <TabsList className="flex flex-wrap justify-center gap-2 h-auto p-2 bg-transparent">
             {categories.map((category) => (
               <TabsTrigger
                 key={category.id}
                 value={category.id}
                 className={cn(
-                  "data-[state=active]:bg-creasoka/20 data-[state=active]:text-creasoka dark:data-[state=active]:bg-creasoka/30 dark:data-[state=active]:text-creasoka text-sm px-1 sm:text-base sm:px-3"
+                  "data-[state=active]:bg-creasoka data-[state=active]:text-white rounded-full px-4 py-2 transition-all border border-transparent data-[state=inactive]:border-gray-200 dark:data-[state=inactive]:border-gray-700 hover:border-creasoka/50"
                 )}
               >
                 {category.label}
@@ -301,7 +312,10 @@ export default function GalleryPage() {
                   alt={creation.title}
                   width={400}
                   height={400}
-                  className="w-full h-72 object-cover transition-transform duration-300 group-hover:scale-105"
+                  className={cn(
+                    "w-full h-72 object-cover transition-transform duration-300 group-hover:scale-105",
+                    creation.status === "adopté" && "brightness-90 grayscale-[0.5]"
+                  )}
                   galleryImages={galleryImages}
                   galleryIndex={index}
                   galleryItems={galleryItems}
@@ -320,10 +334,10 @@ export default function GalleryPage() {
         ) : filteredCreations.length === 0 && adoptedCreations.length === 0 ? (
           <div className="col-span-full text-center py-12">
             <h3 className="text-xl font-semibold mb-2">
-              Aucun résultat trouvé
+              Oups ! Aucune pépite trouvée
             </h3>
             <p className="text-gray-600 dark:text-gray-400 mb-4">
-              Essayez de modifier vos critères de recherche.
+              Il semblerait que cette recherche ne donne rien pour le moment. Essayez d'autres mots-clés ou explorez une autre catégorie !
             </p>
             <Button
               variant="outline"
@@ -335,21 +349,11 @@ export default function GalleryPage() {
               Réinitialiser les filtres
             </Button>
           </div>
-        ) : filteredCreations.length === 0 && adoptedCreations.length > 0 ? (
-          <div className="col-span-full text-center py-12">
-            <h3 className="text-xl font-semibold mb-2">
-              Aucune création disponible
-            </h3>
-            <p className="text-gray-600 dark:text-gray-400 mb-4">
-              Mais nous avons trouvé des créations adoptées qui correspondent à
-              votre recherche.
-            </p>
-          </div>
         ) : null}
       </motion.div>
 
-      {adoptedCreations.length > 0 && (
-        <div className="mt-16">
+      {adoptedCreations.length > 0 && activeCategory !== "adoptes" && (
+        <div className={cn("mt-16", filteredCreations.length === 0 && "mt-0")}>
           <div className="text-center mb-8">
             <h2 className="text-3xl font-bold mb-4">
               Les <span className="text-creasoka">Adoptés</span>

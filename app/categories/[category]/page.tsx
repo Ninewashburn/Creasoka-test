@@ -11,7 +11,7 @@ import { notFound } from "next/navigation";
 import type { Creation } from "@/types/creation";
 
 // Définition du type pour les catégories valides
-type CategoryType = "bijoux" | "minis" | "halloween" | "pokemon" | "divers";
+type CategoryType = "bijoux" | "minis" | "chibi" | "halloween" | "pokemon" | "divers";
 
 export default function CategoryPage() {
   const params = useParams();
@@ -49,6 +49,7 @@ export default function CategoryPage() {
   const validCategories: CategoryType[] = [
     "bijoux",
     "minis",
+    "chibi",
     "halloween",
     "pokemon",
     "divers",
@@ -60,6 +61,7 @@ export default function CategoryPage() {
   const categoryLabels: Record<string, string> = {
     bijoux: "Bijoux",
     minis: "Figurines Miniatures",
+    chibi: "Chibi",
     halloween: "Halloween",
     pokemon: "Pokémon",
     divers: "Divers",
@@ -70,6 +72,8 @@ export default function CategoryPage() {
       "Découvrez ma collection de bijoux faits main. Chaque pièce est unique et réalisée avec soin pour apporter une touche d'originalité à vos tenues.",
     minis:
       "Explorez mon univers de figurines miniatures. Chaque création est minutieusement sculptée et peinte à la main pour donner vie à des mondes féeriques et enchanteurs.",
+    chibi:
+      "Découvrez mes créations Chibi. Des personnages mignons et stylisés, parfaits pour les fans de culture pop et d'art mignon.",
     halloween:
       "Découvrez mes créations inspirées de l'univers d'Halloween. Des décorations originales pour créer une ambiance festive et mystérieuse.",
     pokemon:
@@ -93,7 +97,10 @@ export default function CategoryPage() {
         (creation.price || 0) >= filters.minPrice &&
         (creation.price || 0) <= filters.maxPrice;
 
-      return matchesCategory && matchesSearch && matchesPrice;
+      // Exclure les créations avec le statut "adopté"
+      const isNotAdopted = creation.status !== "adopté";
+
+      return matchesCategory && matchesSearch && matchesPrice && isNotAdopted;
     })
     .sort((a, b) => {
       switch (filters.sort) {
