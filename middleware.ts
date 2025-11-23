@@ -1,51 +1,70 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
-import { getTokenFromRequest, verifyToken } from "./lib/auth";
-import { Action, Resource, UserRole, hasPermission } from "./lib/permissions";
+import { jwtVerify } from "jose";
 
 // Middleware protégeant les routes admin et API sensibles
-export default function middleware(request: NextRequest) {
-  // PROTECTION MINIMALISTE POUR LES ROUTES ADMIN
-  if (request.nextUrl.pathname.startsWith("/admin")) {
-    // Si c'est la page d'accueil admin, toujours autoriser (pour pouvoir s'y connecter)
-    if (request.nextUrl.pathname === "/admin") {
+export default async function middleware(request: NextRequest) {
+  const { pathname } = request.nextUrl;
+
+  // 1. PROTECTION DES ROUTES ADMIN
+  if (pathname.startsWith("/admin")) {
+    // Page de login admin : toujours accessible
+    if (pathname === "/admin") {
       return NextResponse.next();
     }
 
-    // Autoriser toutes les navigations entre pages admin si l'authentification est en place
-    const referer = request.headers.get("referer");
-    if (referer && referer.includes("/admin")) {
-      return NextResponse.next();
+    // Vérification du token pour les autres pages admin
+    const token = request.cookies.get("auth-token")?.value;
+
+    if (!token) {
+      return NextResponse.redirect(new URL("/admin", request.url));
     }
 
-    // Si aucune des conditions n'est remplie, rediriger vers la page admin (pas la page d'accueil)
-    return NextResponse.redirect(new URL("/admin", request.url));
+    try {
+      const secret = new TextEncoder().encode(process.env.JWT_SECRET);
+      const { payload } = await jwtVerify(token, secret);
+
+      // Vérifier le rôle admin
+      if (payload.role !== "admin") {
+        return NextResponse.redirect(new URL("/", request.url));
+      }
+
+      return NextResponse.next();
+    } catch (error) {
+      // Token invalide ou expiré
+      return NextResponse.redirect(new URL("/admin", request.url));
+    }
   }
 
-  // PROTECTION DES ROUTES API (simplifiée)
+  // 2. PROTECTION DES ROUTES API
   if (
-    request.nextUrl.pathname.startsWith("/api/creations") ||
-    request.nextUrl.pathname.startsWith("/api/upload")
+    pathname.startsWith("/api/creations") ||
+    pathname.startsWith("/api/upload")
   ) {
-    // Autoriser toutes les requêtes provenant de pages admin
-    const referer = request.headers.get("referer");
-    if (referer && referer.includes("/admin")) {
-      return NextResponse.next();
-    }
-
-    // Autoriser toutes les lectures (GET) pour tous les utilisateurs
+    // GET autorisé pour tout le monde (lecture publique)
     if (request.method === "GET") {
       return NextResponse.next();
     }
 
-    // Pour les autres méthodes (POST, PUT, DELETE), n'autoriser que si authentifié
-    const token = getTokenFromRequest(request);
-    if (token && verifyToken(token)) {
-      return NextResponse.next();
+    // POST, PUT, DELETE nécessitent une authentification
+    const token = request.cookies.get("auth-token")?.value;
+
+    if (!token) {
+      return NextResponse.json({ error: "Non autorisé" }, { status: 401 });
     }
 
-    // Sinon, refuser l'accès
-    return NextResponse.json({ error: "Non autorisé" }, { status: 401 });
+    try {
+      const secret = new TextEncoder().encode(process.env.JWT_SECRET);
+      const { payload } = await jwtVerify(token, secret);
+
+      if (payload.role !== "admin") {
+        return NextResponse.json({ error: "Interdit" }, { status: 403 });
+      }
+
+      return NextResponse.next();
+    } catch (error) {
+      return NextResponse.json({ error: "Token invalide" }, { status: 401 });
+    }
   }
 
   return NextResponse.next();

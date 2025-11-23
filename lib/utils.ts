@@ -1,5 +1,6 @@
 import { clsx, type ClassValue } from "clsx";
 import { twMerge } from "tailwind-merge";
+import sanitizeHtml from "sanitize-html";
 import type { Creation } from "@/types/creation";
 
 export function cn(...inputs: ClassValue[]) {
@@ -35,7 +36,7 @@ export function findCreationBySlug(
 }
 
 /**
- * Convertit le texte Markdown simple en HTML
+ * Convertit le texte Markdown simple en HTML et le sécurise contre les failles XSS
  */
 export function processMarkdownToHtml(text: string): string {
   if (!text) return "";
@@ -66,5 +67,11 @@ export function processMarkdownToHtml(text: string): string {
     html = "<p>" + html + "</p>";
   }
 
-  return html;
+  // Sanitization pour éviter XSS
+  return sanitizeHtml(html, {
+    allowedTags: ["strong", "em", "br", "p", "ul", "ol", "li", "a", "b", "i", "u"],
+    allowedAttributes: {
+      a: ["href", "target", "rel"],
+    },
+  });
 }

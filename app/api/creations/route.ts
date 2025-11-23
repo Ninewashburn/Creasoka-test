@@ -2,8 +2,27 @@ import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { serverCache } from "@/lib/cache";
 import { logger } from "@/lib/logger";
+import { z } from "zod";
 
 export const runtime = "nodejs";
+
+const creationSchema = z.object({
+  title: z.string().min(1, "Titre requis").max(200),
+  description: z.string().min(1, "Description requise"),
+  categories: z
+    .array(z.string())
+    .min(1, "Au moins une catégorie requise"),
+  image: z.string().optional(),
+  images: z.array(z.string()).optional(),
+  details: z.array(z.string()).optional(),
+  status: z
+    .enum(["nouveau", "vedette", "normal", "adopté", "promotion", "précommande"])
+    .default("normal"),
+  externalLink: z.string().optional().or(z.literal("")),
+  customMessage: z.string().max(500).optional(),
+  price: z.number().min(0, "Le prix ne peut pas être négatif").default(0),
+  stock: z.number().int().min(0, "Le stock ne peut pas être négatif").default(0),
+});
 
 export async function POST(request: NextRequest) {
   try {
@@ -11,39 +30,25 @@ export async function POST(request: NextRequest) {
 
     const body = await request.json();
 
-    // Vérifier les données requises
-    if (
-      !body.title ||
-      !body.description ||
-      !body.categories ||
-      body.categories.length === 0
-    ) {
-      return NextResponse.json(
-        { error: "Titre, description et au moins une catégorie sont requis" },
-        { status: 400 }
-      );
-    }
-
-    // Définir les images et détails comme des tableaux vides s'ils ne sont pas fournis
-    const images = body.images || [];
-    const details = body.details || [];
+    // Validation Zod
+    const validatedData = creationSchema.parse(body);
 
     logger.debug("POST /api/creations - Tentative de création");
 
     // Créer une nouvelle création dans la base de données
     const creation = await prisma.creation.create({
       data: {
-        title: body.title,
-        description: body.description,
-        categories: body.categories,
-        image: body.image || "/placeholder.svg",
-        images,
-        details,
-        status: body.status || "normal",
-        externalLink: body.externalLink || undefined,
-        customMessage: body.customMessage || undefined,
-        price: body.price || 0,
-        stock: body.stock || 0,
+        title: validatedData.title,
+        description: validatedData.description,
+        categories: validatedData.categories,
+        image: validatedData.image || "/placeholder.svg",
+        images: validatedData.images || [],
+        details: validatedData.details || [],
+        status: validatedData.status,
+        externalLink: validatedData.externalLink || undefined,
+        customMessage: validatedData.customMessage || undefined,
+        price: validatedData.price,
+        stock: validatedData.stock,
       },
     });
 
@@ -55,6 +60,14 @@ export async function POST(request: NextRequest) {
     return NextResponse.json(creation, { status: 201 });
   } catch (error) {
     logger.error("POST /api/creations - Erreur:", error);
+
+    if (error instanceof z.ZodError) {
+      return NextResponse.json(
+        { error: "Données invalides", details: error.errors },
+        { status: 400 }
+      );
+    }
+
     return NextResponse.json(
       { error: "Erreur lors de la création" },
       { status: 500 }

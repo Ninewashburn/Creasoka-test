@@ -14,7 +14,7 @@ if (!process.env.JWT_SECRET) {
     "Veuillez vous assurer qu'elle est définie dans votre fichier .env ou dans les paramètres de votre environnement d'hébergement."
   );
   // En production, il est fortement recommandé de lever une erreur ici pour arrêter l'application.
-  // throw new Error("Configuration manquante: JWT_SECRET n'est pas défini.");
+  throw new Error("Configuration manquante: JWT_SECRET n'est pas défini.");
 }
 
 // Utilisation directe, TypeScript devrait maintenant comprendre que JWT_SECRET est une chaîne (s'il est défini).
