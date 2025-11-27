@@ -1,11 +1,13 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
 import { ArrowLeft, ArrowRight, CheckCircle2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useCart } from "@/lib/cart-context";
+import { useAuth } from "@/lib/auth-context";
 import CheckoutSteps from "@/components/checkout/checkout-steps";
 import OrderSummary from "@/components/checkout/order-summary";
 import DeliveryForm from "@/components/checkout/delivery-form";
@@ -16,6 +18,8 @@ const STEPS = ["Panier", "Livraison", "Paiement", "Confirmation"];
 
 export default function CheckoutPage() {
     const { items, cartTotal, clearCart } = useCart();
+    const { isAuthenticated, isLoading } = useAuth();
+    const router = useRouter();
     const [currentStep, setCurrentStep] = useState(1);
     const [formData, setFormData] = useState({
         firstName: "",
@@ -29,6 +33,24 @@ export default function CheckoutPage() {
     const [paymentMethod, setPaymentMethod] = useState("card");
     const [isProcessing, setIsProcessing] = useState(false);
     const { toast } = useToast();
+
+    useEffect(() => {
+        if (!isLoading && !isAuthenticated) {
+            router.push("/login?redirect=/checkout");
+        }
+    }, [isLoading, isAuthenticated, router]);
+
+    if (isLoading) {
+        return (
+            <div className="container mx-auto px-4 py-16 flex justify-center">
+                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-creasoka"></div>
+            </div>
+        );
+    }
+
+    if (!isAuthenticated) {
+        return null; // Will redirect
+    }
 
     const handleNext = async () => {
         if (currentStep === 2) {

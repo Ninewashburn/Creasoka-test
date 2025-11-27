@@ -1,5 +1,3 @@
-"use client";
-
 import Image from "next/image";
 import Link from "next/link";
 import { Badge } from "@/components/ui/badge";
@@ -9,6 +7,7 @@ import type { Creation } from "@/types/creation";
 import { slugify } from "@/lib/utils";
 import { useCart } from "@/lib/cart-context";
 import { ShoppingCart } from "lucide-react";
+import { useAuth } from "@/lib/auth-context";
 
 interface CreationCardProps {
   creation: Creation;
@@ -16,6 +15,8 @@ interface CreationCardProps {
 
 export default function CreationCard({ creation }: CreationCardProps) {
   const { addItem } = useCart();
+  const { isAuthenticated } = useAuth();
+
   return (
     <motion.div
       className="bg-white dark:bg-gray-800 rounded-lg overflow-hidden shadow-sm hover:shadow-lg transition-all duration-300"
@@ -65,9 +66,13 @@ export default function CreationCard({ creation }: CreationCardProps) {
           {creation.description}
         </p>
         <div className="flex justify-between items-center mb-4">
-          <span className="font-bold text-lg text-creasoka">
-            {creation.price} €
-          </span>
+          {isAuthenticated ? (
+            <span className="font-bold text-lg text-creasoka">
+              {creation.price} €
+            </span>
+          ) : (
+             <span className="text-sm text-gray-500 italic">Connectez-vous pour voir le prix</span>
+          )}
           {creation.stock === 0 && creation.status !== "adopté" && (
             <span className="text-xs font-medium text-red-500 bg-red-100 dark:bg-red-900/30 px-2 py-1 rounded-full">
               Rupture
@@ -85,19 +90,21 @@ export default function CreationCard({ creation }: CreationCardProps) {
               Voir détail
             </Link>
           </Button>
-          <Button
-            size="sm"
-            className="bg-purple-600 hover:bg-purple-700 text-white"
-            disabled={creation.stock === 0 && creation.status !== "adopté" || creation.status === "adopté"}
-            onClick={(e) => {
-              e.preventDefault();
-              addItem(creation);
-            }}
-            title="Ajouter au panier"
-          >
-            <ShoppingCart className="h-4 w-4" />
-            <span className="sr-only">Ajouter au panier</span>
-          </Button>
+          {isAuthenticated && (
+            <Button
+              size="sm"
+              className="bg-purple-600 hover:bg-purple-700 text-white"
+              disabled={creation.stock === 0 && creation.status !== "adopté" || creation.status === "adopté"}
+              onClick={(e) => {
+                e.preventDefault();
+                addItem(creation);
+              }}
+              title="Ajouter au panier"
+            >
+              <ShoppingCart className="h-4 w-4" />
+              <span className="sr-only">Ajouter au panier</span>
+            </Button>
+          )}
         </div>
       </div>
     </motion.div>
