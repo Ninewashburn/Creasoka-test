@@ -20,6 +20,7 @@ export default function Header() {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
   const pathname = usePathname();
+  const { isAuthenticated } = useAuth();
 
   useEffect(() => {
     const handleScroll = () => {
@@ -174,7 +175,7 @@ export default function Header() {
           </nav>
 
           <div className="flex items-center gap-2">
-            <CartSheet />
+            {isAuthenticated && <CartSheet />}
             <ThemeToggle />
             {/* Auth Button (Mock) */}
             <AuthButton />

@@ -240,3 +240,25 @@ export function recordFailedLoginAttempt(ip: string): void {
 export function resetLoginAttempts(ip: string): void {
   delete loginAttempts[ip];
 }
+
+/**
+ * Vérifie l'authentification côté serveur (API Routes & Server Actions)
+ * Utilise 'jose' pour la compatibilité Edge et la cohérence avec le middleware
+ */
+import { jwtVerify } from "jose";
+
+export async function verifyAuth() {
+  const cookieStore = await cookies();
+  const token = cookieStore.get(COOKIE_NAME)?.value;
+
+  if (!token) {
+    throw new Error("Non autorisé");
+  }
+
+  try {
+    const secret = new TextEncoder().encode(process.env.JWT_SECRET);
+    await jwtVerify(token, secret);
+  } catch {
+    throw new Error("Token invalide");
+  }
+}

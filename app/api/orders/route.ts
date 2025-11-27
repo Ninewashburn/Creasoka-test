@@ -1,16 +1,17 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { z } from "zod";
+import { verifyAuth } from "@/lib/auth";
 
 export const runtime = "nodejs";
 
 // Schema de validation pour la commande
+// Note: Le prix et le total ne sont PAS fournis par le client pour éviter les manipulations
 const orderSchema = z.object({
     items: z.array(
         z.object({
             creationId: z.string(),
-            quantity: z.number().min(1),
-            price: z.number().min(0),
+            quantity: z.number().min(1).int(),
         })
     ),
     shipping: z.object({
@@ -22,11 +23,13 @@ const orderSchema = z.object({
         postalCode: z.string().min(4),
         country: z.string().default("France"),
     }),
-    total: z.number().min(0),
 });
 
 export async function GET() {
     try {
+        // Vérification Auth (Admin seulement)
+        await verifyAuth();
+
         const orders = await prisma.order.findMany({
             include: {
                 items: {
@@ -72,6 +75,11 @@ export async function GET() {
         return NextResponse.json({ orders: formattedOrders });
     } catch (error) {
         console.error("Erreur lors de la récupération des commandes:", error);
+
+        if (error instanceof Error && (error.message === "Non autorisé" || error.message === "Token invalide")) {
+            return NextResponse.json({ error: "Non autorisé" }, { status: 401 });
+        }
+
         return NextResponse.json(
             { error: "Erreur lors de la récupération des commandes" },
             { status: 500 }
@@ -93,35 +101,55 @@ export async function POST(request: Request) {
             );
         }
 
-        const { items, shipping, total } = result.data;
+        const { items, shipping } = result.data;
 
-        // Utiliser une transaction pour assurer l'intégrité des données (stock)
+        // Utiliser une transaction pour assurer l'intégrité des données (stock + prix)
         const order = await prisma.$transaction(async (tx) => {
-            // 1. Vérifier le stock pour chaque article
+            // 1. Récupérer les créations et calculer le total côté serveur
+            const orderItems = [];
+            let calculatedTotal = 0;
+
             for (const item of items) {
                 const creation = await tx.creation.findUnique({
                     where: { id: item.creationId },
+                    select: { id: true, title: true, price: true, stock: true },
                 });
 
                 if (!creation) {
                     throw new Error(`Création introuvable: ${item.creationId}`);
                 }
 
-                if (creation.stock < item.quantity) {
+                // 2. Décrémenter le stock de manière atomique (évite race condition)
+                const updateResult = await tx.creation.updateMany({
+                    where: {
+                        id: item.creationId,
+                        stock: { gte: item.quantity }, // Condition atomique
+                    },
+                    data: {
+                        stock: { decrement: item.quantity },
+                    },
+                });
+
+                // Si aucune ligne n'a été mise à jour, c'est que le stock est insuffisant
+                if (updateResult.count === 0) {
                     throw new Error(`Stock insuffisant pour: ${creation.title}`);
                 }
 
-                // 2. Décrémenter le stock
-                await tx.creation.update({
-                    where: { id: item.creationId },
-                    data: { stock: creation.stock - item.quantity },
+                // Utiliser le prix réel de la base de données (pas celui du client)
+                const itemTotal = creation.price * item.quantity;
+                calculatedTotal += itemTotal;
+
+                orderItems.push({
+                    creationId: creation.id,
+                    quantity: item.quantity,
+                    price: creation.price, // Prix vérifié côté serveur
                 });
             }
 
-            // 3. Créer la commande
+            // 3. Créer la commande avec le total calculé côté serveur
             const newOrder = await tx.order.create({
                 data: {
-                    total,
+                    total: calculatedTotal, // Total calculé côté serveur
                     status: "pending",
                     firstName: shipping.firstName,
                     lastName: shipping.lastName,
@@ -131,11 +159,7 @@ export async function POST(request: Request) {
                     postalCode: shipping.postalCode,
                     country: shipping.country,
                     items: {
-                        create: items.map((item) => ({
-                            creationId: item.creationId,
-                            quantity: item.quantity,
-                            price: item.price,
-                        })),
+                        create: orderItems,
                     },
                 },
                 include: {
@@ -150,10 +174,13 @@ export async function POST(request: Request) {
             { success: true, order, message: "Commande créée avec succès" },
             { status: 201 }
         );
-    } catch (error: any) {
+    } catch (error) {
         console.error("Erreur lors de la création de la commande:", error);
+
+        const errorMessage = error instanceof Error ? error.message : "Une erreur est survenue lors de la création de la commande";
+
         return NextResponse.json(
-            { error: error.message || "Une erreur est survenue lors de la création de la commande" },
+            { error: errorMessage },
             { status: 500 }
         );
     }
@@ -161,6 +188,9 @@ export async function POST(request: Request) {
 
 export async function PATCH(request: Request) {
     try {
+        // Vérification Auth (Admin seulement)
+        await verifyAuth();
+
         const body = await request.json();
         const { orderId, status, trackingNumber } = body;
 
@@ -186,6 +216,11 @@ export async function PATCH(request: Request) {
         });
     } catch (error) {
         console.error("Erreur lors de la mise à jour de la commande:", error);
+
+        if (error instanceof Error && (error.message === "Non autorisé" || error.message === "Token invalide")) {
+            return NextResponse.json({ error: "Non autorisé" }, { status: 401 });
+        }
+
         return NextResponse.json(
             { error: "Erreur lors de la mise à jour" },
             { status: 500 }

@@ -2,6 +2,9 @@ import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { serverCache } from "@/lib/cache";
 import { logger } from "@/lib/logger";
+import { creationSchema } from "@/lib/schemas";
+import { z } from "zod";
+import { verifyAuth } from "@/lib/auth";
 
 export const runtime = "nodejs";
 
@@ -42,8 +45,16 @@ export async function PUT(
 ) {
   const params = await props.params;
   try {
+    // 1. Vérification Auth
+    await verifyAuth();
+
     const { id } = params;
     const body = await request.json();
+
+    // 2. Validation Zod (Partial car mise à jour)
+    // Note: On utilise partial() car on pourrait vouloir mettre à jour seulement certains champs,
+    // mais ici le frontend envoie généralement tout l'objet. Par sécurité, on valide tout ce qui est reçu.
+    const validatedData = creationSchema.partial().parse(body);
 
     logger.debug(`PUT /api/creations/${id} - Mise à jour`);
 
@@ -63,17 +74,17 @@ export async function PUT(
     const updatedCreation = await prisma.creation.update({
       where: { id },
       data: {
-        title: body.title,
-        description: body.description,
-        categories: body.categories,
-        image: body.image,
-        images: body.images || [],
-        details: body.details || [],
-        status: body.status,
-        externalLink: body.externalLink || undefined,
-        customMessage: body.customMessage || undefined,
-        price: body.price,
-        stock: body.stock,
+        title: validatedData.title,
+        description: validatedData.description,
+        categories: validatedData.categories,
+        image: validatedData.image,
+        images: validatedData.images,
+        details: validatedData.details,
+        status: validatedData.status,
+        externalLink: validatedData.externalLink,
+        customMessage: validatedData.customMessage,
+        price: validatedData.price,
+        stock: validatedData.stock,
       },
     });
 
@@ -85,6 +96,18 @@ export async function PUT(
     return NextResponse.json(updatedCreation);
   } catch (error) {
     logger.error("Erreur lors de la mise à jour:", error);
+
+    if (error instanceof z.ZodError) {
+      return NextResponse.json(
+        { error: "Données invalides", details: error.errors },
+        { status: 400 }
+      );
+    }
+
+    if (error instanceof Error && (error.message === "Non autorisé" || error.message === "Token invalide")) {
+      return NextResponse.json({ error: "Non autorisé" }, { status: 401 });
+    }
+
     return NextResponse.json(
       { error: "Erreur lors de la mise à jour" },
       { status: 500 }
@@ -99,6 +122,9 @@ export async function DELETE(
 ) {
   const params = await props.params;
   try {
+    // 1. Vérification Auth
+    await verifyAuth();
+
     const { id } = params;
 
     logger.debug(`DELETE /api/creations/${id} - Suppression`);
@@ -128,6 +154,11 @@ export async function DELETE(
     return NextResponse.json({ success: true });
   } catch (error) {
     logger.error("Erreur lors de la suppression:", error);
+
+    if (error instanceof Error && (error.message === "Non autorisé" || error.message === "Token invalide")) {
+      return NextResponse.json({ error: "Non autorisé" }, { status: 401 });
+    }
+
     return NextResponse.json(
       { error: "Erreur lors de la suppression" },
       { status: 500 }

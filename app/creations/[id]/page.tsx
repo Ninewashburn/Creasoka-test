@@ -5,7 +5,7 @@ import { useState, useMemo, useEffect } from "react";
 import { useParams, useRouter } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
-import { ArrowLeft, Share2, Calendar, CheckCircle2, Info, ArrowRight } from "lucide-react";
+import { ArrowLeft, Share2, Calendar, CheckCircle2, Info, ArrowRight, ShoppingCart } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
@@ -17,12 +17,13 @@ import { slugify, processMarkdownToHtml } from "@/lib/utils";
 import { getFromCache } from "@/lib/clientCache";
 import type { Creation } from "@/types/creation";
 import { useCart } from "@/lib/cart-context";
-import { ShoppingCart } from "lucide-react";
+import { useAuth } from "@/lib/auth-context";
 
 export default function CreationDetailPage() {
   const params = useParams();
   const router = useRouter();
   const { addItem } = useCart();
+  const { isAuthenticated } = useAuth();
   const slugOrId = typeof params.id === "string" ? params.id : "";
   const [creation, setCreation] = useState<Creation | null>(null);
   const [allCreations, setAllCreations] = useState<Creation[]>([]);
@@ -237,7 +238,11 @@ export default function CreationDetailPage() {
                 </div>
               </div>
               <div className="flex items-center gap-4 mb-6">
-                <span className="text-3xl font-bold text-creasoka">{creation.price} €</span>
+                {isAuthenticated ? (
+                  <span className="text-3xl font-bold text-creasoka">{creation.price} €</span>
+                ) : (
+                  <span className="text-xl text-gray-500 italic">Connectez-vous pour voir le prix</span>
+                )}
                 {creation.stock > 0 ? (
                   <Badge variant="outline" className="bg-green-100 text-green-800 hover:bg-green-100 border-green-200">En stock ({creation.stock})</Badge>
                 ) : creation.status === "adopté" ? (
@@ -281,34 +286,40 @@ export default function CreationDetailPage() {
 
             <div className="space-y-3">
               {creation.status === "précommande" ? (
-                <Button
-                  asChild
-                  size="lg"
-                  className="w-full bg-blue-600 hover:bg-blue-700 text-white"
-                >
-                  <Link href="/contact">Précommander</Link>
-                </Button>
+                isAuthenticated && (
+                  <Button
+                    asChild
+                    size="lg"
+                    className="w-full bg-blue-600 hover:bg-blue-700 text-white"
+                  >
+                    <Link href="/contact">Précommander</Link>
+                  </Button>
+                )
               ) : creation.status !== "adopté" ? (
                 <>
                   <div className="flex flex-col gap-3 mt-6">
-                    <Button
-                      size="lg"
-                      className="w-full h-12 bg-purple-600 hover:bg-purple-700 text-white"
-                      onClick={() => window.open(creation.externalLink || "#", "_blank")}
-                      disabled={!creation.externalLink}
-                    >
-                      {creation.externalLink ? "Voir sur la boutique externe" : "Non disponible en ligne"}
-                    </Button>
-                    <Button
-                      size="lg"
-                      variant="outline"
-                      className="w-full h-12 border-purple-200 hover:bg-purple-50 text-purple-700"
-                      onClick={() => addItem(creation)}
-                      disabled={creation.stock === 0 || (creation.status as string) === "adopté"}
-                    >
-                      <ShoppingCart className="mr-2 h-5 w-5" />
-                      Ajouter au panier
-                    </Button>
+                    {isAuthenticated && (
+                      <>
+                        <Button
+                          size="lg"
+                          className="w-full h-12 bg-purple-600 hover:bg-purple-700 text-white"
+                          onClick={() => window.open(creation.externalLink || "#", "_blank")}
+                          disabled={!creation.externalLink}
+                        >
+                          {creation.externalLink ? "Voir sur la boutique externe" : "Non disponible en ligne"}
+                        </Button>
+                        <Button
+                          size="lg"
+                          variant="outline"
+                          className="w-full h-12 border-purple-200 hover:bg-purple-50 text-purple-700"
+                          onClick={() => addItem(creation)}
+                          disabled={creation.stock === 0 || (creation.status as string) === "adopté"}
+                        >
+                          <ShoppingCart className="mr-2 h-5 w-5" />
+                          Ajouter au panier
+                        </Button>
+                      </>
+                    )}
                   </div>
                   <Button
                     variant="outline"
