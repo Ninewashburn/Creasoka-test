@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/lib/auth-context";
 import AdminOrderList from "@/components/admin/admin-order-list";
@@ -9,16 +9,47 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Package, DollarSign, Clock, TrendingUp, Plus } from "lucide-react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
+import { formatPrice } from "@/lib/utils";
+
+interface AdminStats {
+  revenue: number;
+  totalOrders: number;
+  pendingOrders: number;
+  averageOrderValue: number;
+}
 
 export default function AdminPage() {
   const { user, isAuthenticated } = useAuth();
   const router = useRouter();
+  const [stats, setStats] = useState<AdminStats>({
+    revenue: 0,
+    totalOrders: 0,
+    pendingOrders: 0,
+    averageOrderValue: 0
+  });
 
   useEffect(() => {
     if (!isAuthenticated || (user && user.role !== "admin")) {
       router.push("/");
     }
   }, [isAuthenticated, user, router]);
+
+  useEffect(() => {
+    async function fetchStats() {
+        try {
+            const response = await fetch("/api/admin/stats");
+            if (response.ok) {
+                const data = await response.json();
+                setStats(data);
+            }
+        } catch (error) {
+            console.error("Failed to fetch stats", error);
+        }
+    }
+    if (isAuthenticated && user?.role === "admin") {
+        fetchStats();
+    }
+  }, [isAuthenticated, user]);
 
   if (!isAuthenticated || !user || user.role !== "admin") {
     return null; // Or a loading spinner while redirecting
@@ -44,13 +75,10 @@ export default function AdminPage() {
               Nouvelle création
             </Button>
           </Link>
-          {/* Logout button is handled in header/auth context usually, but added here to match screenshot if needed, 
-              though usually it's in the nav. The screenshot shows it in the header area. */}
         </div>
       </div>
 
-      {/* Stats Cards (Keeping them as they are useful, but maybe user wants them hidden? 
-          I'll keep them for now as "Phase 1" added them, but if user complains I'll remove) */}
+      {/* Stats Cards */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
@@ -58,8 +86,8 @@ export default function AdminPage() {
             <DollarSign className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">1,234.00 €</div>
-            <p className="text-xs text-muted-foreground">+20.1% par rapport au mois dernier</p>
+            <div className="text-2xl font-bold">{formatPrice(stats.revenue)}</div>
+            <p className="text-xs text-muted-foreground">Total des commandes payées</p>
           </CardContent>
         </Card>
         <Card>
@@ -68,8 +96,8 @@ export default function AdminPage() {
             <Package className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">+12</div>
-            <p className="text-xs text-muted-foreground">+4 depuis hier</p>
+            <div className="text-2xl font-bold">{stats.totalOrders}</div>
+            <p className="text-xs text-muted-foreground">Commandes totales</p>
           </CardContent>
         </Card>
         <Card>
@@ -78,18 +106,18 @@ export default function AdminPage() {
             <Clock className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">3</div>
-            <p className="text-xs text-muted-foreground">Commandes à expédier</p>
+            <div className="text-2xl font-bold">{stats.pendingOrders}</div>
+            <p className="text-xs text-muted-foreground">Commandes à traiter</p>
           </CardContent>
         </Card>
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Taux de Conversion</CardTitle>
+            <CardTitle className="text-sm font-medium">Panier Moyen</CardTitle>
             <TrendingUp className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">3.2%</div>
-            <p className="text-xs text-muted-foreground">+0.4% cette semaine</p>
+            <div className="text-2xl font-bold">{formatPrice(stats.averageOrderValue)}</div>
+            <p className="text-xs text-muted-foreground">Moyenne par commande</p>
           </CardContent>
         </Card>
       </div>

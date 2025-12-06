@@ -1,5 +1,7 @@
 import React from "react";
 import type { Viewport } from "next";
+import { AdminNav } from "@/components/admin/admin-nav";
+import { Toaster } from "@/components/ui/toaster";
 
 export const viewport: Viewport = {
   width: "device-width",
@@ -13,5 +15,11 @@ export default function AdminLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  return <>{children}</>;
+  return (
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
+      <AdminNav />
+      {children}
+      <Toaster />
+    </div>
+  );
 }
