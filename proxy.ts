@@ -2,8 +2,8 @@ import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 import { jwtVerify } from "jose";
 
-// Middleware protégeant les routes admin et API sensibles
-export default async function middleware(request: NextRequest) {
+// Proxy protégeant les routes admin et API sensibles (Next.js 16+)
+export default async function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
   // 1. PROTECTION DES ROUTES ADMIN
