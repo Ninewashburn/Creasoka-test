@@ -37,6 +37,9 @@ type LoginAttempt = {
   lockUntil: number;
 };
 
+// WARNING: In-memory cache is not suitable for serverless/edge environments (like Vercel).
+// Rate limiting will be reset on cold starts.
+// For production, consider using Redis/Upstash or a database table.
 const loginAttempts: Record<string, LoginAttempt> = {};
 
 /**
@@ -111,7 +114,7 @@ export async function setAuthCookie(token: string): Promise<void> {
     value: token,
     httpOnly: true,
     secure: process.env.NODE_ENV === "production",
-    sameSite: "lax",
+    sameSite: "strict", // Changed from 'lax' to 'strict' for better CSRF protection
     maxAge: 7 * 24 * 60 * 60, // 7 jours en secondes
     path: "/",
   });

@@ -3,9 +3,23 @@ import { prisma } from "@/lib/prisma";
 import { sendPasswordResetEmail } from "@/lib/email";
 import crypto from "crypto";
 import { z } from "zod";
+import { headers } from "next/headers";
+import { checkLoginAttempts } from "@/lib/auth";
 
 export async function POST(request: Request) {
   try {
+    const headersList = await headers();
+    const forwardedFor = headersList.get("x-forwarded-for");
+    const clientIp = forwardedFor ? forwardedFor.split(",")[0] : "unknown";
+
+    const attemptCheck = checkLoginAttempts(clientIp);
+    if (!attemptCheck.allowed) {
+      return NextResponse.json(
+        { error: attemptCheck.message || "Trop de tentatives" },
+        { status: 429 }
+      );
+    }
+
     const { email } = await request.json();
 
     // Validation de l'email avec Zod

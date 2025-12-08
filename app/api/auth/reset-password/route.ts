@@ -1,6 +1,14 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { hashPassword } from "@/lib/auth";
+import { z } from "zod";
+
+const passwordSchema = z.string()
+  .min(12, "Le mot de passe doit contenir au moins 12 caractères")
+  .regex(/[A-Z]/, "Le mot de passe doit contenir une majuscule")
+  .regex(/[a-z]/, "Le mot de passe doit contenir une minuscule")
+  .regex(/[0-9]/, "Le mot de passe doit contenir un chiffre")
+  .regex(/[\W_]/, "Le mot de passe doit contenir un caractère spécial");
 
 export async function POST(request: Request) {
   try {
@@ -21,10 +29,11 @@ export async function POST(request: Request) {
       );
     }
 
-    // Validation du mot de passe (minimum 8 caractères)
-    if (password.length < 8) {
+    // Validation du mot de passe avec Zod
+    const passwordResult = passwordSchema.safeParse(password);
+    if (!passwordResult.success) {
       return NextResponse.json(
-        { error: "Le mot de passe doit contenir au moins 8 caractères" },
+        { error: passwordResult.error.errors[0].message },
         { status: 400 }
       );
     }

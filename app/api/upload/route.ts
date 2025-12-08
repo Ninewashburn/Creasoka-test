@@ -2,6 +2,8 @@ import { NextResponse } from "next/server";
 import { writeFile } from "fs/promises";
 import { join } from "path";
 import { v4 as uuidv4 } from "uuid";
+import { headers } from "next/headers";
+import { checkLoginAttempts } from "@/lib/auth";
 
 export const runtime = "nodejs";
 
@@ -10,6 +12,18 @@ export const runtime = "nodejs";
  */
 export async function POST(request: Request) {
   try {
+    const headersList = await headers();
+    const forwardedFor = headersList.get("x-forwarded-for");
+    const clientIp = forwardedFor ? forwardedFor.split(",")[0] : "unknown";
+
+    const attemptCheck = checkLoginAttempts(clientIp);
+    if (!attemptCheck.allowed) {
+      return NextResponse.json(
+        { error: attemptCheck.message || "Trop de tentatives" },
+        { status: 429 }
+      );
+    }
+
     // Pour gérer les données multipart/form-data
     const formData = await request.formData();
     const file = formData.get("file") as File;
