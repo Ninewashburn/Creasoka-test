@@ -13,7 +13,7 @@ generator client {
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
-  // directUrl = env("DIRECT_URL")  // Temporarily commented - using pooler only
+  // directUrl = env("DIRECT_URL")
 }
 
 model Creation {
