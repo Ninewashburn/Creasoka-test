@@ -6,10 +6,8 @@ export const dynamic = "force-dynamic";
 
 export async function GET(req: NextRequest) {
   try {
-    const auth = await verifyAuth(req);
-    if (!auth || auth.user.role !== "admin") {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    }
+    // verifyAuth() ne prend pas de paramètres et throw si non autorisé
+    await verifyAuth();
 
     const [
       totalRevenueData,
@@ -53,6 +51,12 @@ export async function GET(req: NextRequest) {
     
   } catch (error) {
     console.error("Error fetching admin stats:", error);
+
+    // Si erreur d'authentification
+    if (error instanceof Error && (error.message === "Non autorisé" || error.message === "Token invalide")) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
     return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
   }
 }
