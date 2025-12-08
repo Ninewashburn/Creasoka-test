@@ -3,7 +3,6 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/lib/auth-context";
-import AdminOrderList from "@/components/admin/admin-order-list";
 import AdminCreationList from "@/components/admin/admin-creation-list";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Package, DollarSign, Clock, TrendingUp, Plus } from "lucide-react";
@@ -133,11 +132,22 @@ export default function AdminPage() {
             </CardContent>
         </Card>
 
-        {/* Orders List */}
-        <div className="space-y-4">
-          <h2 className="text-xl font-semibold">Gestion des Commandes</h2>
-          <AdminOrderList />
-        </div>
+        {/* Orders Management Link */}
+        <Card className="border-none shadow-sm bg-purple-50 dark:bg-purple-900/20">
+          <CardContent className="p-6 flex items-center justify-between">
+            <div>
+                <h2 className="text-xl font-semibold mb-2">Gestion des Commandes</h2>
+                <p className="text-muted-foreground">
+                    Accédez à la page dédiée pour gérer les commandes, les expéditions et les statuts.
+                </p>
+            </div>
+            <Link href="/admin/commandes">
+                <Button size="lg" className="bg-purple-600 hover:bg-purple-700">
+                    Gérer les commandes <TrendingUp className="ml-2 h-4 w-4" />
+                </Button>
+            </Link>
+          </CardContent>
+        </Card>
       </div>
     </div>
   );
