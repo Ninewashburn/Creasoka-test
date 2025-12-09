@@ -37,7 +37,7 @@ export function AdminNav() {
         <div className="flex items-center gap-2">
           {navItems.map((item) => (
             <Button
-              key={item.href}
+              key={item.label}
               variant={item.active ? "secondary" : "ghost"}
               asChild
               className={cn(

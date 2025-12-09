@@ -29,7 +29,10 @@ const orderSchema = z.object({
 export async function GET() {
     try {
         // Vérification Auth (Admin seulement)
-        await verifyAuth();
+        const auth = await verifyAuth();
+        if (!auth || auth.user.role !== "admin") {
+            return NextResponse.json({ error: "Non autorisé" }, { status: 403 });
+        }
 
         const orders = await prisma.order.findMany({
             include: {
@@ -197,7 +200,10 @@ export async function POST(request: Request) {
 export async function PATCH(request: Request) {
     try {
         // Vérification Auth (Admin seulement)
-        await verifyAuth();
+        const auth = await verifyAuth();
+        if (!auth || auth.user.role !== "admin") {
+            return NextResponse.json({ error: "Non autorisé" }, { status: 403 });
+        }
 
         const body = await request.json();
         const { orderId, status, trackingNumber } = body;

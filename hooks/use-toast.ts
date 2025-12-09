@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useCallback } from "react"
 
-type ToastVariant = "default" | "success" | "error" | "warning" | "info"
+type ToastVariant = "default" | "success" | "error" | "warning" | "info" | "destructive"
 
 interface ToastProps {
   title: string

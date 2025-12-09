@@ -95,6 +95,15 @@ export async function POST(request: Request) {
     const bytes = await file.arrayBuffer();
     const buffer = Buffer.from(bytes);
 
+    // Validation Magic Bytes (Signature de fichier)
+    const isSignatureValid = validateBufferSignature(buffer, file.type);
+    if (!isSignatureValid) {
+      return NextResponse.json(
+        { error: "Le contenu du fichier ne correspond pas à son type (Signature invalide)." },
+        { status: 400 }
+      );
+    }
+
     // Écrire le fichier dans le dossier public
     const filePath = join(publicDir, fileName);
     await writeFile(filePath, buffer);
@@ -112,5 +121,25 @@ export async function POST(request: Request) {
       { error: "Erreur lors du téléchargement du fichier" },
       { status: 500 }
     );
+  }
+}
+
+function validateBufferSignature(buffer: Buffer, mimeType: string): boolean {
+  if (buffer.length < 4) return false;
+  const hex = buffer.toString('hex', 0, 4).toUpperCase();
+
+  switch (mimeType) {
+    case "image/jpeg":
+      return hex.startsWith("FFD8FF");
+    case "image/png":
+      return hex === "89504E47";
+    case "image/gif":
+      return hex.startsWith("47494638");
+    case "image/webp":
+      // WebP is complex (RIFF...WEBP), simplistic check for 'RIFF'
+      // RIFF = 52 49 46 46
+      return hex === "52494646";
+    default:
+      return false;
   }
 }

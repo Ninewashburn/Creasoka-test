@@ -119,9 +119,9 @@ export default function ProfilePage() {
                             <CardContent className="space-y-6">
                                 <div className="flex flex-col items-center p-4 bg-gray-50 dark:bg-gray-800 rounded-lg">
                                     <div className="w-20 h-20 rounded-full bg-creasoka/20 flex items-center justify-center text-creasoka text-2xl font-bold mb-3">
-                                        {user.name.charAt(0)}
+                                        {user.name?.charAt(0) || user.email.charAt(0).toUpperCase()}
                                     </div>
-                                    <h3 className="font-semibold text-lg">{user.name}</h3>
+                                    <h3 className="font-semibold text-lg">{user.name || "Utilisateur"}</h3>
                                     <p className="text-gray-500 text-sm">{user.email}</p>
                                     <Badge variant="secondary" className="mt-2">
                                         {user.role === "admin" ? "Administrateur" : "Membre"}

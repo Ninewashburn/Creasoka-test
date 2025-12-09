@@ -216,9 +216,11 @@ export async function checkLoginAttempts(ip: string): Promise<{
 
   } catch (error) {
     console.error("Rate limit check failed", error);
-    // Fail safe: allow if DB is down? Or block? Block safer but annoying.
-    // Let's allow but log error for now to avoid locking everyone out if DB hiccups.
-    return { allowed: true };
+    // Fail closed: Security first
+    return {
+      allowed: false,
+      message: "Service temporairement indisponible. Veuillez réessayer."
+    };
   }
 }
 

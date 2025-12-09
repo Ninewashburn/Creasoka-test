@@ -58,12 +58,20 @@ export async function POST(request: Request) {
                         data: { status: "paid" }
                     });
 
-                    // Décrémenter les stocks
+                    // Décrémenter les stocks avec vérification atomique
                     for (const item of localOrder.items) {
-                        await tx.creation.update({
-                            where: { id: item.creationId },
+                        const updateResult = await tx.creation.updateMany({
+                            where: {
+                                id: item.creationId,
+                                stock: { gte: item.quantity } // Condition atomique
+                            },
                             data: { stock: { decrement: item.quantity } }
                         });
+
+                        // Si aucune ligne n'a été mise à jour, c'est que le stock est insuffisant
+                        if (updateResult.count === 0) {
+                            throw new Error(`Stock insuffisant pour l'article ${item.creationId}`);
+                        }
                     }
                 });
             }

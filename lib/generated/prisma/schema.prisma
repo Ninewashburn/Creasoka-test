@@ -35,14 +35,16 @@ model Creation {
 }
 
 model Order {
-  id        String      @id @default(uuid())
-  userId    String?
-  user      User?       @relation(fields: [userId], references: [id])
-  items     OrderItem[]
-  total     Float
-  status    String      @default("pending") // pending, paid, shipped, delivered, cancelled
-  createdAt DateTime    @default(now())
-  updatedAt DateTime    @updatedAt
+  id            String      @id @default(uuid())
+  userId        String?
+  user          User?       @relation(fields: [userId], references: [id])
+  items         OrderItem[]
+  total         Float
+  status        String      @default("pending") // pending, paid, shipped, delivered, cancelled
+  paymentId     String? // PayPal Transaction ID
+  paymentMethod String? // "paypal", "card", etc.
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
 
   // Shipping info
   firstName  String
