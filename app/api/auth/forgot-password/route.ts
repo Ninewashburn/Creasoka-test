@@ -12,7 +12,7 @@ export async function POST(request: Request) {
     const forwardedFor = headersList.get("x-forwarded-for");
     const clientIp = forwardedFor ? forwardedFor.split(",")[0] : "unknown";
 
-    const attemptCheck = checkLoginAttempts(clientIp);
+    const attemptCheck = await checkLoginAttempts(clientIp);
     if (!attemptCheck.allowed) {
       return NextResponse.json(
         { error: attemptCheck.message || "Trop de tentatives" },

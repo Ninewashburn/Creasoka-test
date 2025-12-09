@@ -1,65 +1,67 @@
 import { NextResponse } from "next/server";
+import { prisma } from "@/lib/prisma";
+import { verifyAuth } from "@/lib/auth";
 
 export async function GET() {
-    // Simulation de délai réseau
-    await new Promise((resolve) => setTimeout(resolve, 500));
-
-    // Simulation de récupération des commandes de l'utilisateur
-    // Dans un vrai cas, on utiliserait l'ID de l'utilisateur de la session
-
-    const mockOrders = [
-        {
-            id: "ord_1732185000000",
-            date: new Date("2024-11-21T10:30:00"),
-            status: "pending",
-            total: 45.00,
-            items: [
-                {
-                    id: "item_1",
-                    title: "Bracelet Perles Rose Pastel",
-                    quantity: 1,
-                    price: 18.00,
-                    image: "/placeholder.svg"
-                },
-                {
-                    id: "item_2",
-                    title: "Pikachu Clin d'œil",
-                    quantity: 1,
-                    price: 22.00,
-                    image: "/placeholder.svg"
-                }
-            ],
-            shipping: {
-                address: "123 Rue des Fleurs",
-                city: "Paris",
-                postalCode: "75001",
-                country: "France"
-            }
-        },
-        {
-            id: "ord_1731580000000",
-            date: new Date("2024-11-14T14:15:00"),
-            status: "delivered",
-            total: 32.00,
-            items: [
-                {
-                    id: "item_3",
-                    title: "Collier Résine Fleurs Séchées",
-                    quantity: 1,
-                    price: 32.00,
-                    image: "/placeholder.svg"
-                }
-            ],
-            shipping: {
-                address: "123 Rue des Fleurs",
-                city: "Paris",
-                postalCode: "75001",
-                country: "France"
-            }
+    try {
+        const auth = await verifyAuth();
+        if (!auth) {
+            return NextResponse.json({ error: "Non autorisé" }, { status: 401 });
         }
-    ];
 
-    return NextResponse.json({
-        orders: mockOrders
-    });
+        const { email } = auth.user;
+
+        // Récupérer l'utilisateur pour avoir son ID (si nécessaire, ou utiliser email si l'utilisateur est lié par email)
+        // Ici le Token contient l'ID normalement.
+        const userId = auth.user.id;
+
+        // Récupérer les commandes de l'utilisateur
+        const orders = await prisma.order.findMany({
+            where: {
+                OR: [
+                    { userId: userId }, // Si lié par ID
+                    { email: email }    // Si lié par email (fallback pour guest checkout converti)
+                ]
+            },
+            orderBy: {
+                createdAt: "desc"
+            },
+            include: {
+                items: {
+                    include: {
+                        creation: true
+                    }
+                }
+            }
+        });
+
+        // Transformer les données pour le frontend
+        const formattedOrders = orders.map(order => ({
+            id: order.id,
+            date: order.createdAt,
+            status: order.status,
+            total: order.total,
+            items: order.items.map(item => ({
+                id: item.id,
+                title: item.creation.title,
+                quantity: item.quantity,
+                price: item.price,
+                image: item.creation.image
+            })),
+            shipping: {
+                address: order.address,
+                city: order.city,
+                postalCode: order.postalCode,
+                country: order.country
+            }
+        }));
+
+        return NextResponse.json({
+            orders: formattedOrders
+        });
+
+    } catch (error) {
+        console.error("Erreur profile:", error);
+        return NextResponse.json({ error: "Erreur serveur" }, { status: 500 });
+    }
 }

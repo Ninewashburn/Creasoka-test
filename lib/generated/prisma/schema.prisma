@@ -93,3 +93,11 @@ model PasswordResetToken {
   @@index([userId])
   @@index([token])
 }
+
+model RateLimit {
+  id          String    @id @default(uuid())
+  key         String    @unique // IP or Identifier
+  count       Int       @default(0)
+  lastAttempt DateTime  @default(now())
+  lockUntil   DateTime?
+}

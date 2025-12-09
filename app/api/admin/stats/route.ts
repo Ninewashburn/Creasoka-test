@@ -6,7 +6,7 @@ export const dynamic = "force-dynamic";
 
 export async function GET(req: NextRequest) {
   try {
-    const auth = await verifyAuth(req);
+    const auth = await verifyAuth();
     if (!auth || auth.user.role !== "admin") {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
@@ -20,16 +20,16 @@ export async function GET(req: NextRequest) {
       // Total Revenue: Sum of orders that are paid/shipped/delivered
       prisma.order.aggregate({
         _sum: {
-            total: true
+          total: true
         },
         where: {
-            status: { in: ["paid", "shipped", "delivered"] }
+          status: { in: ["paid", "shipped", "delivered"] }
         }
       }),
-      
+
       // Total Orders count
       prisma.order.count(),
-      
+
       // Pending/Paid (Needs processing)
       prisma.order.count({
         where: { status: { in: ["pending", "paid"] } }
@@ -50,7 +50,7 @@ export async function GET(req: NextRequest) {
       pendingOrders,
       averageOrderValue
     });
-    
+
   } catch (error) {
     console.error("Error fetching admin stats:", error);
     return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });

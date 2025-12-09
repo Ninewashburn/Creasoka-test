@@ -13,6 +13,7 @@ import OrderSummary from "@/components/checkout/order-summary";
 import DeliveryForm from "@/components/checkout/delivery-form";
 import PaymentMethod from "@/components/checkout/payment-method";
 import { useToast } from "@/hooks/use-toast";
+import { PayPalScriptProvider, PayPalButtons } from "@paypal/react-paypal-js";
 
 const STEPS = ["Panier", "Livraison", "Paiement", "Confirmation"];
 
@@ -52,7 +53,7 @@ export default function CheckoutPage() {
         return null; // Will redirect
     }
 
-    const handleNext = async () => {
+    const handleNext = async (paypalPaymentId?: string) => {
         if (currentStep === 2) {
             // Validate delivery form
             if (
@@ -66,7 +67,7 @@ export default function CheckoutPage() {
                 toast({
                     title: "Champs manquants",
                     description: "Veuillez remplir tous les champs de livraison.",
-                    variant: "error",
+                    variant: "destructive",
                 });
                 return;
             }
@@ -75,12 +76,8 @@ export default function CheckoutPage() {
         if (currentStep === 3) {
             setIsProcessing(true);
 
-            // Simulation de paiement PayPal
-            if (paymentMethod === "paypal") {
-                // Dans un vrai cas, on redirigerait vers PayPal ici
-                await new Promise((resolve) => setTimeout(resolve, 1500));
-            } else {
-                // Simulation de paiement par carte
+            // Simulation de paiement (Carte)
+            if (paymentMethod !== "paypal" && !paypalPaymentId) {
                 await new Promise((resolve) => setTimeout(resolve, 1500));
             }
 
@@ -102,7 +99,8 @@ export default function CheckoutPage() {
                         postalCode: formData.postalCode,
                         country: formData.country
                     },
-                    paymentMethod: paymentMethod
+                    paymentMethod: paymentMethod,
+                    paymentId: paypalPaymentId || undefined // Enregistrer l'ID PayPal
                 };
 
                 const response = await fetch("/api/orders", {
@@ -125,7 +123,7 @@ export default function CheckoutPage() {
                 toast({
                     title: "Erreur",
                     description: "Une erreur est survenue lors de la commande. Veuillez réessayer.",
-                    variant: "error",
+                    variant: "destructive",
                 });
             } finally {
                 setIsProcessing(false);
@@ -241,21 +239,59 @@ export default function CheckoutPage() {
                             ) : (
                                 <div /> /* Spacer */
                             )}
-                            <Button
-                                onClick={handleNext}
-                                disabled={isProcessing}
-                                className="bg-creasoka hover:bg-creasoka/90"
-                            >
-                                {isProcessing ? (
-                                    "Traitement..."
-                                ) : currentStep === 3 ? (
-                                    "Payer et Commander"
-                                ) : (
-                                    <>
-                                        Suivant <ArrowRight className="ml-2 h-4 w-4" />
-                                    </>
-                                )}
-                            </Button>
+                            {currentStep === 3 && paymentMethod === "paypal" ? (
+                                <div className="mt-6 relative z-0">
+                                    <PayPalScriptProvider options={{ 
+                                        clientId: process.env.NEXT_PUBLIC_PAYPAL_CLIENT_ID || "test",
+                                        currency: "EUR"
+                                    }}>
+                                        <PayPalButtons 
+                                            style={{ layout: "vertical" }}
+                                            createOrder={async () => {
+                                                const res = await fetch("/api/paypal/create-order", {
+                                                    method: "POST",
+                                                    headers: { "Content-Type": "application/json" },
+                                                    body: JSON.stringify({ cart: items, total: cartTotal })
+                                                });
+                                                const order = await res.json();
+                                                return order.id;
+                                            }}
+                                            onApprove={async (data) => {
+                                                // Capturer le paiement
+                                                const res = await fetch("/api/paypal/capture-order", {
+                                                    method: "POST",
+                                                    headers: { "Content-Type": "application/json" },
+                                                    body: JSON.stringify({ orderID: data.orderID })
+                                                });
+                                                const details = await res.json();
+                                                
+                                                if (details.status === "COMPLETED") {
+                                                    // Paiement réussi, on crée la commande locale
+                                                    await handleNext(details.details.id); 
+                                                } else {
+                                                    toast({ title: "Erreur Paiement", description: "Le paiement n'a pas pu être validé.", variant: "destructive" });
+                                                }
+                                            }}
+                                        />
+                                    </PayPalScriptProvider>
+                                </div>
+                            ) : (
+                                <Button
+                                    onClick={() => handleNext()}
+                                    disabled={isProcessing}
+                                    className="bg-creasoka hover:bg-creasoka/90 w-full md:w-auto"
+                                >
+                                    {isProcessing ? (
+                                        "Traitement..."
+                                    ) : currentStep === 3 ? (
+                                        "Payer par Carte (Simulation)"
+                                    ) : (
+                                        <>
+                                            Suivant <ArrowRight className="ml-2 h-4 w-4" />
+                                        </>
+                                    )}
+                                </Button>
+                            )}
                         </div>
                     )}
                 </div>

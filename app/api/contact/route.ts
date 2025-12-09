@@ -1,7 +1,8 @@
 import { NextResponse } from "next/server";
 import { z } from "zod";
 import { headers } from "next/headers";
-import { checkLoginAttempts } from "@/lib/auth";
+import { checkLoginAttempts, validateOrigin } from "@/lib/auth";
+import { sendEmail } from "@/lib/email";
 
 // Schema de validation pour le formulaire de contact
 const contactSchema = z.object({
@@ -16,12 +17,17 @@ export async function POST(request: Request) {
         const forwardedFor = headersList.get("x-forwarded-for");
         const clientIp = forwardedFor ? forwardedFor.split(",")[0] : "unknown";
 
-        const attemptCheck = checkLoginAttempts(clientIp);
+        const attemptCheck = await checkLoginAttempts(clientIp);
         if (!attemptCheck.allowed) {
             return NextResponse.json(
                 { error: attemptCheck.message || "Trop de tentatives" },
                 { status: 429 }
             );
+        }
+
+        // CSRF Protection
+        if (!validateOrigin(headersList)) {
+            return NextResponse.json({ error: "Origine non autorisée" }, { status: 403 });
         }
 
         const body = await request.json();
@@ -38,14 +44,30 @@ export async function POST(request: Request) {
 
         const { name, email, message } = result.data;
 
-        // Ici, vous connecteriez normalement un service d'envoi d'email (Resend, SendGrid, etc.)
-        // ou vous enregistreriez le message dans la base de données.
-        // Pour l'instant, nous allons simuler un succès et logger les données.
+        // Envoyer l'email
+        const emailSuccess = await sendEmail({
+            to: process.env.ADMIN_EMAIL || "contact@creasoka.com", // Votre adresse admin
+            subject: `Nouveau message de contact : ${name}`,
+            text: `Nom: ${name}\nEmail: ${email}\n\nMessage:\n${message}`,
+            html: `
+                <h1>Nouveau message de contact</h1>
+                <p><strong>Nom:</strong> ${name}</p>
+                <p><strong>Email:</strong> ${email}</p>
+                <h2>Message:</h2>
+                <div style="background-color: #f5f5f5; padding: 15px; border-radius: 5px; white-space: pre-wrap;">
+                    ${message.replace(/\n/g, '<br>')}
+                </div>
+            `
+        });
 
-
-
-        // Simulation d'un délai réseau
-        await new Promise((resolve) => setTimeout(resolve, 500));
+        if (!emailSuccess) {
+            // En prod, si ça échoue, on peut vouloir le signaler ou logguer
+            console.error("Échec de l'envoi du message de contact");
+            return NextResponse.json(
+                { error: "Erreur technique lors de l'envoi. Veuillez réessayer plus tard." },
+                { status: 500 }
+            );
+        }
 
         return NextResponse.json(
             { success: true, message: "Message envoyé avec succès" },

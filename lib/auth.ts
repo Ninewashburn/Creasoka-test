@@ -1,6 +1,7 @@
 import jwt, { SignOptions } from "jsonwebtoken";
 import bcrypt from "bcryptjs";
 import { cookies } from "next/headers";
+import { prisma } from "@/lib/prisma";
 import { NextRequest } from "next/server";
 
 // IMPORTANT: En production, définissez ces valeurs dans .env.local
@@ -31,16 +32,7 @@ export interface JwtPayload {
 }
 
 // Protection contre les attaques de force brute
-type LoginAttempt = {
-  count: number;
-  lastAttempt: number;
-  lockUntil: number;
-};
 
-// WARNING: In-memory cache is not suitable for serverless/edge environments (like Vercel).
-// Rate limiting will be reset on cold starts.
-// For production, consider using Redis/Upstash or a database table.
-const loginAttempts: Record<string, LoginAttempt> = {};
 
 /**
  * Génère un hachage de mot de passe
@@ -189,59 +181,89 @@ export function verifyCsrfToken(token: string, expectedToken: string): boolean {
 /**
  * Vérifie si l'adresse IP est autorisée à tenter de se connecter
  */
-export function checkLoginAttempts(ip: string): {
+/**
+ * Vérifie si l'adresse IP est autorisée à tenter de se connecter
+ */
+export async function checkLoginAttempts(ip: string): Promise<{
   allowed: boolean;
   message?: string;
-} {
-  const now = Date.now();
-  const attempt = loginAttempts[ip];
+}> {
+  try {
+    const now = new Date();
+    const rateLimit = await prisma.rateLimit.findUnique({
+      where: { key: ip }
+    });
 
-  // Si pas de tentative précédente ou reset après 24h
-  if (!attempt || now - attempt.lastAttempt > 24 * 60 * 60 * 1000) {
-    loginAttempts[ip] = { count: 0, lastAttempt: now, lockUntil: 0 };
+    if (!rateLimit) {
+      return { allowed: true };
+    }
+
+    // Reset after 24h
+    const diff = now.getTime() - rateLimit.lastAttempt.getTime();
+    if (diff > 24 * 60 * 60 * 1000) {
+      await prisma.rateLimit.update({
+        where: { key: ip },
+        data: { count: 0, lastAttempt: now, lockUntil: null }
+      });
+      return { allowed: true };
+    }
+
+    if (rateLimit.lockUntil && rateLimit.lockUntil > now) {
+      const remainingMinutes = Math.ceil((rateLimit.lockUntil.getTime() - now.getTime()) / (60 * 1000));
+      return {
+        allowed: false,
+        message: `Compte temporairement bloqué. Réessayez dans ${remainingMinutes} minute(s).`
+      };
+    }
+
+    return { allowed: true };
+
+  } catch (error) {
+    console.error("Rate limit check failed", error);
+    // Fail safe: allow if DB is down? Or block? Block safer but annoying.
+    // Let's allow but log error for now to avoid locking everyone out if DB hiccups.
     return { allowed: true };
   }
-
-  // Vérifier si l'IP est bloquée
-  if (attempt.lockUntil > now) {
-    const remainingMinutes = Math.ceil((attempt.lockUntil - now) / (60 * 1000));
-    return {
-      allowed: false,
-      message: `Compte temporairement bloqué. Réessayez dans ${remainingMinutes} minute(s).`,
-    };
-  }
-
-  return { allowed: true };
 }
 
 /**
  * Enregistre une tentative de connexion échouée
  */
-export function recordFailedLoginAttempt(ip: string): void {
-  const now = Date.now();
-  const attempt = loginAttempts[ip] || {
-    count: 0,
-    lastAttempt: now,
-    lockUntil: 0,
-  };
+export async function recordFailedLoginAttempt(ip: string): Promise<void> {
+  try {
+    const now = new Date();
 
-  attempt.count += 1;
-  attempt.lastAttempt = now;
+    const rateLimit = await prisma.rateLimit.upsert({
+      where: { key: ip },
+      create: { key: ip, count: 1, lastAttempt: now },
+      update: { count: { increment: 1 }, lastAttempt: now }
+    });
 
-  // Après 5 tentatives échouées, bloquer pour 15 minutes
-  if (attempt.count >= 5) {
-    attempt.lockUntil = now + 15 * 60 * 1000;
-    attempt.count = 0;
+    if (rateLimit.count >= 5) {
+      await prisma.rateLimit.update({
+        where: { key: ip },
+        data: {
+          lockUntil: new Date(now.getTime() + 15 * 60 * 1000), // 15 min lock
+          count: 0 // Reset count or keep it? Usually reset count after lock.
+        }
+      });
+    }
+  } catch (error) {
+    console.error("Rate limit record failed", error);
   }
-
-  loginAttempts[ip] = attempt;
 }
 
 /**
  * Réinitialise les tentatives de connexion après un succès
  */
-export function resetLoginAttempts(ip: string): void {
-  delete loginAttempts[ip];
+export async function resetLoginAttempts(ip: string): Promise<void> {
+  try {
+    await prisma.rateLimit.delete({
+      where: { key: ip }
+    });
+  } catch {
+    // Ignore error if record doesn't exist
+  }
 }
 
 /**
@@ -260,8 +282,26 @@ export async function verifyAuth() {
 
   try {
     const secret = new TextEncoder().encode(process.env.JWT_SECRET);
-    await jwtVerify(token, secret);
+    const { payload } = await jwtVerify(token, secret);
+    return { user: payload as unknown as JwtPayload };
   } catch {
     throw new Error("Token invalide");
   }
+}
+
+/**
+ * Valide l'origine de la requête pour la protection CSRF
+ * @param headersList Headers de la requête
+ * @returns true si l'origine est valide, false sinon
+ */
+export function validateOrigin(headersList: Headers): boolean {
+  if (process.env.NODE_ENV !== "production") return true;
+
+  const origin = headersList.get("origin");
+  const host = headersList.get("host");
+
+  if (!origin || !host) return true; // Laisser passer si pas d'origine (ex: requêtes serveur à serveur ou outils)
+
+  // L'origine contient le protocole (https://...) alors que host non
+  return origin === `https://${host}`;
 }

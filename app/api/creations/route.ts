@@ -4,6 +4,7 @@ import { serverCache } from "@/lib/cache";
 import { logger } from "@/lib/logger";
 import { z } from "zod";
 import { creationSchema } from "@/lib/schemas";
+import { verifyAuth } from "@/lib/auth";
 
 export const runtime = "nodejs";
 
@@ -11,6 +12,16 @@ export const runtime = "nodejs";
 export async function POST(request: NextRequest) {
   try {
     logger.debug("POST /api/creations - Début de la requête");
+
+    // Authentication check
+    try {
+      const auth = await verifyAuth();
+      if (auth.user.role !== "admin") {
+        return NextResponse.json({ error: "Non autorisé" }, { status: 403 });
+      }
+    } catch {
+      return NextResponse.json({ error: "Non autorisé" }, { status: 401 });
+    }
 
     const body = await request.json();
 

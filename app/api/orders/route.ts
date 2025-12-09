@@ -1,7 +1,8 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { z } from "zod";
-import { verifyAuth } from "@/lib/auth";
+import { verifyAuth, validateOrigin } from "@/lib/auth";
+import { headers } from "next/headers";
 
 export const runtime = "nodejs";
 
@@ -89,6 +90,13 @@ export async function GET() {
 
 export async function POST(request: Request) {
     try {
+        const headersList = await headers();
+
+        // CSRF Protection
+        if (!validateOrigin(headersList)) {
+            return NextResponse.json({ error: "Origine non autorisée" }, { status: 403 });
+        }
+
         const body = await request.json();
 
         // Valider les données

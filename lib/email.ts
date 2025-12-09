@@ -122,6 +122,11 @@ Si vous n'avez pas demandé cette réinitialisation, vous pouvez ignorer cet ema
  * EN DÉVELOPPEMENT : Les emails sont loggés dans la console
  * EN PRODUCTION : Configurez un service d'email (Resend, SendGrid, etc.)
  */
+import { Resend } from 'resend';
+
+// Initialisation conditionnelle pour éviter les erreurs si la clé manque
+const resend = process.env.RESEND_API_KEY ? new Resend(process.env.RESEND_API_KEY) : null;
+
 export async function sendEmail(options: EmailOptions): Promise<boolean> {
   const isDevelopment = process.env.NODE_ENV === "development";
 
@@ -135,31 +140,35 @@ export async function sendEmail(options: EmailOptions): Promise<boolean> {
     console.log("\n--- CONTENU TEXTE ---");
     console.log(options.text || "Pas de version texte");
     console.log("\n--- CONTENU HTML ---");
-    console.log(options.html);
+    // console.log(options.html); // Trop verbeux
+    console.log("(Contenu HTML masqué)");
     console.log("=".repeat(60) + "\n");
-    return true;
+    return true; // Toujours succès en dev
   }
 
-  // EN PRODUCTION : Utiliser Resend ou un autre service
-  try {
-    // Décommenter et configurer pour la production avec Resend :
-    /*
-    const resend = new Resend(process.env.RESEND_API_KEY);
+  // EN PRODUCTION
+  if (!resend) {
+    console.error("ERREUR: RESEND_API_KEY manquante. L'envoi d'email a échoué.");
+    return false;
+  }
 
-    await resend.emails.send({
-      from: process.env.EMAIL_FROM || 'noreply@creasoka.com',
-      to: options.to,
+  try {
+    const data = await resend.emails.send({
+      from: process.env.EMAIL_FROM || 'CreaSoka <onboarding@resend.dev>', // Utilisez votre domaine vérifié en prod
+      to: options.to, // En test gratuit Resend, seulement vers votre propre email (owner)
       subject: options.subject,
       html: options.html,
       text: options.text,
     });
-    */
 
-    // Pour l'instant, retourner true (l'email sera logué)
-    console.log(`📧 Email prévu pour : ${options.to} - ${options.subject}`);
+    if (data.error) {
+      console.error("Resend API Error:", data.error);
+      return false;
+    }
+
     return true;
   } catch (error) {
-    console.error("Erreur lors de l'envoi de l'email:", error);
+    console.error("Erreur lors de l'envoi de l'email via Resend:", error);
     return false;
   }
 }

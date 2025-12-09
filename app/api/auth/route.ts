@@ -10,6 +10,7 @@ import {
   checkLoginAttempts,
   recordFailedLoginAttempt,
   resetLoginAttempts,
+  validateOrigin,
 } from "@/lib/auth";
 import { headers } from "next/headers";
 
@@ -22,11 +23,27 @@ export async function POST(request: NextRequest) {
 
     // Récupérer l'adresse IP du client
     const headersList = await headers();
+
+    // CSRF Protection: Vérifier l'origine (Origin Check)
+    const origin = headersList.get("origin");
+    const host = headersList.get("host");
+
+    // En production, on vérifie que l'origine correspond au host
+    if (process.env.NODE_ENV === "production" && origin) {
+      const allowedOrigin = `https://${host}`;
+      if (origin !== allowedOrigin) {
+        return NextResponse.json(
+          { success: false, message: "CSRF: Origine non autorisée" },
+          { status: 403 }
+        );
+      }
+    }
+
     const forwardedFor = headersList.get("x-forwarded-for");
     const clientIp = forwardedFor ? forwardedFor.split(",")[0] : "unknown";
 
     // Vérifier si l'adresse IP n'est pas bloquée
-    const attemptCheck = checkLoginAttempts(clientIp);
+    const attemptCheck = await checkLoginAttempts(clientIp);
     if (!attemptCheck.allowed) {
       return NextResponse.json(
         { success: false, message: attemptCheck.message },
@@ -49,7 +66,7 @@ export async function POST(request: NextRequest) {
 
     // Vérifier si l'utilisateur existe
     if (!user) {
-      recordFailedLoginAttempt(clientIp);
+      await recordFailedLoginAttempt(clientIp);
       return NextResponse.json(
         { success: false, message: "Identifiants incorrects" },
         { status: 401 }
@@ -59,7 +76,7 @@ export async function POST(request: NextRequest) {
     // Vérifier le mot de passe
     const isPasswordValid = await verifyPassword(password, user.password);
     if (!isPasswordValid) {
-      recordFailedLoginAttempt(clientIp);
+      await recordFailedLoginAttempt(clientIp);
       return NextResponse.json(
         { success: false, message: "Identifiants incorrects" },
         { status: 401 }
@@ -67,7 +84,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Réinitialiser les tentatives après une connexion réussie
-    resetLoginAttempts(clientIp);
+    await resetLoginAttempts(clientIp);
 
     // Générer un token JWT
     const token = generateToken({
