@@ -9,7 +9,7 @@ export async function POST(request: Request) {
             return NextResponse.json({ error: "Non autorisé" }, { status: 401 });
         }
 
-        const { orderID } = await request.json();
+        const { orderID } = await request.json(); // PayPal Order ID
 
         const PAYPAL_CLIENT_ID = process.env.NEXT_PUBLIC_PAYPAL_CLIENT_ID;
         const PAYPAL_CLIENT_SECRET = process.env.PAYPAL_CLIENT_SECRET;
@@ -41,7 +41,34 @@ export async function POST(request: Request) {
         const captureData = await captureResponse.json();
 
         if (captureData.status === "COMPLETED") {
-            return NextResponse.json({ status: "COMPLETED", details: captureData });
+            // 3. Mettre à jour la commande locale et décrémenter le stock
+
+            // Retrouver la commande locale via paymentId (le orderID PayPal)
+            const localOrder = await prisma.order.findFirst({
+                where: { paymentId: orderID },
+                include: { items: true }
+            });
+
+            if (localOrder) {
+                // Transaction pour mettre à jour le statut et décrémenter le stock
+                await prisma.$transaction(async (tx) => {
+                    // Update statut
+                    await tx.order.update({
+                        where: { id: localOrder.id },
+                        data: { status: "paid" }
+                    });
+
+                    // Décrémenter les stocks
+                    for (const item of localOrder.items) {
+                        await tx.creation.update({
+                            where: { id: item.creationId },
+                            data: { stock: { decrement: item.quantity } }
+                        });
+                    }
+                });
+            }
+
+            return NextResponse.json({ status: "COMPLETED", details: captureData, orderId: localOrder?.id });
         } else {
             return NextResponse.json({ status: "FAILED", details: captureData }, { status: 500 });
         }

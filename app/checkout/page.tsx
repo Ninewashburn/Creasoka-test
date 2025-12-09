@@ -251,25 +251,38 @@ export default function CheckoutPage() {
                                                 const res = await fetch("/api/paypal/create-order", {
                                                     method: "POST",
                                                     headers: { "Content-Type": "application/json" },
-                                                    body: JSON.stringify({ cart: items, total: cartTotal })
+                                                    body: JSON.stringify({ 
+                                                        items: items.map(item => ({
+                                                            creationId: item.id,
+                                                            quantity: item.quantity
+                                                        })), 
+                                                        shipping: formData
+                                                    })
                                                 });
                                                 const order = await res.json();
+                                                if (order.error) throw new Error(order.error);
                                                 return order.id;
                                             }}
                                             onApprove={async (data) => {
-                                                // Capturer le paiement
-                                                const res = await fetch("/api/paypal/capture-order", {
-                                                    method: "POST",
-                                                    headers: { "Content-Type": "application/json" },
-                                                    body: JSON.stringify({ orderID: data.orderID })
-                                                });
-                                                const details = await res.json();
-                                                
-                                                if (details.status === "COMPLETED") {
-                                                    // Paiement réussi, on crée la commande locale
-                                                    await handleNext(details.details.id); 
-                                                } else {
-                                                    toast({ title: "Erreur Paiement", description: "Le paiement n'a pas pu être validé.", variant: "destructive" });
+                                                try {
+                                                    const res = await fetch("/api/paypal/capture-order", {
+                                                        method: "POST",
+                                                        headers: { "Content-Type": "application/json" },
+                                                        body: JSON.stringify({ orderID: data.orderID })
+                                                    });
+                                                    const details = await res.json();
+                                                    
+                                                    if (details.status === "COMPLETED") {
+                                                        // Paiement réussi & Commande validée côté serveur
+                                                        clearCart();
+                                                        setCurrentStep(4);
+                                                        window.scrollTo(0, 0);
+                                                    } else {
+                                                        toast({ title: "Erreur Paiement", description: "Le paiement n'a pas pu être validé.", variant: "destructive" });
+                                                    }
+                                                } catch (error) {
+                                                    console.error(error);
+                                                    toast({ title: "Erreur Paiement", description: "Une erreur est survenue.", variant: "destructive" });
                                                 }
                                             }}
                                         />
