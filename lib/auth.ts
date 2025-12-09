@@ -137,11 +137,7 @@ export function getTokenFromRequest(request: NextRequest): string | null {
     return authHeader.substring(7);
   }
 
-  // 3. Vérifier dans les paramètres de recherche (moins sécurisé, mais pour débogage)
-  const urlToken = request.nextUrl.searchParams.get("token");
-  if (urlToken && process.env.NODE_ENV !== "production") {
-    return urlToken;
-  }
+
 
   return null;
 }

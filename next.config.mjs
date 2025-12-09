@@ -35,6 +35,10 @@ const nextConfig = {
             value: '1; mode=block'
           },
           {
+            key: "Content-Security-Policy",
+            value: "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://www.paypal.com https://www.sandbox.paypal.com; img-src 'self' data: https:; style-src 'self' 'unsafe-inline'; frame-src 'self' https://www.paypal.com https://www.sandbox.paypal.com;"
+          },
+          {
             key: 'X-Frame-Options',
             value: 'SAMEORIGIN'
           },
