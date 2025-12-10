@@ -1,6 +1,8 @@
 "use client";
 
-import React, { createContext, useContext, useState, useEffect } from "react";
+import { logger } from "@/lib/sentry";
+
+import { createContext, useContext, useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 
 interface User {
@@ -50,7 +52,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
                 setUser(null);
             }
         } catch (error) {
-            console.error("Erreur lors de la vérification de l'authentification:", error);
+            logger.error("Erreur lors de la vérification de l'authentification:", error);
             setUser(null);
         } finally {
             setIsLoading(false);
@@ -77,7 +79,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
             setUser(null);
             router.push("/");
         } catch (error) {
-            console.error("Erreur lors de la déconnexion:", error);
+            logger.error("Erreur lors de la déconnexion:", error);
         }
     };
 

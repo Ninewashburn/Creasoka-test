@@ -1,5 +1,7 @@
 "use client";
 
+import { logger } from "@/lib/sentry";
+
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/lib/auth-context";
@@ -42,7 +44,7 @@ export default function AdminPage() {
                 setStats(data);
             }
         } catch (error) {
-            console.error("Failed to fetch stats", error);
+            logger.error("Failed to fetch stats", error);
         }
     }
     if (isAuthenticated && user?.role === "admin") {

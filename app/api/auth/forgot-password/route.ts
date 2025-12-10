@@ -5,6 +5,7 @@ import crypto from "crypto";
 import { z } from "zod";
 import { headers } from "next/headers";
 import { checkLoginAttempts } from "@/lib/auth";
+import { logger } from "@/lib/sentry";
 
 export async function POST(request: Request) {
   try {
@@ -41,7 +42,7 @@ export async function POST(request: Request) {
     // Pour la sécurité, on retourne toujours un succès même si l'email n'existe pas
     // Cela empêche l'énumération des comptes
     if (!user) {
-      console.log(`Tentative de réinitialisation pour email inexistant: ${email}`);
+      logger.warn("Tentative de réinitialisation pour email inexistant");
       return NextResponse.json(
         {
           message:
@@ -85,7 +86,7 @@ export async function POST(request: Request) {
     );
 
     if (!emailSent) {
-      console.error("Échec de l'envoi de l'email de réinitialisation");
+      logger.error("Échec de l'envoi de l'email de réinitialisation");
       // On ne retourne pas d'erreur à l'utilisateur pour ne pas révéler d'informations
     }
 
@@ -97,7 +98,7 @@ export async function POST(request: Request) {
       { status: 200 }
     );
   } catch (error) {
-    console.error("Erreur dans forgot-password:", error);
+    logger.error("Erreur dans forgot-password", error);
     return NextResponse.json(
       { error: "Une erreur est survenue" },
       { status: 500 }

@@ -10,6 +10,7 @@ import { Button } from "@/components/ui/button";
 import { Package, User, MapPin } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
+import { clientLogger } from "@/lib/client-logger";
 interface OrderItem {
     id: string;
     title: string;
@@ -58,7 +59,7 @@ export default function ProfilePage() {
                 setOrders(data.orders);
             }
         } catch (error) {
-            console.error("Erreur lors du chargement des commandes:", error);
+            clientLogger.error("Erreur lors du chargement des commandes", error);
         } finally {
             setLoadingOrders(false);
         }

@@ -1,5 +1,7 @@
 "use client";
 
+import { logger } from "@/lib/sentry";
+
 import { useState, useEffect } from "react";
 
 interface User {
@@ -48,7 +50,7 @@ export function useAuth() {
             setUser(null);
           }
         } catch (error) {
-          console.error(
+          logger.error(
             "Erreur lors de la vérification de l'authentification:",
             error
           );
@@ -93,11 +95,11 @@ export function useAuth() {
         setUser(data.user);
         return true;
       } else {
-        console.error("Échec de la connexion:", data.message);
+        logger.error("Échec de la connexion (Client):", new Error(data.message));
         return false;
       }
     } catch (error) {
-      console.error("Erreur lors de la connexion:", error);
+      logger.error("Erreur lors de la connexion:", error);
       return false;
     }
   };
@@ -106,7 +108,7 @@ export function useAuth() {
   const logout = async (): Promise<void> => {
     if (IS_DEVELOPMENT) {
       // En développement, simuler la déconnexion
-      console.log("Déconnexion simulée (mode développement)");
+      logger.debug("Déconnexion simulée (mode développement)");
       setIsAuthenticated(false);
       setUser(null);
       window.location.href = "/";
@@ -120,7 +122,7 @@ export function useAuth() {
         credentials: "include",
       });
     } catch (error) {
-      console.error("Erreur lors de la déconnexion:", error);
+      logger.error("Erreur lors de la déconnexion:", error);
     } finally {
       setIsAuthenticated(false);
       setUser(null);

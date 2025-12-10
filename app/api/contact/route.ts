@@ -3,6 +3,8 @@ import { z } from "zod";
 import { headers } from "next/headers";
 import { checkLoginAttempts, validateOrigin } from "@/lib/auth";
 import { sendEmail } from "@/lib/email";
+import sanitizeHtml from "sanitize-html";
+import { logger } from "@/lib/sentry";
 
 // Schema de validation pour le formulaire de contact
 const contactSchema = z.object({
@@ -44,25 +46,33 @@ export async function POST(request: Request) {
 
         const { name, email, message } = result.data;
 
+        // Échapper le HTML pour prévenir les attaques XSS
+        const safeName = sanitizeHtml(name, { allowedTags: [], allowedAttributes: {} });
+        const safeEmail = sanitizeHtml(email, { allowedTags: [], allowedAttributes: {} });
+        const safeMessage = sanitizeHtml(message, {
+            allowedTags: ['br'],
+            allowedAttributes: {}
+        }).replace(/\n/g, '<br>');
+
         // Envoyer l'email
         const emailSuccess = await sendEmail({
             to: process.env.ADMIN_EMAIL || "contact@creasoka.com", // Votre adresse admin
-            subject: `Nouveau message de contact : ${name}`,
+            subject: `Nouveau message de contact : ${safeName}`,
             text: `Nom: ${name}\nEmail: ${email}\n\nMessage:\n${message}`,
             html: `
                 <h1>Nouveau message de contact</h1>
-                <p><strong>Nom:</strong> ${name}</p>
-                <p><strong>Email:</strong> ${email}</p>
+                <p><strong>Nom:</strong> ${safeName}</p>
+                <p><strong>Email:</strong> ${safeEmail}</p>
                 <h2>Message:</h2>
                 <div style="background-color: #f5f5f5; padding: 15px; border-radius: 5px; white-space: pre-wrap;">
-                    ${message.replace(/\n/g, '<br>')}
+                    ${safeMessage}
                 </div>
             `
         });
 
         if (!emailSuccess) {
             // En prod, si ça échoue, on peut vouloir le signaler ou logguer
-            console.error("Échec de l'envoi du message de contact");
+            logger.error("Échec de l'envoi du message de contact");
             return NextResponse.json(
                 { error: "Erreur technique lors de l'envoi. Veuillez réessayer plus tard." },
                 { status: 500 }
@@ -74,7 +84,7 @@ export async function POST(request: Request) {
             { status: 200 }
         );
     } catch (error) {
-        console.error("Erreur lors du traitement du formulaire de contact:", error);
+        logger.error("Erreur lors du traitement du formulaire de contact", error);
         return NextResponse.json(
             { error: "Une erreur est survenue lors de l'envoi du message" },
             { status: 500 }

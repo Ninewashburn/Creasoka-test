@@ -8,6 +8,7 @@ import { useState, useEffect } from "react";
 import type { Creation } from "@/types/creation";
 import { slugify } from "@/lib/utils";
 import { getFromCache, setToCache } from "@/lib/clientCache";
+import { clientLogger } from "@/lib/client-logger";
 
 // Clé de cache pour les créations vedettes
 const CACHE_KEY = "featuredCreations";
@@ -34,8 +35,8 @@ export default function FeaturedCreations() {
         // Si pas de cache ou cache expiré, charger les données normalement
         await fetchDataFromAPI();
       } catch (error) {
-        console.error(
-          "Erreur lors du chargement des créations vedettes:",
+        clientLogger.error(
+          "Erreur lors du chargement des créations vedettes",
           error
         );
         setIsLoading(false);
@@ -58,7 +59,7 @@ export default function FeaturedCreations() {
           setToCache(CACHE_KEY, featured);
         }
       } catch (error) {
-        console.error("Erreur lors du chargement depuis l'API:", error);
+        clientLogger.error("Erreur lors du chargement depuis l'API", error);
       } finally {
         setIsLoading(false);
       }

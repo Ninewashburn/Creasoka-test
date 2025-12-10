@@ -3,6 +3,7 @@
 import { useEffect } from "react";
 import { setToCache } from "@/lib/clientCache";
 import type { Creation } from "@/types/creation";
+import { clientLogger } from "@/lib/client-logger";
 
 export default function PreloadData() {
   useEffect(() => {
@@ -29,7 +30,7 @@ export default function PreloadData() {
           setToCache("featuredCreations", featured);
         })
         .catch((error) => {
-          console.error("Erreur de préchargement:", error);
+          clientLogger.error("Erreur de préchargement", error);
         });
     };
 

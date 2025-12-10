@@ -1,4 +1,4 @@
-import React from "react";
+
 import Script from "next/script";
 
 type SchemaOrgProps = {
@@ -34,14 +34,15 @@ export default function SchemaOrg({
   };
 
   // Schéma spécifique pour l'organisation
+  const baseUrl = process.env.NEXT_PUBLIC_APP_URL || "https://creasoka.com";
   const organizationSchema = {
     "@context": "https://schema.org",
     "@type": "Organization",
-    url: "https://creasoka.com",
+    url: baseUrl,
     name: "Crea'Soka",
     description:
       "Créations artisanales uniques et pleines de charme pour ajouter une touche de magie à votre quotidien.",
-    logo: "https://creasoka.com/logo.png",
+    logo: `${baseUrl}/logo.png`,
     sameAs: [
       // Ajouter ici les liens vers les réseaux sociaux
       // Par exemple: 'https://instagram.com/creasoka'

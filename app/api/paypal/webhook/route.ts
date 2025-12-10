@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { headers } from "next/headers";
+import { logger } from "@/lib/sentry";
 
 export async function POST(request: Request) {
     try {
@@ -17,7 +18,7 @@ export async function POST(request: Request) {
         const WEBHOOK_ID = process.env.PAYPAL_WEBHOOK_ID;
 
         if (!WEBHOOK_ID) {
-            console.error("PAYPAL_WEBHOOK_ID manquant");
+            logger.error("PAYPAL_WEBHOOK_ID manquant");
             // Fail safe: accept for now in dev, or 500? Use strict in prod.
             if (process.env.NODE_ENV === "production") return NextResponse.json({ error: "Config missing" }, { status: 500 });
         }
@@ -31,7 +32,7 @@ export async function POST(request: Request) {
             );
 
             if (!isValid) {
-                console.error("Signature Webhook Invalide");
+                logger.error("Signature Webhook Invalide");
                 return NextResponse.json({ error: "Invalid Signature" }, { status: 401 });
             }
         }
@@ -41,24 +42,32 @@ export async function POST(request: Request) {
         const eventType = body.event_type;
         const resource = body.resource;
 
-        console.log(`Webhook PayPal Validé: ${eventType}`);
+        logger.info(`Webhook PayPal Validé: ${eventType}`);
 
         if (eventType === "PAYMENT.CAPTURE.COMPLETED") {
             // Traitement (déjà géré synchronement, mais bon pour backup)
-            console.log("Capture confirmée par webhook:", resource.id);
+            logger.info("Capture confirmée par webhook", { resourceId: resource.id });
         }
 
         return NextResponse.json({ received: true });
 
     } catch (error) {
-        console.error("Erreur Webhook PayPal:", error);
+        logger.error("Erreur Webhook PayPal", error);
         return NextResponse.json({ error: "Webhook Error" }, { status: 500 });
     }
 }
 
+interface PayPalHeaders {
+    transmissionId: string | null;
+    transmissionTime: string | null;
+    certUrl: string | null;
+    authAlgo: string | null;
+    transmissionSig: string | null;
+}
+
 async function verifyPayPalSignature(
     body: string,
-    headers: any,
+    headers: PayPalHeaders,
     webhookId: string
 ): Promise<boolean> {
     const PAYPAL_CLIENT_ID = process.env.NEXT_PUBLIC_PAYPAL_CLIENT_ID;

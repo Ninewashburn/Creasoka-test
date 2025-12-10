@@ -4,6 +4,8 @@ import { join } from "path";
 import { v4 as uuidv4 } from "uuid";
 import { headers } from "next/headers";
 import { checkLoginAttempts, verifyAuth } from "@/lib/auth";
+import { fileTypeFromBuffer } from "file-type";
+import { logger } from "@/lib/sentry";
 
 export const runtime = "nodejs";
 
@@ -69,7 +71,31 @@ export async function POST(request: Request) {
       );
     }
 
-    // Générer un nom de fichier unique avec extension sûre basée sur le type MIME
+    // Convertir le fichier en tableau d'octets pour validation
+    const bytes = await file.arrayBuffer();
+    const buffer = Buffer.from(bytes);
+
+    // Validation Magic Bytes côté serveur avec file-type
+    const fileType = await fileTypeFromBuffer(buffer);
+
+    if (!fileType) {
+      return NextResponse.json(
+        { error: "Impossible de déterminer le type de fichier. Le fichier peut être corrompu." },
+        { status: 400 }
+      );
+    }
+
+    // Vérifier que le type réel correspond au type autorisé
+    if (!allowedTypes.includes(fileType.mime)) {
+      return NextResponse.json(
+        {
+          error: `Type de fichier réel (${fileType.mime}) ne correspond pas au type autorisé. Tentative de spoofing détectée.`
+        },
+        { status: 400 }
+      );
+    }
+
+    // Générer un nom de fichier unique avec extension basée sur le type réel détecté
     const mimeToExt: Record<string, string> = {
       "image/jpeg": "jpg",
       "image/png": "png",
@@ -77,32 +103,12 @@ export async function POST(request: Request) {
       "image/gif": "gif"
     };
 
-    const extension = mimeToExt[file.type];
-    if (!extension) {
-      return NextResponse.json(
-        { error: "Type de fichier non supporté." },
-        { status: 400 }
-      );
-    }
-
+    const extension = mimeToExt[fileType.mime];
     const fileName = `${uuidv4()}.${extension}`;
 
     // Définir le chemin où sauvegarder le fichier
     const directory = "images/creations";
     const publicDir = join(process.cwd(), "public", directory);
-
-    // Convertir le fichier en tableau d'octets
-    const bytes = await file.arrayBuffer();
-    const buffer = Buffer.from(bytes);
-
-    // Validation Magic Bytes (Signature de fichier)
-    const isSignatureValid = validateBufferSignature(buffer, file.type);
-    if (!isSignatureValid) {
-      return NextResponse.json(
-        { error: "Le contenu du fichier ne correspond pas à son type (Signature invalide)." },
-        { status: 400 }
-      );
-    }
 
     // Écrire le fichier dans le dossier public
     const filePath = join(publicDir, fileName);
@@ -116,7 +122,7 @@ export async function POST(request: Request) {
       filePath: imagePath,
     });
   } catch (error) {
-    console.error("Erreur lors du téléchargement du fichier:", error);
+    logger.error("Erreur lors du téléchargement du fichier", error);
     return NextResponse.json(
       { error: "Erreur lors du téléchargement du fichier" },
       { status: 500 }
@@ -124,22 +130,3 @@ export async function POST(request: Request) {
   }
 }
 
-function validateBufferSignature(buffer: Buffer, mimeType: string): boolean {
-  if (buffer.length < 4) return false;
-  const hex = buffer.toString('hex', 0, 4).toUpperCase();
-
-  switch (mimeType) {
-    case "image/jpeg":
-      return hex.startsWith("FFD8FF");
-    case "image/png":
-      return hex === "89504E47";
-    case "image/gif":
-      return hex.startsWith("47494638");
-    case "image/webp":
-      // WebP is complex (RIFF...WEBP), simplistic check for 'RIFF'
-      // RIFF = 52 49 46 46
-      return hex === "52494646";
-    default:
-      return false;
-  }
-}

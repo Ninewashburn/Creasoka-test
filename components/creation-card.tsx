@@ -66,13 +66,9 @@ export default function CreationCard({ creation }: CreationCardProps) {
           {creation.description}
         </p>
         <div className="flex justify-between items-center mb-4">
-          {isAuthenticated ? (
-            <span className="font-bold text-lg text-creasoka">
-              {creation.price} €
-            </span>
-          ) : (
-             <span className="text-sm text-gray-500 italic">Connectez-vous pour voir le prix</span>
-          )}
+          <span className="font-bold text-lg text-creasoka">
+            {creation.price} €
+          </span>
           {creation.stock === 0 && creation.status !== "adopté" && (
             <span className="text-xs font-medium text-red-500 bg-red-100 dark:bg-red-900/30 px-2 py-1 rounded-full">
               Rupture

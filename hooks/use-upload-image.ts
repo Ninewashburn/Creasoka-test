@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { clientLogger } from "@/lib/client-logger";
 
 type UploadStatus = "idle" | "uploading" | "success" | "error";
 
@@ -76,7 +77,7 @@ export function useUploadImage() {
           errorMessage = errorData.error || errorMessage;
         } catch (parseError) {
           // Si la réponse n'est pas du JSON valide, utiliser le status text ou un message générique
-          console.error("Erreur de parsing JSON:", parseError);
+          clientLogger.error("Erreur de parsing JSON", parseError);
           errorMessage = `Erreur serveur: ${response.status} ${
             response.statusText || ""
           }`;

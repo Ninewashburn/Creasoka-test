@@ -1,4 +1,4 @@
-import React from "react";
+
 import type { Viewport } from "next";
 import { AdminNav } from "@/components/admin/admin-nav";
 import { Toaster } from "@/components/ui/toaster";

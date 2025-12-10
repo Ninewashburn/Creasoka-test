@@ -14,6 +14,7 @@ import DeliveryForm from "@/components/checkout/delivery-form";
 import PaymentMethod from "@/components/checkout/payment-method";
 import { useToast } from "@/hooks/use-toast";
 import { PayPalScriptProvider, PayPalButtons } from "@paypal/react-paypal-js";
+import { logger } from "@/lib/sentry";
 
 const STEPS = ["Panier", "Livraison", "Paiement", "Confirmation"];
 
@@ -119,7 +120,7 @@ export default function CheckoutPage() {
                 setCurrentStep((prev) => prev + 1);
                 window.scrollTo(0, 0);
             } catch (error) {
-                console.error(error);
+                logger.error("Erreur commande", error);
                 toast({
                     title: "Erreur",
                     description: "Une erreur est survenue lors de la commande. Veuillez réessayer.",
@@ -281,7 +282,7 @@ export default function CheckoutPage() {
                                                         toast({ title: "Erreur Paiement", description: "Le paiement n'a pas pu être validé.", variant: "destructive" });
                                                     }
                                                 } catch (error) {
-                                                    console.error(error);
+                                                    logger.error("Erreur Paiement PayPal", error);
                                                     toast({ title: "Erreur Paiement", description: "Une erreur est survenue.", variant: "destructive" });
                                                 }
                                             }}

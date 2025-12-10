@@ -3,6 +3,7 @@ import bcrypt from "bcryptjs";
 import { cookies } from "next/headers";
 import { prisma } from "@/lib/prisma";
 import { NextRequest } from "next/server";
+import { logger } from "@/lib/sentry";
 
 // IMPORTANT: En production, définissez ces valeurs dans .env.local
 // NEVER commit these values to version control
@@ -10,7 +11,7 @@ import { NextRequest } from "next/server";
 // Grâce à types/env.d.ts, TypeScript devrait connaître le type de process.env.JWT_SECRET
 
 if (!process.env.JWT_SECRET) {
-  console.error(
+  logger.error(
     "ERREUR CRITIQUE: JWT_SECRET n'est pas défini dans les variables d'environnement.\n" +
     "Veuillez vous assurer qu'elle est définie dans votre fichier .env ou dans les paramètres de votre environnement d'hébergement."
   );
@@ -21,7 +22,9 @@ if (!process.env.JWT_SECRET) {
 // Utilisation directe, TypeScript devrait maintenant comprendre que JWT_SECRET est une chaîne (s'il est défini).
 // La garde ci-dessus est pour l'exécution ; la déclaration .d.ts est pour la compilation.
 const JWT_SECRET = process.env.JWT_SECRET;
-const JWT_EXPIRES_IN = process.env.JWT_EXPIRES_IN || "7d";
+// Note: Pour une meilleure sécurité, utiliser des refresh tokens avec une courte expiration
+// Access token: 15 minutes, Refresh token: 7 jours (à implémenter)
+const JWT_EXPIRES_IN = process.env.JWT_EXPIRES_IN || "15m";
 
 const COOKIE_NAME = "auth-token";
 
@@ -59,7 +62,7 @@ export function generateToken(payload: JwtPayload): string {
   if (!JWT_SECRET) {
     // Cette vérification est une sécurité supplémentaire au cas où la garde initiale serait contournée
     // ou si process.env.JWT_SECRET était une chaîne vide, ce qui est indésirable.
-    console.error(
+    logger.error(
       "Tentative de génération de token JWT sans JWT_SECRET valide."
     );
     throw new Error(
@@ -84,14 +87,14 @@ export function generateToken(payload: JwtPayload): string {
 export function verifyToken(token: string): JwtPayload | null {
   try {
     if (!JWT_SECRET) {
-      console.error(
+      logger.error(
         "Tentative de vérification de token JWT sans JWT_SECRET valide."
       );
       return null; // Ou lever une erreur, selon la politique de gestion des erreurs
     }
     return jwt.verify(token, JWT_SECRET as string) as JwtPayload;
   } catch (error) {
-    console.error("Error verifying token:", error);
+    logger.error("Error verifying token:", error);
     return null;
   }
 }
@@ -107,7 +110,7 @@ export async function setAuthCookie(token: string): Promise<void> {
     httpOnly: true,
     secure: process.env.NODE_ENV === "production",
     sameSite: "strict", // Changed from 'lax' to 'strict' for better CSRF protection
-    maxAge: 7 * 24 * 60 * 60, // 7 jours en secondes
+    maxAge: 15 * 60, // 15 minutes en secondes (correspond à l'expiration du JWT)
     path: "/",
   });
 }
@@ -215,7 +218,7 @@ export async function checkLoginAttempts(ip: string): Promise<{
     return { allowed: true };
 
   } catch (error) {
-    console.error("Rate limit check failed", error);
+    logger.error("Rate limit check failed", error);
     // Fail closed: Security first
     return {
       allowed: false,
@@ -247,7 +250,7 @@ export async function recordFailedLoginAttempt(ip: string): Promise<void> {
       });
     }
   } catch (error) {
-    console.error("Rate limit record failed", error);
+    logger.error("Rate limit record failed", error);
   }
 }
 

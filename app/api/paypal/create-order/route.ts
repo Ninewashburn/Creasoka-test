@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { verifyAuth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
+import { logger } from "@/lib/sentry";
 
 export async function POST(request: Request) {
   try {
@@ -118,7 +119,7 @@ export async function POST(request: Request) {
     return NextResponse.json(orderData);
 
   } catch (error) {
-    console.error("PayPal Create Order Error:", error);
+    logger.error("PayPal Create Order Error", error);
     return NextResponse.json({ error: "Erreur création commande PayPal" }, { status: 500 });
   }
 }

@@ -1,8 +1,9 @@
 "use client";
 
-import React, { createContext, useContext, useEffect, useState } from "react";
+import { createContext, useContext, useEffect, useState } from "react";
 import { Creation } from "@/types/creation";
 import { useToast } from "@/hooks/use-toast";
+import { clientLogger } from "@/lib/client-logger";
 
 export type CartItem = {
     id: string;
@@ -42,7 +43,7 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
                 try {
                     setItems(JSON.parse(savedCart));
                 } catch (e) {
-                    console.error("Failed to parse cart from localStorage", e);
+                    clientLogger.error("Failed to parse cart from localStorage", e);
                 }
             }
             setIsLoaded(true);

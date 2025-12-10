@@ -10,6 +10,7 @@ import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/lib/auth-context";
 import { motion } from "framer-motion";
 import { Loader2 } from "lucide-react";
+import { clientLogger } from "@/lib/client-logger";
 
 export default function LoginPage() {
   const [email, setEmail] = useState("");
@@ -57,7 +58,7 @@ export default function LoginPage() {
         });
       }
     } catch (error) {
-      console.error("Erreur de connexion:", error);
+      clientLogger.error("Erreur de connexion", error);
       toast({
         variant: "destructive",
         title: "Erreur",

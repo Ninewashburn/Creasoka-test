@@ -238,11 +238,7 @@ export default function CreationDetailPage() {
                 </div>
               </div>
               <div className="flex items-center gap-4 mb-6">
-                {isAuthenticated ? (
-                  <span className="text-3xl font-bold text-creasoka">{creation.price} €</span>
-                ) : (
-                  <span className="text-xl text-gray-500 italic">Connectez-vous pour voir le prix</span>
-                )}
+                <span className="text-3xl font-bold text-creasoka">{creation.price} €</span>
                 {creation.stock > 0 ? (
                   <Badge variant="outline" className="bg-green-100 text-green-800 hover:bg-green-100 border-green-200">En stock ({creation.stock})</Badge>
                 ) : creation.status === "adopté" ? (
@@ -390,6 +386,26 @@ export default function CreationDetailPage() {
           </div>
         </div>
       )}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "Product",
+            name: creation.title,
+            description: creation.description,
+            image: galleryImages,
+            sku: creation.id,
+            offers: {
+              "@type": "Offer",
+              price: creation.price,
+              priceCurrency: "EUR",
+              availability: creation.stock > 0 ? "https://schema.org/InStock" : "https://schema.org/OutOfStock",
+              url: `${process.env.NEXT_PUBLIC_APP_URL || "https://creasoka.com"}/creations/${slugify(creation.title)}-${creation.id}`
+            }
+          })
+        }}
+      />
     </div>
   );
 }

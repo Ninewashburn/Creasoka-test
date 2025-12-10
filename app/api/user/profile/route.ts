@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { verifyAuth } from "@/lib/auth";
+import { logger } from "@/lib/sentry";
 
 export async function GET() {
     try {
@@ -61,7 +62,7 @@ export async function GET() {
         });
 
     } catch (error) {
-        console.error("Erreur profile:", error);
+        logger.error("Erreur profile", error);
         return NextResponse.json({ error: "Erreur serveur" }, { status: 500 });
     }
 }

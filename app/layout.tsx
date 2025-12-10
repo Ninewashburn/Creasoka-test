@@ -27,7 +27,7 @@ export const viewport: Viewport = {
 };
 
 export const metadata: Metadata = {
-  metadataBase: new URL("https://creasoka.com"),
+  metadataBase: new URL(process.env.NEXT_PUBLIC_APP_URL || "https://creasoka.com"),
   title: {
     default: "Crea'Soka - Créations Artisanales Uniques",
     template: "%s | Crea'Soka",
@@ -60,14 +60,14 @@ export const metadata: Metadata = {
   openGraph: {
     type: "website",
     locale: "fr_FR",
-    url: "https://creasoka.com",
+    url: process.env.NEXT_PUBLIC_APP_URL || "https://creasoka.com",
     title: "Crea'Soka - Créations Artisanales Uniques",
     description:
       "Découvrez des créations artisanales uniques et pleines de charme pour ajouter une touche de magie à votre quotidien.",
     siteName: "Crea'Soka",
     images: [
       {
-        url: "https://creasoka.com/images/og-image.jpg",
+        url: `${process.env.NEXT_PUBLIC_APP_URL || "https://creasoka.com"}/images/og-image.jpg`,
         width: 1200,
         height: 630,
         alt: "Crea'Soka - Créations Artisanales",
@@ -79,7 +79,7 @@ export const metadata: Metadata = {
     title: "Crea'Soka - Créations Artisanales Uniques",
     description:
       "Découvrez des créations artisanales uniques et pleines de charme pour ajouter une touche de magie à votre quotidien.",
-    images: ["https://creasoka.com/images/twitter-image.jpg"],
+    images: [`${process.env.NEXT_PUBLIC_APP_URL || "https://creasoka.com"}/images/twitter-image.jpg`],
   },
   verification: {
     // À compléter si vous avez des codes de vérification
@@ -87,9 +87,9 @@ export const metadata: Metadata = {
     // yandex: "yandex-verification-code",
   },
   alternates: {
-    canonical: "https://creasoka.com",
+    canonical: process.env.NEXT_PUBLIC_APP_URL || "https://creasoka.com",
     languages: {
-      "fr-FR": "https://creasoka.com",
+      "fr-FR": process.env.NEXT_PUBLIC_APP_URL || "https://creasoka.com",
     },
   },
   robots: {
@@ -132,8 +132,8 @@ export default function RootLayout({
           <AuthProvider>
             <QueryProvider>
               <CartProvider>
-                <SchemaOrg
-                  url="https://creasoka.com"
+                  <SchemaOrg
+                    url={process.env.NEXT_PUBLIC_APP_URL || "https://creasoka.com"}
                   title="Crea'Soka - Créations Artisanales Uniques"
                   description="Découvrez des créations artisanales uniques et pleines de charme pour ajouter une touche de magie à votre quotidien."
                   type="Organization"

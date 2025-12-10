@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { hashPassword } from "@/lib/auth";
 import { z } from "zod";
+import { logger } from "@/lib/sentry";
 
 const passwordSchema = z.string()
   .min(12, "Le mot de passe doit contenir au moins 12 caractères")
@@ -101,7 +102,7 @@ export async function POST(request: Request) {
       { status: 200 }
     );
   } catch (error) {
-    console.error("Erreur dans reset-password:", error);
+    logger.error("Erreur dans reset-password", error);
     return NextResponse.json(
       { error: "Une erreur est survenue" },
       { status: 500 }

@@ -3,6 +3,7 @@ import { prisma } from "@/lib/prisma";
 import { z } from "zod";
 import { verifyAuth, validateOrigin } from "@/lib/auth";
 import { headers } from "next/headers";
+import { logger } from "@/lib/sentry";
 
 export const runtime = "nodejs";
 
@@ -28,13 +29,17 @@ const orderSchema = z.object({
 
 export async function GET() {
     try {
-        // Vérification Auth (Admin seulement)
+        // Vérification Auth
         const auth = await verifyAuth();
-        if (!auth || auth.user.role !== "admin") {
-            return NextResponse.json({ error: "Non autorisé" }, { status: 403 });
+        if (!auth) {
+            return NextResponse.json({ error: "Non autorisé" }, { status: 401 });
         }
 
+        // Si l'utilisateur n'est pas admin, il ne peut voir que ses propres commandes
+        const whereClause = auth.user.role === "admin" ? {} : { userId: auth.user.id };
+
         const orders = await prisma.order.findMany({
+            where: whereClause,
             include: {
                 items: {
                     include: {
@@ -78,7 +83,7 @@ export async function GET() {
 
         return NextResponse.json({ orders: formattedOrders });
     } catch (error) {
-        console.error("Erreur lors de la récupération des commandes:", error);
+        logger.error("Erreur lors de la récupération des commandes", error);
 
         if (error instanceof Error && (error.message === "Non autorisé" || error.message === "Token invalide")) {
             return NextResponse.json({ error: "Non autorisé" }, { status: 401 });
@@ -186,7 +191,7 @@ export async function POST(request: Request) {
             { status: 201 }
         );
     } catch (error) {
-        console.error("Erreur lors de la création de la commande:", error);
+        logger.error("Erreur lors de la création de la commande", error);
 
         const errorMessage = error instanceof Error ? error.message : "Une erreur est survenue lors de la création de la commande";
 
@@ -229,7 +234,7 @@ export async function PATCH(request: Request) {
             message: "Commande mise à jour",
         });
     } catch (error) {
-        console.error("Erreur lors de la mise à jour de la commande:", error);
+        logger.error("Erreur lors de la mise à jour de la commande", error);
 
         if (error instanceof Error && (error.message === "Non autorisé" || error.message === "Token invalide")) {
             return NextResponse.json({ error: "Non autorisé" }, { status: 401 });

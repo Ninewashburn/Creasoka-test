@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+
 import UploadImage from "./upload-image-input";
 
 interface UploadMultipleImagesProps {

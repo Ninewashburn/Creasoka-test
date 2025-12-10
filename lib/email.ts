@@ -10,6 +10,8 @@ export interface EmailOptions {
   text?: string;
 }
 
+import { logger } from "@/lib/sentry";
+
 /**
  * Envoie un email de réinitialisation de mot de passe
  */
@@ -132,23 +134,23 @@ export async function sendEmail(options: EmailOptions): Promise<boolean> {
 
   if (isDevelopment) {
     // En développement, on log l'email dans la console
-    console.log("\n" + "=".repeat(60));
-    console.log("📧 EMAIL ENVOYÉ (MODE DÉVELOPPEMENT)");
-    console.log("=".repeat(60));
-    console.log("À:", options.to);
-    console.log("Sujet:", options.subject);
-    console.log("\n--- CONTENU TEXTE ---");
-    console.log(options.text || "Pas de version texte");
-    console.log("\n--- CONTENU HTML ---");
-    // console.log(options.html); // Trop verbeux
-    console.log("(Contenu HTML masqué)");
-    console.log("=".repeat(60) + "\n");
+    logger.info("\n" + "=".repeat(60));
+    logger.info("📧 EMAIL ENVOYÉ (MODE DÉVELOPPEMENT)");
+    logger.info("=".repeat(60));
+    logger.info(`À: ${options.to}`);
+    logger.info(`Sujet: ${options.subject}`);
+    logger.info("\n--- CONTENU TEXTE ---");
+    logger.info(options.text || "Pas de version texte");
+    logger.info("\n--- CONTENU HTML ---");
+    // logger.info(options.html); // Trop verbeux
+    logger.info("(Contenu HTML masqué)");
+    logger.info("=".repeat(60) + "\n");
     return true; // Toujours succès en dev
   }
 
   // EN PRODUCTION
   if (!resend) {
-    console.error("ERREUR: RESEND_API_KEY manquante. L'envoi d'email a échoué.");
+    logger.error("ERREUR: RESEND_API_KEY manquante. L'envoi d'email a échoué.");
     return false;
   }
 
@@ -162,13 +164,13 @@ export async function sendEmail(options: EmailOptions): Promise<boolean> {
     });
 
     if (data.error) {
-      console.error("Resend API Error:", data.error);
+      logger.error("Resend API Error:", new Error(data.error.message || "Unknown error"));
       return false;
     }
 
     return true;
   } catch (error) {
-    console.error("Erreur lors de l'envoi de l'email via Resend:", error);
+    logger.error("Erreur lors de l'envoi de l'email via Resend:", error);
     return false;
   }
 }

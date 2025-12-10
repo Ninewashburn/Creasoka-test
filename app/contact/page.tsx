@@ -7,6 +7,7 @@ import { Textarea } from "@/components/ui/textarea"
 import { Button } from "@/components/ui/button"
 import { Instagram, Facebook, Mail } from "lucide-react"
 import { motion } from "framer-motion"
+import { logger } from "@/lib/sentry"
 
 export default function ContactPage() {
   const [formData, setFormData] = useState({
@@ -52,7 +53,7 @@ export default function ContactPage() {
       // Reset success message after 5 seconds
       setTimeout(() => setIsSubmitted(false), 5000)
     } catch (error) {
-      console.error("Erreur d'envoi:", error)
+      logger.error("Erreur d'envoi:", error)
       // Ici on pourrait ajouter une notification d'erreur (toast)
     } finally {
       setIsSubmitting(false)

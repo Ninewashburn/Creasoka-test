@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma"; // Assuming prisma client is exported from here, need to verify
 import { verifyAuth } from "@/lib/auth";
+import { logger } from "@/lib/sentry";
 
 export const dynamic = "force-dynamic";
 
@@ -52,7 +53,7 @@ export async function GET(req: NextRequest) {
     });
 
   } catch (error) {
-    console.error("Error fetching admin stats:", error);
+    logger.error("Error fetching admin stats", error);
     return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
   }
 }

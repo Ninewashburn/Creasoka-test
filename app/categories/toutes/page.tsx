@@ -7,6 +7,7 @@ import AdvancedSearch from "@/components/advanced-search";
 import { motion, AnimatePresence } from "framer-motion";
 import CreationCard from "@/components/creation-card";
 import type { Creation } from "@/types/creation";
+import { clientLogger } from "@/lib/client-logger";
 
 export default function AllCreationsPage() {
   const [filters, setFilters] = useState({
@@ -30,7 +31,7 @@ export default function AllCreationsPage() {
           setCreations(data);
         }
       } catch (error) {
-        console.error("Erreur lors du chargement des créations:", error);
+        clientLogger.error("Erreur lors du chargement des créations", error);
       } finally {
         setIsLoading(false);
       }

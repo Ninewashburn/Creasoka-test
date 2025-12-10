@@ -1,4 +1,6 @@
 // Fonctions utilitaires pour gérer le cache côté client
+import { clientLogger } from "@/lib/client-logger";
+
 const CACHE_DURATION = 5 * 60 * 1000; // 5 minutes par défaut
 
 export function getFromCache<T>(key: string): T | null {
@@ -17,8 +19,8 @@ export function getFromCache<T>(key: string): T | null {
     localStorage.removeItem(key);
     return null;
   } catch (error) {
-    console.error(
-      `Erreur lors de la récupération du cache pour ${key}:`,
+    clientLogger.error(
+      `Erreur lors de la récupération du cache pour ${key}`,
       error
     );
     return null;
@@ -35,7 +37,7 @@ export function setToCache<T>(key: string, data: T): void {
       })
     );
   } catch (error) {
-    console.error(`Erreur lors de la mise en cache pour ${key}:`, error);
+    clientLogger.error(`Erreur lors de la mise en cache pour ${key}`, error);
   }
 }
 

@@ -13,6 +13,7 @@ import {
   validateOrigin,
 } from "@/lib/auth";
 import { headers } from "next/headers";
+import { logger } from "@/lib/sentry";
 
 export const runtime = "nodejs";
 
@@ -107,7 +108,7 @@ export async function POST(request: NextRequest) {
       },
     });
   } catch (error) {
-    console.error("Erreur d'authentification:", error);
+    logger.error("Erreur d'authentification", error);
     return NextResponse.json(
       { success: false, message: "Erreur lors de l'authentification" },
       { status: 500 }
@@ -162,7 +163,7 @@ export async function GET() {
       },
     });
   } catch (error) {
-    console.error("Erreur de vérification d'authentification:", error);
+    logger.error("Erreur de vérification d'authentification", error);
     return NextResponse.json({ authenticated: false }, { status: 500 });
   }
 }

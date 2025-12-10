@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useMemo, useEffect } from "react";
+import { logger } from "@/lib/sentry";
 
 
 import { Input } from "@/components/ui/input";
@@ -49,7 +50,7 @@ export default function GalleryPage() {
         // Si pas de cache, récupérer depuis l'API
         await fetchFromAPI();
       } catch (error) {
-        console.error("Erreur lors du chargement des créations:", error);
+        logger.error("Erreur lors du chargement des créations:", error);
         setIsLoading(false);
       }
     }
@@ -65,7 +66,7 @@ export default function GalleryPage() {
           setIsLoading(false);
         }
       } catch (error) {
-        console.error("Erreur lors du chargement depuis l'API:", error);
+        logger.error("Erreur lors du chargement depuis l'API:", error);
         setIsLoading(false);
       }
     }
@@ -221,6 +222,8 @@ export default function GalleryPage() {
         <div className="relative w-full md:w-96 mx-auto mb-6">
           <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
           <Input
+            id="gallery-search"
+            name="search"
             type="text"
             placeholder="Rechercher une création..."
             className="pl-10 pr-10"
@@ -319,6 +322,7 @@ export default function GalleryPage() {
                   galleryImages={galleryImages}
                   galleryIndex={index}
                   galleryItems={galleryItems}
+                  priority={index < 3}
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent flex flex-col justify-end p-4 text-white pointer-events-none group-hover:opacity-100 transition-opacity">
                   <h3 className="font-semibold text-lg">{creation.title}</h3>

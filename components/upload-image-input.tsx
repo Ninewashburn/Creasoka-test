@@ -1,11 +1,12 @@
 "use client";
 
-import React, { useRef, useState, useCallback } from "react";
+import { useRef, useState, useCallback, useEffect, type ChangeEvent } from "react";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { Camera, Upload, X, Crop } from "lucide-react";
 import { useUploadImage } from "@/hooks/use-upload-image";
 import Image from "next/image";
+import { clientLogger } from "@/lib/client-logger";
 import { motion } from "framer-motion";
 import { Progress } from "@/components/ui/progress";
 import {
@@ -62,7 +63,7 @@ export default function UploadImage({
   const [isProcessingCrop, setIsProcessingCrop] = useState(false);
 
   // Mettre à jour le preview quand la valeur change (mode unique)
-  React.useEffect(() => {
+  useEffect(() => {
     if (!multiple && typeof value === "string") {
       setPreviewUrl(value && value !== "/placeholder.svg" ? value : null);
     }
@@ -77,7 +78,7 @@ export default function UploadImage({
   );
 
   // Gérer la sélection de fichier(s)
-  const handleFileSelect = async (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileSelect = async (e: ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files;
     if (!files || files.length === 0) return;
 
@@ -176,7 +177,7 @@ export default function UploadImage({
         }
       }
     } catch (e) {
-      console.error("Erreur lors du recadrage ou de l'upload de l'image:", e);
+      clientLogger.error("Erreur lors du recadrage ou de l'upload de l'image", e);
     } finally {
       setIsProcessingCrop(false);
       handleCloseCropper();

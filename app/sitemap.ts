@@ -12,7 +12,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   });
 
   // URL de base du site
-  const baseUrl = "https://creasoka.com";
+  const baseUrl = process.env.NEXT_PUBLIC_APP_URL || "https://creasoka.com";
 
   // Pages statiques avec leur date de dernière modification
   const staticPages: MetadataRoute.Sitemap = [
