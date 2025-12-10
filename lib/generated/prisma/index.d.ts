@@ -43,6 +43,16 @@ export type PasswordResetToken = $Result.DefaultSelection<Prisma.$PasswordResetT
  * 
  */
 export type RateLimit = $Result.DefaultSelection<Prisma.$RateLimitPayload>
+/**
+ * Model StockReservation
+ * 
+ */
+export type StockReservation = $Result.DefaultSelection<Prisma.$StockReservationPayload>
+/**
+ * Model ProcessedWebhookEvent
+ * 
+ */
+export type ProcessedWebhookEvent = $Result.DefaultSelection<Prisma.$ProcessedWebhookEventPayload>
 
 /**
  * ##  Prisma Client ʲˢ
@@ -221,6 +231,26 @@ export class PrismaClient<
     * ```
     */
   get rateLimit(): Prisma.RateLimitDelegate<ExtArgs, ClientOptions>;
+
+  /**
+   * `prisma.stockReservation`: Exposes CRUD operations for the **StockReservation** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more StockReservations
+    * const stockReservations = await prisma.stockReservation.findMany()
+    * ```
+    */
+  get stockReservation(): Prisma.StockReservationDelegate<ExtArgs, ClientOptions>;
+
+  /**
+   * `prisma.processedWebhookEvent`: Exposes CRUD operations for the **ProcessedWebhookEvent** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more ProcessedWebhookEvents
+    * const processedWebhookEvents = await prisma.processedWebhookEvent.findMany()
+    * ```
+    */
+  get processedWebhookEvent(): Prisma.ProcessedWebhookEventDelegate<ExtArgs, ClientOptions>;
 }
 
 export namespace Prisma {
@@ -667,7 +697,9 @@ export namespace Prisma {
     OrderItem: 'OrderItem',
     User: 'User',
     PasswordResetToken: 'PasswordResetToken',
-    RateLimit: 'RateLimit'
+    RateLimit: 'RateLimit',
+    StockReservation: 'StockReservation',
+    ProcessedWebhookEvent: 'ProcessedWebhookEvent'
   };
 
   export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -686,7 +718,7 @@ export namespace Prisma {
       omit: GlobalOmitOptions
     }
     meta: {
-      modelProps: "creation" | "order" | "orderItem" | "user" | "passwordResetToken" | "rateLimit"
+      modelProps: "creation" | "order" | "orderItem" | "user" | "passwordResetToken" | "rateLimit" | "stockReservation" | "processedWebhookEvent"
       txIsolationLevel: Prisma.TransactionIsolationLevel
     }
     model: {
@@ -1134,6 +1166,154 @@ export namespace Prisma {
           }
         }
       }
+      StockReservation: {
+        payload: Prisma.$StockReservationPayload<ExtArgs>
+        fields: Prisma.StockReservationFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.StockReservationFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$StockReservationPayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.StockReservationFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$StockReservationPayload>
+          }
+          findFirst: {
+            args: Prisma.StockReservationFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$StockReservationPayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.StockReservationFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$StockReservationPayload>
+          }
+          findMany: {
+            args: Prisma.StockReservationFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$StockReservationPayload>[]
+          }
+          create: {
+            args: Prisma.StockReservationCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$StockReservationPayload>
+          }
+          createMany: {
+            args: Prisma.StockReservationCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.StockReservationCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$StockReservationPayload>[]
+          }
+          delete: {
+            args: Prisma.StockReservationDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$StockReservationPayload>
+          }
+          update: {
+            args: Prisma.StockReservationUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$StockReservationPayload>
+          }
+          deleteMany: {
+            args: Prisma.StockReservationDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.StockReservationUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateManyAndReturn: {
+            args: Prisma.StockReservationUpdateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$StockReservationPayload>[]
+          }
+          upsert: {
+            args: Prisma.StockReservationUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$StockReservationPayload>
+          }
+          aggregate: {
+            args: Prisma.StockReservationAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateStockReservation>
+          }
+          groupBy: {
+            args: Prisma.StockReservationGroupByArgs<ExtArgs>
+            result: $Utils.Optional<StockReservationGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.StockReservationCountArgs<ExtArgs>
+            result: $Utils.Optional<StockReservationCountAggregateOutputType> | number
+          }
+        }
+      }
+      ProcessedWebhookEvent: {
+        payload: Prisma.$ProcessedWebhookEventPayload<ExtArgs>
+        fields: Prisma.ProcessedWebhookEventFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.ProcessedWebhookEventFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ProcessedWebhookEventPayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.ProcessedWebhookEventFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ProcessedWebhookEventPayload>
+          }
+          findFirst: {
+            args: Prisma.ProcessedWebhookEventFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ProcessedWebhookEventPayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.ProcessedWebhookEventFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ProcessedWebhookEventPayload>
+          }
+          findMany: {
+            args: Prisma.ProcessedWebhookEventFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ProcessedWebhookEventPayload>[]
+          }
+          create: {
+            args: Prisma.ProcessedWebhookEventCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ProcessedWebhookEventPayload>
+          }
+          createMany: {
+            args: Prisma.ProcessedWebhookEventCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.ProcessedWebhookEventCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ProcessedWebhookEventPayload>[]
+          }
+          delete: {
+            args: Prisma.ProcessedWebhookEventDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ProcessedWebhookEventPayload>
+          }
+          update: {
+            args: Prisma.ProcessedWebhookEventUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ProcessedWebhookEventPayload>
+          }
+          deleteMany: {
+            args: Prisma.ProcessedWebhookEventDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.ProcessedWebhookEventUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateManyAndReturn: {
+            args: Prisma.ProcessedWebhookEventUpdateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ProcessedWebhookEventPayload>[]
+          }
+          upsert: {
+            args: Prisma.ProcessedWebhookEventUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ProcessedWebhookEventPayload>
+          }
+          aggregate: {
+            args: Prisma.ProcessedWebhookEventAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateProcessedWebhookEvent>
+          }
+          groupBy: {
+            args: Prisma.ProcessedWebhookEventGroupByArgs<ExtArgs>
+            result: $Utils.Optional<ProcessedWebhookEventGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.ProcessedWebhookEventCountArgs<ExtArgs>
+            result: $Utils.Optional<ProcessedWebhookEventCountAggregateOutputType> | number
+          }
+        }
+      }
     }
   } & {
     other: {
@@ -1236,6 +1416,8 @@ export namespace Prisma {
     user?: UserOmit
     passwordResetToken?: PasswordResetTokenOmit
     rateLimit?: RateLimitOmit
+    stockReservation?: StockReservationOmit
+    processedWebhookEvent?: ProcessedWebhookEventOmit
   }
 
   /* Types for Logging */
@@ -1317,10 +1499,12 @@ export namespace Prisma {
 
   export type CreationCountOutputType = {
     orderItems: number
+    stockReservations: number
   }
 
   export type CreationCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     orderItems?: boolean | CreationCountOutputTypeCountOrderItemsArgs
+    stockReservations?: boolean | CreationCountOutputTypeCountStockReservationsArgs
   }
 
   // Custom InputTypes
@@ -1339,6 +1523,13 @@ export namespace Prisma {
    */
   export type CreationCountOutputTypeCountOrderItemsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: OrderItemWhereInput
+  }
+
+  /**
+   * CreationCountOutputType without action
+   */
+  export type CreationCountOutputTypeCountStockReservationsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: StockReservationWhereInput
   }
 
 
@@ -1680,6 +1871,7 @@ export namespace Prisma {
     createdAt?: boolean
     updatedAt?: boolean
     orderItems?: boolean | Creation$orderItemsArgs<ExtArgs>
+    stockReservations?: boolean | Creation$stockReservationsArgs<ExtArgs>
     _count?: boolean | CreationCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["creation"]>
 
@@ -1737,6 +1929,7 @@ export namespace Prisma {
   export type CreationOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "title" | "description" | "categories" | "image" | "images" | "details" | "status" | "externalLink" | "customMessage" | "price" | "stock" | "createdAt" | "updatedAt", ExtArgs["result"]["creation"]>
   export type CreationInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     orderItems?: boolean | Creation$orderItemsArgs<ExtArgs>
+    stockReservations?: boolean | Creation$stockReservationsArgs<ExtArgs>
     _count?: boolean | CreationCountOutputTypeDefaultArgs<ExtArgs>
   }
   export type CreationIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {}
@@ -1746,6 +1939,7 @@ export namespace Prisma {
     name: "Creation"
     objects: {
       orderItems: Prisma.$OrderItemPayload<ExtArgs>[]
+      stockReservations: Prisma.$StockReservationPayload<ExtArgs>[]
     }
     scalars: $Extensions.GetPayloadResult<{
       id: string
@@ -2157,6 +2351,7 @@ export namespace Prisma {
   export interface Prisma__CreationClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
     readonly [Symbol.toStringTag]: "PrismaPromise"
     orderItems<T extends Creation$orderItemsArgs<ExtArgs> = {}>(args?: Subset<T, Creation$orderItemsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$OrderItemPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    stockReservations<T extends Creation$stockReservationsArgs<ExtArgs> = {}>(args?: Subset<T, Creation$stockReservationsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$StockReservationPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -2612,6 +2807,30 @@ export namespace Prisma {
   }
 
   /**
+   * Creation.stockReservations
+   */
+  export type Creation$stockReservationsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the StockReservation
+     */
+    select?: StockReservationSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the StockReservation
+     */
+    omit?: StockReservationOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: StockReservationInclude<ExtArgs> | null
+    where?: StockReservationWhereInput
+    orderBy?: StockReservationOrderByWithRelationInput | StockReservationOrderByWithRelationInput[]
+    cursor?: StockReservationWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: StockReservationScalarFieldEnum | StockReservationScalarFieldEnum[]
+  }
+
+  /**
    * Creation without action
    */
   export type CreationDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -2910,6 +3129,7 @@ export namespace Prisma {
     country?: boolean
     user?: boolean | Order$userArgs<ExtArgs>
     items?: boolean | Order$itemsArgs<ExtArgs>
+    stockReservation?: boolean | Order$stockReservationArgs<ExtArgs>
     _count?: boolean | OrderCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["order"]>
 
@@ -2973,6 +3193,7 @@ export namespace Prisma {
   export type OrderInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     user?: boolean | Order$userArgs<ExtArgs>
     items?: boolean | Order$itemsArgs<ExtArgs>
+    stockReservation?: boolean | Order$stockReservationArgs<ExtArgs>
     _count?: boolean | OrderCountOutputTypeDefaultArgs<ExtArgs>
   }
   export type OrderIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -2987,6 +3208,7 @@ export namespace Prisma {
     objects: {
       user: Prisma.$UserPayload<ExtArgs> | null
       items: Prisma.$OrderItemPayload<ExtArgs>[]
+      stockReservation: Prisma.$StockReservationPayload<ExtArgs> | null
     }
     scalars: $Extensions.GetPayloadResult<{
       id: string
@@ -3400,6 +3622,7 @@ export namespace Prisma {
     readonly [Symbol.toStringTag]: "PrismaPromise"
     user<T extends Order$userArgs<ExtArgs> = {}>(args?: Subset<T, Order$userArgs<ExtArgs>>): Prisma__UserClient<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
     items<T extends Order$itemsArgs<ExtArgs> = {}>(args?: Subset<T, Order$itemsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$OrderItemPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    stockReservation<T extends Order$stockReservationArgs<ExtArgs> = {}>(args?: Subset<T, Order$stockReservationArgs<ExtArgs>>): Prisma__StockReservationClient<$Result.GetResult<Prisma.$StockReservationPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -3880,6 +4103,25 @@ export namespace Prisma {
     take?: number
     skip?: number
     distinct?: OrderItemScalarFieldEnum | OrderItemScalarFieldEnum[]
+  }
+
+  /**
+   * Order.stockReservation
+   */
+  export type Order$stockReservationArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the StockReservation
+     */
+    select?: StockReservationSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the StockReservation
+     */
+    omit?: StockReservationOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: StockReservationInclude<ExtArgs> | null
+    where?: StockReservationWhereInput
   }
 
   /**
@@ -8295,6 +8537,2133 @@ export namespace Prisma {
 
 
   /**
+   * Model StockReservation
+   */
+
+  export type AggregateStockReservation = {
+    _count: StockReservationCountAggregateOutputType | null
+    _avg: StockReservationAvgAggregateOutputType | null
+    _sum: StockReservationSumAggregateOutputType | null
+    _min: StockReservationMinAggregateOutputType | null
+    _max: StockReservationMaxAggregateOutputType | null
+  }
+
+  export type StockReservationAvgAggregateOutputType = {
+    quantity: number | null
+  }
+
+  export type StockReservationSumAggregateOutputType = {
+    quantity: number | null
+  }
+
+  export type StockReservationMinAggregateOutputType = {
+    id: string | null
+    creationId: string | null
+    quantity: number | null
+    orderId: string | null
+    expiresAt: Date | null
+    createdAt: Date | null
+  }
+
+  export type StockReservationMaxAggregateOutputType = {
+    id: string | null
+    creationId: string | null
+    quantity: number | null
+    orderId: string | null
+    expiresAt: Date | null
+    createdAt: Date | null
+  }
+
+  export type StockReservationCountAggregateOutputType = {
+    id: number
+    creationId: number
+    quantity: number
+    orderId: number
+    expiresAt: number
+    createdAt: number
+    _all: number
+  }
+
+
+  export type StockReservationAvgAggregateInputType = {
+    quantity?: true
+  }
+
+  export type StockReservationSumAggregateInputType = {
+    quantity?: true
+  }
+
+  export type StockReservationMinAggregateInputType = {
+    id?: true
+    creationId?: true
+    quantity?: true
+    orderId?: true
+    expiresAt?: true
+    createdAt?: true
+  }
+
+  export type StockReservationMaxAggregateInputType = {
+    id?: true
+    creationId?: true
+    quantity?: true
+    orderId?: true
+    expiresAt?: true
+    createdAt?: true
+  }
+
+  export type StockReservationCountAggregateInputType = {
+    id?: true
+    creationId?: true
+    quantity?: true
+    orderId?: true
+    expiresAt?: true
+    createdAt?: true
+    _all?: true
+  }
+
+  export type StockReservationAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which StockReservation to aggregate.
+     */
+    where?: StockReservationWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of StockReservations to fetch.
+     */
+    orderBy?: StockReservationOrderByWithRelationInput | StockReservationOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: StockReservationWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` StockReservations from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` StockReservations.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned StockReservations
+    **/
+    _count?: true | StockReservationCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to average
+    **/
+    _avg?: StockReservationAvgAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to sum
+    **/
+    _sum?: StockReservationSumAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: StockReservationMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: StockReservationMaxAggregateInputType
+  }
+
+  export type GetStockReservationAggregateType<T extends StockReservationAggregateArgs> = {
+        [P in keyof T & keyof AggregateStockReservation]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateStockReservation[P]>
+      : GetScalarType<T[P], AggregateStockReservation[P]>
+  }
+
+
+
+
+  export type StockReservationGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: StockReservationWhereInput
+    orderBy?: StockReservationOrderByWithAggregationInput | StockReservationOrderByWithAggregationInput[]
+    by: StockReservationScalarFieldEnum[] | StockReservationScalarFieldEnum
+    having?: StockReservationScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: StockReservationCountAggregateInputType | true
+    _avg?: StockReservationAvgAggregateInputType
+    _sum?: StockReservationSumAggregateInputType
+    _min?: StockReservationMinAggregateInputType
+    _max?: StockReservationMaxAggregateInputType
+  }
+
+  export type StockReservationGroupByOutputType = {
+    id: string
+    creationId: string
+    quantity: number
+    orderId: string | null
+    expiresAt: Date
+    createdAt: Date
+    _count: StockReservationCountAggregateOutputType | null
+    _avg: StockReservationAvgAggregateOutputType | null
+    _sum: StockReservationSumAggregateOutputType | null
+    _min: StockReservationMinAggregateOutputType | null
+    _max: StockReservationMaxAggregateOutputType | null
+  }
+
+  type GetStockReservationGroupByPayload<T extends StockReservationGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<StockReservationGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof StockReservationGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], StockReservationGroupByOutputType[P]>
+            : GetScalarType<T[P], StockReservationGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type StockReservationSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    creationId?: boolean
+    quantity?: boolean
+    orderId?: boolean
+    expiresAt?: boolean
+    createdAt?: boolean
+    creation?: boolean | CreationDefaultArgs<ExtArgs>
+    order?: boolean | StockReservation$orderArgs<ExtArgs>
+  }, ExtArgs["result"]["stockReservation"]>
+
+  export type StockReservationSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    creationId?: boolean
+    quantity?: boolean
+    orderId?: boolean
+    expiresAt?: boolean
+    createdAt?: boolean
+    creation?: boolean | CreationDefaultArgs<ExtArgs>
+    order?: boolean | StockReservation$orderArgs<ExtArgs>
+  }, ExtArgs["result"]["stockReservation"]>
+
+  export type StockReservationSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    creationId?: boolean
+    quantity?: boolean
+    orderId?: boolean
+    expiresAt?: boolean
+    createdAt?: boolean
+    creation?: boolean | CreationDefaultArgs<ExtArgs>
+    order?: boolean | StockReservation$orderArgs<ExtArgs>
+  }, ExtArgs["result"]["stockReservation"]>
+
+  export type StockReservationSelectScalar = {
+    id?: boolean
+    creationId?: boolean
+    quantity?: boolean
+    orderId?: boolean
+    expiresAt?: boolean
+    createdAt?: boolean
+  }
+
+  export type StockReservationOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "creationId" | "quantity" | "orderId" | "expiresAt" | "createdAt", ExtArgs["result"]["stockReservation"]>
+  export type StockReservationInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    creation?: boolean | CreationDefaultArgs<ExtArgs>
+    order?: boolean | StockReservation$orderArgs<ExtArgs>
+  }
+  export type StockReservationIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    creation?: boolean | CreationDefaultArgs<ExtArgs>
+    order?: boolean | StockReservation$orderArgs<ExtArgs>
+  }
+  export type StockReservationIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    creation?: boolean | CreationDefaultArgs<ExtArgs>
+    order?: boolean | StockReservation$orderArgs<ExtArgs>
+  }
+
+  export type $StockReservationPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "StockReservation"
+    objects: {
+      creation: Prisma.$CreationPayload<ExtArgs>
+      order: Prisma.$OrderPayload<ExtArgs> | null
+    }
+    scalars: $Extensions.GetPayloadResult<{
+      id: string
+      creationId: string
+      quantity: number
+      orderId: string | null
+      expiresAt: Date
+      createdAt: Date
+    }, ExtArgs["result"]["stockReservation"]>
+    composites: {}
+  }
+
+  type StockReservationGetPayload<S extends boolean | null | undefined | StockReservationDefaultArgs> = $Result.GetResult<Prisma.$StockReservationPayload, S>
+
+  type StockReservationCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
+    Omit<StockReservationFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+      select?: StockReservationCountAggregateInputType | true
+    }
+
+  export interface StockReservationDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['StockReservation'], meta: { name: 'StockReservation' } }
+    /**
+     * Find zero or one StockReservation that matches the filter.
+     * @param {StockReservationFindUniqueArgs} args - Arguments to find a StockReservation
+     * @example
+     * // Get one StockReservation
+     * const stockReservation = await prisma.stockReservation.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends StockReservationFindUniqueArgs>(args: SelectSubset<T, StockReservationFindUniqueArgs<ExtArgs>>): Prisma__StockReservationClient<$Result.GetResult<Prisma.$StockReservationPayload<ExtArgs>, T, "findUnique", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find one StockReservation that matches the filter or throw an error with `error.code='P2025'`
+     * if no matches were found.
+     * @param {StockReservationFindUniqueOrThrowArgs} args - Arguments to find a StockReservation
+     * @example
+     * // Get one StockReservation
+     * const stockReservation = await prisma.stockReservation.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends StockReservationFindUniqueOrThrowArgs>(args: SelectSubset<T, StockReservationFindUniqueOrThrowArgs<ExtArgs>>): Prisma__StockReservationClient<$Result.GetResult<Prisma.$StockReservationPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first StockReservation that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {StockReservationFindFirstArgs} args - Arguments to find a StockReservation
+     * @example
+     * // Get one StockReservation
+     * const stockReservation = await prisma.stockReservation.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends StockReservationFindFirstArgs>(args?: SelectSubset<T, StockReservationFindFirstArgs<ExtArgs>>): Prisma__StockReservationClient<$Result.GetResult<Prisma.$StockReservationPayload<ExtArgs>, T, "findFirst", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first StockReservation that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {StockReservationFindFirstOrThrowArgs} args - Arguments to find a StockReservation
+     * @example
+     * // Get one StockReservation
+     * const stockReservation = await prisma.stockReservation.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends StockReservationFindFirstOrThrowArgs>(args?: SelectSubset<T, StockReservationFindFirstOrThrowArgs<ExtArgs>>): Prisma__StockReservationClient<$Result.GetResult<Prisma.$StockReservationPayload<ExtArgs>, T, "findFirstOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find zero or more StockReservations that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {StockReservationFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all StockReservations
+     * const stockReservations = await prisma.stockReservation.findMany()
+     * 
+     * // Get first 10 StockReservations
+     * const stockReservations = await prisma.stockReservation.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const stockReservationWithIdOnly = await prisma.stockReservation.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends StockReservationFindManyArgs>(args?: SelectSubset<T, StockReservationFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$StockReservationPayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
+
+    /**
+     * Create a StockReservation.
+     * @param {StockReservationCreateArgs} args - Arguments to create a StockReservation.
+     * @example
+     * // Create one StockReservation
+     * const StockReservation = await prisma.stockReservation.create({
+     *   data: {
+     *     // ... data to create a StockReservation
+     *   }
+     * })
+     * 
+     */
+    create<T extends StockReservationCreateArgs>(args: SelectSubset<T, StockReservationCreateArgs<ExtArgs>>): Prisma__StockReservationClient<$Result.GetResult<Prisma.$StockReservationPayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Create many StockReservations.
+     * @param {StockReservationCreateManyArgs} args - Arguments to create many StockReservations.
+     * @example
+     * // Create many StockReservations
+     * const stockReservation = await prisma.stockReservation.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends StockReservationCreateManyArgs>(args?: SelectSubset<T, StockReservationCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many StockReservations and returns the data saved in the database.
+     * @param {StockReservationCreateManyAndReturnArgs} args - Arguments to create many StockReservations.
+     * @example
+     * // Create many StockReservations
+     * const stockReservation = await prisma.stockReservation.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many StockReservations and only return the `id`
+     * const stockReservationWithIdOnly = await prisma.stockReservation.createManyAndReturn({
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends StockReservationCreateManyAndReturnArgs>(args?: SelectSubset<T, StockReservationCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$StockReservationPayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Delete a StockReservation.
+     * @param {StockReservationDeleteArgs} args - Arguments to delete one StockReservation.
+     * @example
+     * // Delete one StockReservation
+     * const StockReservation = await prisma.stockReservation.delete({
+     *   where: {
+     *     // ... filter to delete one StockReservation
+     *   }
+     * })
+     * 
+     */
+    delete<T extends StockReservationDeleteArgs>(args: SelectSubset<T, StockReservationDeleteArgs<ExtArgs>>): Prisma__StockReservationClient<$Result.GetResult<Prisma.$StockReservationPayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Update one StockReservation.
+     * @param {StockReservationUpdateArgs} args - Arguments to update one StockReservation.
+     * @example
+     * // Update one StockReservation
+     * const stockReservation = await prisma.stockReservation.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends StockReservationUpdateArgs>(args: SelectSubset<T, StockReservationUpdateArgs<ExtArgs>>): Prisma__StockReservationClient<$Result.GetResult<Prisma.$StockReservationPayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Delete zero or more StockReservations.
+     * @param {StockReservationDeleteManyArgs} args - Arguments to filter StockReservations to delete.
+     * @example
+     * // Delete a few StockReservations
+     * const { count } = await prisma.stockReservation.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends StockReservationDeleteManyArgs>(args?: SelectSubset<T, StockReservationDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more StockReservations.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {StockReservationUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many StockReservations
+     * const stockReservation = await prisma.stockReservation.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends StockReservationUpdateManyArgs>(args: SelectSubset<T, StockReservationUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more StockReservations and returns the data updated in the database.
+     * @param {StockReservationUpdateManyAndReturnArgs} args - Arguments to update many StockReservations.
+     * @example
+     * // Update many StockReservations
+     * const stockReservation = await prisma.stockReservation.updateManyAndReturn({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Update zero or more StockReservations and only return the `id`
+     * const stockReservationWithIdOnly = await prisma.stockReservation.updateManyAndReturn({
+     *   select: { id: true },
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    updateManyAndReturn<T extends StockReservationUpdateManyAndReturnArgs>(args: SelectSubset<T, StockReservationUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$StockReservationPayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Create or update one StockReservation.
+     * @param {StockReservationUpsertArgs} args - Arguments to update or create a StockReservation.
+     * @example
+     * // Update or create a StockReservation
+     * const stockReservation = await prisma.stockReservation.upsert({
+     *   create: {
+     *     // ... data to create a StockReservation
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the StockReservation we want to update
+     *   }
+     * })
+     */
+    upsert<T extends StockReservationUpsertArgs>(args: SelectSubset<T, StockReservationUpsertArgs<ExtArgs>>): Prisma__StockReservationClient<$Result.GetResult<Prisma.$StockReservationPayload<ExtArgs>, T, "upsert", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+
+    /**
+     * Count the number of StockReservations.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {StockReservationCountArgs} args - Arguments to filter StockReservations to count.
+     * @example
+     * // Count the number of StockReservations
+     * const count = await prisma.stockReservation.count({
+     *   where: {
+     *     // ... the filter for the StockReservations we want to count
+     *   }
+     * })
+    **/
+    count<T extends StockReservationCountArgs>(
+      args?: Subset<T, StockReservationCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], StockReservationCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a StockReservation.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {StockReservationAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends StockReservationAggregateArgs>(args: Subset<T, StockReservationAggregateArgs>): Prisma.PrismaPromise<GetStockReservationAggregateType<T>>
+
+    /**
+     * Group by StockReservation.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {StockReservationGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends StockReservationGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: StockReservationGroupByArgs['orderBy'] }
+        : { orderBy?: StockReservationGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, StockReservationGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetStockReservationGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the StockReservation model
+   */
+  readonly fields: StockReservationFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for StockReservation.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__StockReservationClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    creation<T extends CreationDefaultArgs<ExtArgs> = {}>(args?: Subset<T, CreationDefaultArgs<ExtArgs>>): Prisma__CreationClient<$Result.GetResult<Prisma.$CreationPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    order<T extends StockReservation$orderArgs<ExtArgs> = {}>(args?: Subset<T, StockReservation$orderArgs<ExtArgs>>): Prisma__OrderClient<$Result.GetResult<Prisma.$OrderPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the StockReservation model
+   */
+  interface StockReservationFieldRefs {
+    readonly id: FieldRef<"StockReservation", 'String'>
+    readonly creationId: FieldRef<"StockReservation", 'String'>
+    readonly quantity: FieldRef<"StockReservation", 'Int'>
+    readonly orderId: FieldRef<"StockReservation", 'String'>
+    readonly expiresAt: FieldRef<"StockReservation", 'DateTime'>
+    readonly createdAt: FieldRef<"StockReservation", 'DateTime'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * StockReservation findUnique
+   */
+  export type StockReservationFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the StockReservation
+     */
+    select?: StockReservationSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the StockReservation
+     */
+    omit?: StockReservationOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: StockReservationInclude<ExtArgs> | null
+    /**
+     * Filter, which StockReservation to fetch.
+     */
+    where: StockReservationWhereUniqueInput
+  }
+
+  /**
+   * StockReservation findUniqueOrThrow
+   */
+  export type StockReservationFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the StockReservation
+     */
+    select?: StockReservationSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the StockReservation
+     */
+    omit?: StockReservationOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: StockReservationInclude<ExtArgs> | null
+    /**
+     * Filter, which StockReservation to fetch.
+     */
+    where: StockReservationWhereUniqueInput
+  }
+
+  /**
+   * StockReservation findFirst
+   */
+  export type StockReservationFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the StockReservation
+     */
+    select?: StockReservationSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the StockReservation
+     */
+    omit?: StockReservationOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: StockReservationInclude<ExtArgs> | null
+    /**
+     * Filter, which StockReservation to fetch.
+     */
+    where?: StockReservationWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of StockReservations to fetch.
+     */
+    orderBy?: StockReservationOrderByWithRelationInput | StockReservationOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for StockReservations.
+     */
+    cursor?: StockReservationWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` StockReservations from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` StockReservations.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of StockReservations.
+     */
+    distinct?: StockReservationScalarFieldEnum | StockReservationScalarFieldEnum[]
+  }
+
+  /**
+   * StockReservation findFirstOrThrow
+   */
+  export type StockReservationFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the StockReservation
+     */
+    select?: StockReservationSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the StockReservation
+     */
+    omit?: StockReservationOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: StockReservationInclude<ExtArgs> | null
+    /**
+     * Filter, which StockReservation to fetch.
+     */
+    where?: StockReservationWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of StockReservations to fetch.
+     */
+    orderBy?: StockReservationOrderByWithRelationInput | StockReservationOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for StockReservations.
+     */
+    cursor?: StockReservationWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` StockReservations from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` StockReservations.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of StockReservations.
+     */
+    distinct?: StockReservationScalarFieldEnum | StockReservationScalarFieldEnum[]
+  }
+
+  /**
+   * StockReservation findMany
+   */
+  export type StockReservationFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the StockReservation
+     */
+    select?: StockReservationSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the StockReservation
+     */
+    omit?: StockReservationOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: StockReservationInclude<ExtArgs> | null
+    /**
+     * Filter, which StockReservations to fetch.
+     */
+    where?: StockReservationWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of StockReservations to fetch.
+     */
+    orderBy?: StockReservationOrderByWithRelationInput | StockReservationOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing StockReservations.
+     */
+    cursor?: StockReservationWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` StockReservations from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` StockReservations.
+     */
+    skip?: number
+    distinct?: StockReservationScalarFieldEnum | StockReservationScalarFieldEnum[]
+  }
+
+  /**
+   * StockReservation create
+   */
+  export type StockReservationCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the StockReservation
+     */
+    select?: StockReservationSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the StockReservation
+     */
+    omit?: StockReservationOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: StockReservationInclude<ExtArgs> | null
+    /**
+     * The data needed to create a StockReservation.
+     */
+    data: XOR<StockReservationCreateInput, StockReservationUncheckedCreateInput>
+  }
+
+  /**
+   * StockReservation createMany
+   */
+  export type StockReservationCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many StockReservations.
+     */
+    data: StockReservationCreateManyInput | StockReservationCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * StockReservation createManyAndReturn
+   */
+  export type StockReservationCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the StockReservation
+     */
+    select?: StockReservationSelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the StockReservation
+     */
+    omit?: StockReservationOmit<ExtArgs> | null
+    /**
+     * The data used to create many StockReservations.
+     */
+    data: StockReservationCreateManyInput | StockReservationCreateManyInput[]
+    skipDuplicates?: boolean
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: StockReservationIncludeCreateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * StockReservation update
+   */
+  export type StockReservationUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the StockReservation
+     */
+    select?: StockReservationSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the StockReservation
+     */
+    omit?: StockReservationOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: StockReservationInclude<ExtArgs> | null
+    /**
+     * The data needed to update a StockReservation.
+     */
+    data: XOR<StockReservationUpdateInput, StockReservationUncheckedUpdateInput>
+    /**
+     * Choose, which StockReservation to update.
+     */
+    where: StockReservationWhereUniqueInput
+  }
+
+  /**
+   * StockReservation updateMany
+   */
+  export type StockReservationUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update StockReservations.
+     */
+    data: XOR<StockReservationUpdateManyMutationInput, StockReservationUncheckedUpdateManyInput>
+    /**
+     * Filter which StockReservations to update
+     */
+    where?: StockReservationWhereInput
+    /**
+     * Limit how many StockReservations to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * StockReservation updateManyAndReturn
+   */
+  export type StockReservationUpdateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the StockReservation
+     */
+    select?: StockReservationSelectUpdateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the StockReservation
+     */
+    omit?: StockReservationOmit<ExtArgs> | null
+    /**
+     * The data used to update StockReservations.
+     */
+    data: XOR<StockReservationUpdateManyMutationInput, StockReservationUncheckedUpdateManyInput>
+    /**
+     * Filter which StockReservations to update
+     */
+    where?: StockReservationWhereInput
+    /**
+     * Limit how many StockReservations to update.
+     */
+    limit?: number
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: StockReservationIncludeUpdateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * StockReservation upsert
+   */
+  export type StockReservationUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the StockReservation
+     */
+    select?: StockReservationSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the StockReservation
+     */
+    omit?: StockReservationOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: StockReservationInclude<ExtArgs> | null
+    /**
+     * The filter to search for the StockReservation to update in case it exists.
+     */
+    where: StockReservationWhereUniqueInput
+    /**
+     * In case the StockReservation found by the `where` argument doesn't exist, create a new StockReservation with this data.
+     */
+    create: XOR<StockReservationCreateInput, StockReservationUncheckedCreateInput>
+    /**
+     * In case the StockReservation was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<StockReservationUpdateInput, StockReservationUncheckedUpdateInput>
+  }
+
+  /**
+   * StockReservation delete
+   */
+  export type StockReservationDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the StockReservation
+     */
+    select?: StockReservationSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the StockReservation
+     */
+    omit?: StockReservationOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: StockReservationInclude<ExtArgs> | null
+    /**
+     * Filter which StockReservation to delete.
+     */
+    where: StockReservationWhereUniqueInput
+  }
+
+  /**
+   * StockReservation deleteMany
+   */
+  export type StockReservationDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which StockReservations to delete
+     */
+    where?: StockReservationWhereInput
+    /**
+     * Limit how many StockReservations to delete.
+     */
+    limit?: number
+  }
+
+  /**
+   * StockReservation.order
+   */
+  export type StockReservation$orderArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Order
+     */
+    select?: OrderSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Order
+     */
+    omit?: OrderOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: OrderInclude<ExtArgs> | null
+    where?: OrderWhereInput
+  }
+
+  /**
+   * StockReservation without action
+   */
+  export type StockReservationDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the StockReservation
+     */
+    select?: StockReservationSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the StockReservation
+     */
+    omit?: StockReservationOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: StockReservationInclude<ExtArgs> | null
+  }
+
+
+  /**
+   * Model ProcessedWebhookEvent
+   */
+
+  export type AggregateProcessedWebhookEvent = {
+    _count: ProcessedWebhookEventCountAggregateOutputType | null
+    _min: ProcessedWebhookEventMinAggregateOutputType | null
+    _max: ProcessedWebhookEventMaxAggregateOutputType | null
+  }
+
+  export type ProcessedWebhookEventMinAggregateOutputType = {
+    id: string | null
+    eventId: string | null
+    eventType: string | null
+    processed: boolean | null
+    createdAt: Date | null
+  }
+
+  export type ProcessedWebhookEventMaxAggregateOutputType = {
+    id: string | null
+    eventId: string | null
+    eventType: string | null
+    processed: boolean | null
+    createdAt: Date | null
+  }
+
+  export type ProcessedWebhookEventCountAggregateOutputType = {
+    id: number
+    eventId: number
+    eventType: number
+    processed: number
+    createdAt: number
+    _all: number
+  }
+
+
+  export type ProcessedWebhookEventMinAggregateInputType = {
+    id?: true
+    eventId?: true
+    eventType?: true
+    processed?: true
+    createdAt?: true
+  }
+
+  export type ProcessedWebhookEventMaxAggregateInputType = {
+    id?: true
+    eventId?: true
+    eventType?: true
+    processed?: true
+    createdAt?: true
+  }
+
+  export type ProcessedWebhookEventCountAggregateInputType = {
+    id?: true
+    eventId?: true
+    eventType?: true
+    processed?: true
+    createdAt?: true
+    _all?: true
+  }
+
+  export type ProcessedWebhookEventAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which ProcessedWebhookEvent to aggregate.
+     */
+    where?: ProcessedWebhookEventWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of ProcessedWebhookEvents to fetch.
+     */
+    orderBy?: ProcessedWebhookEventOrderByWithRelationInput | ProcessedWebhookEventOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: ProcessedWebhookEventWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` ProcessedWebhookEvents from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` ProcessedWebhookEvents.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned ProcessedWebhookEvents
+    **/
+    _count?: true | ProcessedWebhookEventCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: ProcessedWebhookEventMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: ProcessedWebhookEventMaxAggregateInputType
+  }
+
+  export type GetProcessedWebhookEventAggregateType<T extends ProcessedWebhookEventAggregateArgs> = {
+        [P in keyof T & keyof AggregateProcessedWebhookEvent]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateProcessedWebhookEvent[P]>
+      : GetScalarType<T[P], AggregateProcessedWebhookEvent[P]>
+  }
+
+
+
+
+  export type ProcessedWebhookEventGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: ProcessedWebhookEventWhereInput
+    orderBy?: ProcessedWebhookEventOrderByWithAggregationInput | ProcessedWebhookEventOrderByWithAggregationInput[]
+    by: ProcessedWebhookEventScalarFieldEnum[] | ProcessedWebhookEventScalarFieldEnum
+    having?: ProcessedWebhookEventScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: ProcessedWebhookEventCountAggregateInputType | true
+    _min?: ProcessedWebhookEventMinAggregateInputType
+    _max?: ProcessedWebhookEventMaxAggregateInputType
+  }
+
+  export type ProcessedWebhookEventGroupByOutputType = {
+    id: string
+    eventId: string
+    eventType: string
+    processed: boolean
+    createdAt: Date
+    _count: ProcessedWebhookEventCountAggregateOutputType | null
+    _min: ProcessedWebhookEventMinAggregateOutputType | null
+    _max: ProcessedWebhookEventMaxAggregateOutputType | null
+  }
+
+  type GetProcessedWebhookEventGroupByPayload<T extends ProcessedWebhookEventGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<ProcessedWebhookEventGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof ProcessedWebhookEventGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], ProcessedWebhookEventGroupByOutputType[P]>
+            : GetScalarType<T[P], ProcessedWebhookEventGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type ProcessedWebhookEventSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    eventId?: boolean
+    eventType?: boolean
+    processed?: boolean
+    createdAt?: boolean
+  }, ExtArgs["result"]["processedWebhookEvent"]>
+
+  export type ProcessedWebhookEventSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    eventId?: boolean
+    eventType?: boolean
+    processed?: boolean
+    createdAt?: boolean
+  }, ExtArgs["result"]["processedWebhookEvent"]>
+
+  export type ProcessedWebhookEventSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    eventId?: boolean
+    eventType?: boolean
+    processed?: boolean
+    createdAt?: boolean
+  }, ExtArgs["result"]["processedWebhookEvent"]>
+
+  export type ProcessedWebhookEventSelectScalar = {
+    id?: boolean
+    eventId?: boolean
+    eventType?: boolean
+    processed?: boolean
+    createdAt?: boolean
+  }
+
+  export type ProcessedWebhookEventOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "eventId" | "eventType" | "processed" | "createdAt", ExtArgs["result"]["processedWebhookEvent"]>
+
+  export type $ProcessedWebhookEventPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "ProcessedWebhookEvent"
+    objects: {}
+    scalars: $Extensions.GetPayloadResult<{
+      id: string
+      eventId: string
+      eventType: string
+      processed: boolean
+      createdAt: Date
+    }, ExtArgs["result"]["processedWebhookEvent"]>
+    composites: {}
+  }
+
+  type ProcessedWebhookEventGetPayload<S extends boolean | null | undefined | ProcessedWebhookEventDefaultArgs> = $Result.GetResult<Prisma.$ProcessedWebhookEventPayload, S>
+
+  type ProcessedWebhookEventCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
+    Omit<ProcessedWebhookEventFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+      select?: ProcessedWebhookEventCountAggregateInputType | true
+    }
+
+  export interface ProcessedWebhookEventDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['ProcessedWebhookEvent'], meta: { name: 'ProcessedWebhookEvent' } }
+    /**
+     * Find zero or one ProcessedWebhookEvent that matches the filter.
+     * @param {ProcessedWebhookEventFindUniqueArgs} args - Arguments to find a ProcessedWebhookEvent
+     * @example
+     * // Get one ProcessedWebhookEvent
+     * const processedWebhookEvent = await prisma.processedWebhookEvent.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends ProcessedWebhookEventFindUniqueArgs>(args: SelectSubset<T, ProcessedWebhookEventFindUniqueArgs<ExtArgs>>): Prisma__ProcessedWebhookEventClient<$Result.GetResult<Prisma.$ProcessedWebhookEventPayload<ExtArgs>, T, "findUnique", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find one ProcessedWebhookEvent that matches the filter or throw an error with `error.code='P2025'`
+     * if no matches were found.
+     * @param {ProcessedWebhookEventFindUniqueOrThrowArgs} args - Arguments to find a ProcessedWebhookEvent
+     * @example
+     * // Get one ProcessedWebhookEvent
+     * const processedWebhookEvent = await prisma.processedWebhookEvent.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends ProcessedWebhookEventFindUniqueOrThrowArgs>(args: SelectSubset<T, ProcessedWebhookEventFindUniqueOrThrowArgs<ExtArgs>>): Prisma__ProcessedWebhookEventClient<$Result.GetResult<Prisma.$ProcessedWebhookEventPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first ProcessedWebhookEvent that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ProcessedWebhookEventFindFirstArgs} args - Arguments to find a ProcessedWebhookEvent
+     * @example
+     * // Get one ProcessedWebhookEvent
+     * const processedWebhookEvent = await prisma.processedWebhookEvent.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends ProcessedWebhookEventFindFirstArgs>(args?: SelectSubset<T, ProcessedWebhookEventFindFirstArgs<ExtArgs>>): Prisma__ProcessedWebhookEventClient<$Result.GetResult<Prisma.$ProcessedWebhookEventPayload<ExtArgs>, T, "findFirst", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first ProcessedWebhookEvent that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ProcessedWebhookEventFindFirstOrThrowArgs} args - Arguments to find a ProcessedWebhookEvent
+     * @example
+     * // Get one ProcessedWebhookEvent
+     * const processedWebhookEvent = await prisma.processedWebhookEvent.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends ProcessedWebhookEventFindFirstOrThrowArgs>(args?: SelectSubset<T, ProcessedWebhookEventFindFirstOrThrowArgs<ExtArgs>>): Prisma__ProcessedWebhookEventClient<$Result.GetResult<Prisma.$ProcessedWebhookEventPayload<ExtArgs>, T, "findFirstOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find zero or more ProcessedWebhookEvents that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ProcessedWebhookEventFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all ProcessedWebhookEvents
+     * const processedWebhookEvents = await prisma.processedWebhookEvent.findMany()
+     * 
+     * // Get first 10 ProcessedWebhookEvents
+     * const processedWebhookEvents = await prisma.processedWebhookEvent.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const processedWebhookEventWithIdOnly = await prisma.processedWebhookEvent.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends ProcessedWebhookEventFindManyArgs>(args?: SelectSubset<T, ProcessedWebhookEventFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ProcessedWebhookEventPayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
+
+    /**
+     * Create a ProcessedWebhookEvent.
+     * @param {ProcessedWebhookEventCreateArgs} args - Arguments to create a ProcessedWebhookEvent.
+     * @example
+     * // Create one ProcessedWebhookEvent
+     * const ProcessedWebhookEvent = await prisma.processedWebhookEvent.create({
+     *   data: {
+     *     // ... data to create a ProcessedWebhookEvent
+     *   }
+     * })
+     * 
+     */
+    create<T extends ProcessedWebhookEventCreateArgs>(args: SelectSubset<T, ProcessedWebhookEventCreateArgs<ExtArgs>>): Prisma__ProcessedWebhookEventClient<$Result.GetResult<Prisma.$ProcessedWebhookEventPayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Create many ProcessedWebhookEvents.
+     * @param {ProcessedWebhookEventCreateManyArgs} args - Arguments to create many ProcessedWebhookEvents.
+     * @example
+     * // Create many ProcessedWebhookEvents
+     * const processedWebhookEvent = await prisma.processedWebhookEvent.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends ProcessedWebhookEventCreateManyArgs>(args?: SelectSubset<T, ProcessedWebhookEventCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many ProcessedWebhookEvents and returns the data saved in the database.
+     * @param {ProcessedWebhookEventCreateManyAndReturnArgs} args - Arguments to create many ProcessedWebhookEvents.
+     * @example
+     * // Create many ProcessedWebhookEvents
+     * const processedWebhookEvent = await prisma.processedWebhookEvent.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many ProcessedWebhookEvents and only return the `id`
+     * const processedWebhookEventWithIdOnly = await prisma.processedWebhookEvent.createManyAndReturn({
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends ProcessedWebhookEventCreateManyAndReturnArgs>(args?: SelectSubset<T, ProcessedWebhookEventCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ProcessedWebhookEventPayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Delete a ProcessedWebhookEvent.
+     * @param {ProcessedWebhookEventDeleteArgs} args - Arguments to delete one ProcessedWebhookEvent.
+     * @example
+     * // Delete one ProcessedWebhookEvent
+     * const ProcessedWebhookEvent = await prisma.processedWebhookEvent.delete({
+     *   where: {
+     *     // ... filter to delete one ProcessedWebhookEvent
+     *   }
+     * })
+     * 
+     */
+    delete<T extends ProcessedWebhookEventDeleteArgs>(args: SelectSubset<T, ProcessedWebhookEventDeleteArgs<ExtArgs>>): Prisma__ProcessedWebhookEventClient<$Result.GetResult<Prisma.$ProcessedWebhookEventPayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Update one ProcessedWebhookEvent.
+     * @param {ProcessedWebhookEventUpdateArgs} args - Arguments to update one ProcessedWebhookEvent.
+     * @example
+     * // Update one ProcessedWebhookEvent
+     * const processedWebhookEvent = await prisma.processedWebhookEvent.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends ProcessedWebhookEventUpdateArgs>(args: SelectSubset<T, ProcessedWebhookEventUpdateArgs<ExtArgs>>): Prisma__ProcessedWebhookEventClient<$Result.GetResult<Prisma.$ProcessedWebhookEventPayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Delete zero or more ProcessedWebhookEvents.
+     * @param {ProcessedWebhookEventDeleteManyArgs} args - Arguments to filter ProcessedWebhookEvents to delete.
+     * @example
+     * // Delete a few ProcessedWebhookEvents
+     * const { count } = await prisma.processedWebhookEvent.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends ProcessedWebhookEventDeleteManyArgs>(args?: SelectSubset<T, ProcessedWebhookEventDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more ProcessedWebhookEvents.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ProcessedWebhookEventUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many ProcessedWebhookEvents
+     * const processedWebhookEvent = await prisma.processedWebhookEvent.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends ProcessedWebhookEventUpdateManyArgs>(args: SelectSubset<T, ProcessedWebhookEventUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more ProcessedWebhookEvents and returns the data updated in the database.
+     * @param {ProcessedWebhookEventUpdateManyAndReturnArgs} args - Arguments to update many ProcessedWebhookEvents.
+     * @example
+     * // Update many ProcessedWebhookEvents
+     * const processedWebhookEvent = await prisma.processedWebhookEvent.updateManyAndReturn({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Update zero or more ProcessedWebhookEvents and only return the `id`
+     * const processedWebhookEventWithIdOnly = await prisma.processedWebhookEvent.updateManyAndReturn({
+     *   select: { id: true },
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    updateManyAndReturn<T extends ProcessedWebhookEventUpdateManyAndReturnArgs>(args: SelectSubset<T, ProcessedWebhookEventUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ProcessedWebhookEventPayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Create or update one ProcessedWebhookEvent.
+     * @param {ProcessedWebhookEventUpsertArgs} args - Arguments to update or create a ProcessedWebhookEvent.
+     * @example
+     * // Update or create a ProcessedWebhookEvent
+     * const processedWebhookEvent = await prisma.processedWebhookEvent.upsert({
+     *   create: {
+     *     // ... data to create a ProcessedWebhookEvent
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the ProcessedWebhookEvent we want to update
+     *   }
+     * })
+     */
+    upsert<T extends ProcessedWebhookEventUpsertArgs>(args: SelectSubset<T, ProcessedWebhookEventUpsertArgs<ExtArgs>>): Prisma__ProcessedWebhookEventClient<$Result.GetResult<Prisma.$ProcessedWebhookEventPayload<ExtArgs>, T, "upsert", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+
+    /**
+     * Count the number of ProcessedWebhookEvents.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ProcessedWebhookEventCountArgs} args - Arguments to filter ProcessedWebhookEvents to count.
+     * @example
+     * // Count the number of ProcessedWebhookEvents
+     * const count = await prisma.processedWebhookEvent.count({
+     *   where: {
+     *     // ... the filter for the ProcessedWebhookEvents we want to count
+     *   }
+     * })
+    **/
+    count<T extends ProcessedWebhookEventCountArgs>(
+      args?: Subset<T, ProcessedWebhookEventCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], ProcessedWebhookEventCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a ProcessedWebhookEvent.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ProcessedWebhookEventAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends ProcessedWebhookEventAggregateArgs>(args: Subset<T, ProcessedWebhookEventAggregateArgs>): Prisma.PrismaPromise<GetProcessedWebhookEventAggregateType<T>>
+
+    /**
+     * Group by ProcessedWebhookEvent.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ProcessedWebhookEventGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends ProcessedWebhookEventGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: ProcessedWebhookEventGroupByArgs['orderBy'] }
+        : { orderBy?: ProcessedWebhookEventGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, ProcessedWebhookEventGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetProcessedWebhookEventGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the ProcessedWebhookEvent model
+   */
+  readonly fields: ProcessedWebhookEventFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for ProcessedWebhookEvent.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__ProcessedWebhookEventClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the ProcessedWebhookEvent model
+   */
+  interface ProcessedWebhookEventFieldRefs {
+    readonly id: FieldRef<"ProcessedWebhookEvent", 'String'>
+    readonly eventId: FieldRef<"ProcessedWebhookEvent", 'String'>
+    readonly eventType: FieldRef<"ProcessedWebhookEvent", 'String'>
+    readonly processed: FieldRef<"ProcessedWebhookEvent", 'Boolean'>
+    readonly createdAt: FieldRef<"ProcessedWebhookEvent", 'DateTime'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * ProcessedWebhookEvent findUnique
+   */
+  export type ProcessedWebhookEventFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ProcessedWebhookEvent
+     */
+    select?: ProcessedWebhookEventSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the ProcessedWebhookEvent
+     */
+    omit?: ProcessedWebhookEventOmit<ExtArgs> | null
+    /**
+     * Filter, which ProcessedWebhookEvent to fetch.
+     */
+    where: ProcessedWebhookEventWhereUniqueInput
+  }
+
+  /**
+   * ProcessedWebhookEvent findUniqueOrThrow
+   */
+  export type ProcessedWebhookEventFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ProcessedWebhookEvent
+     */
+    select?: ProcessedWebhookEventSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the ProcessedWebhookEvent
+     */
+    omit?: ProcessedWebhookEventOmit<ExtArgs> | null
+    /**
+     * Filter, which ProcessedWebhookEvent to fetch.
+     */
+    where: ProcessedWebhookEventWhereUniqueInput
+  }
+
+  /**
+   * ProcessedWebhookEvent findFirst
+   */
+  export type ProcessedWebhookEventFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ProcessedWebhookEvent
+     */
+    select?: ProcessedWebhookEventSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the ProcessedWebhookEvent
+     */
+    omit?: ProcessedWebhookEventOmit<ExtArgs> | null
+    /**
+     * Filter, which ProcessedWebhookEvent to fetch.
+     */
+    where?: ProcessedWebhookEventWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of ProcessedWebhookEvents to fetch.
+     */
+    orderBy?: ProcessedWebhookEventOrderByWithRelationInput | ProcessedWebhookEventOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for ProcessedWebhookEvents.
+     */
+    cursor?: ProcessedWebhookEventWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` ProcessedWebhookEvents from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` ProcessedWebhookEvents.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of ProcessedWebhookEvents.
+     */
+    distinct?: ProcessedWebhookEventScalarFieldEnum | ProcessedWebhookEventScalarFieldEnum[]
+  }
+
+  /**
+   * ProcessedWebhookEvent findFirstOrThrow
+   */
+  export type ProcessedWebhookEventFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ProcessedWebhookEvent
+     */
+    select?: ProcessedWebhookEventSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the ProcessedWebhookEvent
+     */
+    omit?: ProcessedWebhookEventOmit<ExtArgs> | null
+    /**
+     * Filter, which ProcessedWebhookEvent to fetch.
+     */
+    where?: ProcessedWebhookEventWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of ProcessedWebhookEvents to fetch.
+     */
+    orderBy?: ProcessedWebhookEventOrderByWithRelationInput | ProcessedWebhookEventOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for ProcessedWebhookEvents.
+     */
+    cursor?: ProcessedWebhookEventWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` ProcessedWebhookEvents from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` ProcessedWebhookEvents.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of ProcessedWebhookEvents.
+     */
+    distinct?: ProcessedWebhookEventScalarFieldEnum | ProcessedWebhookEventScalarFieldEnum[]
+  }
+
+  /**
+   * ProcessedWebhookEvent findMany
+   */
+  export type ProcessedWebhookEventFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ProcessedWebhookEvent
+     */
+    select?: ProcessedWebhookEventSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the ProcessedWebhookEvent
+     */
+    omit?: ProcessedWebhookEventOmit<ExtArgs> | null
+    /**
+     * Filter, which ProcessedWebhookEvents to fetch.
+     */
+    where?: ProcessedWebhookEventWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of ProcessedWebhookEvents to fetch.
+     */
+    orderBy?: ProcessedWebhookEventOrderByWithRelationInput | ProcessedWebhookEventOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing ProcessedWebhookEvents.
+     */
+    cursor?: ProcessedWebhookEventWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` ProcessedWebhookEvents from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` ProcessedWebhookEvents.
+     */
+    skip?: number
+    distinct?: ProcessedWebhookEventScalarFieldEnum | ProcessedWebhookEventScalarFieldEnum[]
+  }
+
+  /**
+   * ProcessedWebhookEvent create
+   */
+  export type ProcessedWebhookEventCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ProcessedWebhookEvent
+     */
+    select?: ProcessedWebhookEventSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the ProcessedWebhookEvent
+     */
+    omit?: ProcessedWebhookEventOmit<ExtArgs> | null
+    /**
+     * The data needed to create a ProcessedWebhookEvent.
+     */
+    data: XOR<ProcessedWebhookEventCreateInput, ProcessedWebhookEventUncheckedCreateInput>
+  }
+
+  /**
+   * ProcessedWebhookEvent createMany
+   */
+  export type ProcessedWebhookEventCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many ProcessedWebhookEvents.
+     */
+    data: ProcessedWebhookEventCreateManyInput | ProcessedWebhookEventCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * ProcessedWebhookEvent createManyAndReturn
+   */
+  export type ProcessedWebhookEventCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ProcessedWebhookEvent
+     */
+    select?: ProcessedWebhookEventSelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the ProcessedWebhookEvent
+     */
+    omit?: ProcessedWebhookEventOmit<ExtArgs> | null
+    /**
+     * The data used to create many ProcessedWebhookEvents.
+     */
+    data: ProcessedWebhookEventCreateManyInput | ProcessedWebhookEventCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * ProcessedWebhookEvent update
+   */
+  export type ProcessedWebhookEventUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ProcessedWebhookEvent
+     */
+    select?: ProcessedWebhookEventSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the ProcessedWebhookEvent
+     */
+    omit?: ProcessedWebhookEventOmit<ExtArgs> | null
+    /**
+     * The data needed to update a ProcessedWebhookEvent.
+     */
+    data: XOR<ProcessedWebhookEventUpdateInput, ProcessedWebhookEventUncheckedUpdateInput>
+    /**
+     * Choose, which ProcessedWebhookEvent to update.
+     */
+    where: ProcessedWebhookEventWhereUniqueInput
+  }
+
+  /**
+   * ProcessedWebhookEvent updateMany
+   */
+  export type ProcessedWebhookEventUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update ProcessedWebhookEvents.
+     */
+    data: XOR<ProcessedWebhookEventUpdateManyMutationInput, ProcessedWebhookEventUncheckedUpdateManyInput>
+    /**
+     * Filter which ProcessedWebhookEvents to update
+     */
+    where?: ProcessedWebhookEventWhereInput
+    /**
+     * Limit how many ProcessedWebhookEvents to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * ProcessedWebhookEvent updateManyAndReturn
+   */
+  export type ProcessedWebhookEventUpdateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ProcessedWebhookEvent
+     */
+    select?: ProcessedWebhookEventSelectUpdateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the ProcessedWebhookEvent
+     */
+    omit?: ProcessedWebhookEventOmit<ExtArgs> | null
+    /**
+     * The data used to update ProcessedWebhookEvents.
+     */
+    data: XOR<ProcessedWebhookEventUpdateManyMutationInput, ProcessedWebhookEventUncheckedUpdateManyInput>
+    /**
+     * Filter which ProcessedWebhookEvents to update
+     */
+    where?: ProcessedWebhookEventWhereInput
+    /**
+     * Limit how many ProcessedWebhookEvents to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * ProcessedWebhookEvent upsert
+   */
+  export type ProcessedWebhookEventUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ProcessedWebhookEvent
+     */
+    select?: ProcessedWebhookEventSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the ProcessedWebhookEvent
+     */
+    omit?: ProcessedWebhookEventOmit<ExtArgs> | null
+    /**
+     * The filter to search for the ProcessedWebhookEvent to update in case it exists.
+     */
+    where: ProcessedWebhookEventWhereUniqueInput
+    /**
+     * In case the ProcessedWebhookEvent found by the `where` argument doesn't exist, create a new ProcessedWebhookEvent with this data.
+     */
+    create: XOR<ProcessedWebhookEventCreateInput, ProcessedWebhookEventUncheckedCreateInput>
+    /**
+     * In case the ProcessedWebhookEvent was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<ProcessedWebhookEventUpdateInput, ProcessedWebhookEventUncheckedUpdateInput>
+  }
+
+  /**
+   * ProcessedWebhookEvent delete
+   */
+  export type ProcessedWebhookEventDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ProcessedWebhookEvent
+     */
+    select?: ProcessedWebhookEventSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the ProcessedWebhookEvent
+     */
+    omit?: ProcessedWebhookEventOmit<ExtArgs> | null
+    /**
+     * Filter which ProcessedWebhookEvent to delete.
+     */
+    where: ProcessedWebhookEventWhereUniqueInput
+  }
+
+  /**
+   * ProcessedWebhookEvent deleteMany
+   */
+  export type ProcessedWebhookEventDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which ProcessedWebhookEvents to delete
+     */
+    where?: ProcessedWebhookEventWhereInput
+    /**
+     * Limit how many ProcessedWebhookEvents to delete.
+     */
+    limit?: number
+  }
+
+  /**
+   * ProcessedWebhookEvent without action
+   */
+  export type ProcessedWebhookEventDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ProcessedWebhookEvent
+     */
+    select?: ProcessedWebhookEventSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the ProcessedWebhookEvent
+     */
+    omit?: ProcessedWebhookEventOmit<ExtArgs> | null
+  }
+
+
+  /**
    * Enums
    */
 
@@ -8399,6 +10768,29 @@ export namespace Prisma {
   };
 
   export type RateLimitScalarFieldEnum = (typeof RateLimitScalarFieldEnum)[keyof typeof RateLimitScalarFieldEnum]
+
+
+  export const StockReservationScalarFieldEnum: {
+    id: 'id',
+    creationId: 'creationId',
+    quantity: 'quantity',
+    orderId: 'orderId',
+    expiresAt: 'expiresAt',
+    createdAt: 'createdAt'
+  };
+
+  export type StockReservationScalarFieldEnum = (typeof StockReservationScalarFieldEnum)[keyof typeof StockReservationScalarFieldEnum]
+
+
+  export const ProcessedWebhookEventScalarFieldEnum: {
+    id: 'id',
+    eventId: 'eventId',
+    eventType: 'eventType',
+    processed: 'processed',
+    createdAt: 'createdAt'
+  };
+
+  export type ProcessedWebhookEventScalarFieldEnum = (typeof ProcessedWebhookEventScalarFieldEnum)[keyof typeof ProcessedWebhookEventScalarFieldEnum]
 
 
   export const SortOrder: {
@@ -8515,6 +10907,7 @@ export namespace Prisma {
     createdAt?: DateTimeFilter<"Creation"> | Date | string
     updatedAt?: DateTimeFilter<"Creation"> | Date | string
     orderItems?: OrderItemListRelationFilter
+    stockReservations?: StockReservationListRelationFilter
   }
 
   export type CreationOrderByWithRelationInput = {
@@ -8533,6 +10926,7 @@ export namespace Prisma {
     createdAt?: SortOrder
     updatedAt?: SortOrder
     orderItems?: OrderItemOrderByRelationAggregateInput
+    stockReservations?: StockReservationOrderByRelationAggregateInput
   }
 
   export type CreationWhereUniqueInput = Prisma.AtLeast<{
@@ -8554,6 +10948,7 @@ export namespace Prisma {
     createdAt?: DateTimeFilter<"Creation"> | Date | string
     updatedAt?: DateTimeFilter<"Creation"> | Date | string
     orderItems?: OrderItemListRelationFilter
+    stockReservations?: StockReservationListRelationFilter
   }, "id">
 
   export type CreationOrderByWithAggregationInput = {
@@ -8619,6 +11014,7 @@ export namespace Prisma {
     country?: StringFilter<"Order"> | string
     user?: XOR<UserNullableScalarRelationFilter, UserWhereInput> | null
     items?: OrderItemListRelationFilter
+    stockReservation?: XOR<StockReservationNullableScalarRelationFilter, StockReservationWhereInput> | null
   }
 
   export type OrderOrderByWithRelationInput = {
@@ -8639,6 +11035,7 @@ export namespace Prisma {
     country?: SortOrder
     user?: UserOrderByWithRelationInput
     items?: OrderItemOrderByRelationAggregateInput
+    stockReservation?: StockReservationOrderByWithRelationInput
   }
 
   export type OrderWhereUniqueInput = Prisma.AtLeast<{
@@ -8662,6 +11059,7 @@ export namespace Prisma {
     country?: StringFilter<"Order"> | string
     user?: XOR<UserNullableScalarRelationFilter, UserWhereInput> | null
     items?: OrderItemListRelationFilter
+    stockReservation?: XOR<StockReservationNullableScalarRelationFilter, StockReservationWhereInput> | null
   }, "id">
 
   export type OrderOrderByWithAggregationInput = {
@@ -8975,6 +11373,123 @@ export namespace Prisma {
     lockUntil?: DateTimeNullableWithAggregatesFilter<"RateLimit"> | Date | string | null
   }
 
+  export type StockReservationWhereInput = {
+    AND?: StockReservationWhereInput | StockReservationWhereInput[]
+    OR?: StockReservationWhereInput[]
+    NOT?: StockReservationWhereInput | StockReservationWhereInput[]
+    id?: StringFilter<"StockReservation"> | string
+    creationId?: StringFilter<"StockReservation"> | string
+    quantity?: IntFilter<"StockReservation"> | number
+    orderId?: StringNullableFilter<"StockReservation"> | string | null
+    expiresAt?: DateTimeFilter<"StockReservation"> | Date | string
+    createdAt?: DateTimeFilter<"StockReservation"> | Date | string
+    creation?: XOR<CreationScalarRelationFilter, CreationWhereInput>
+    order?: XOR<OrderNullableScalarRelationFilter, OrderWhereInput> | null
+  }
+
+  export type StockReservationOrderByWithRelationInput = {
+    id?: SortOrder
+    creationId?: SortOrder
+    quantity?: SortOrder
+    orderId?: SortOrderInput | SortOrder
+    expiresAt?: SortOrder
+    createdAt?: SortOrder
+    creation?: CreationOrderByWithRelationInput
+    order?: OrderOrderByWithRelationInput
+  }
+
+  export type StockReservationWhereUniqueInput = Prisma.AtLeast<{
+    id?: string
+    orderId?: string
+    AND?: StockReservationWhereInput | StockReservationWhereInput[]
+    OR?: StockReservationWhereInput[]
+    NOT?: StockReservationWhereInput | StockReservationWhereInput[]
+    creationId?: StringFilter<"StockReservation"> | string
+    quantity?: IntFilter<"StockReservation"> | number
+    expiresAt?: DateTimeFilter<"StockReservation"> | Date | string
+    createdAt?: DateTimeFilter<"StockReservation"> | Date | string
+    creation?: XOR<CreationScalarRelationFilter, CreationWhereInput>
+    order?: XOR<OrderNullableScalarRelationFilter, OrderWhereInput> | null
+  }, "id" | "orderId">
+
+  export type StockReservationOrderByWithAggregationInput = {
+    id?: SortOrder
+    creationId?: SortOrder
+    quantity?: SortOrder
+    orderId?: SortOrderInput | SortOrder
+    expiresAt?: SortOrder
+    createdAt?: SortOrder
+    _count?: StockReservationCountOrderByAggregateInput
+    _avg?: StockReservationAvgOrderByAggregateInput
+    _max?: StockReservationMaxOrderByAggregateInput
+    _min?: StockReservationMinOrderByAggregateInput
+    _sum?: StockReservationSumOrderByAggregateInput
+  }
+
+  export type StockReservationScalarWhereWithAggregatesInput = {
+    AND?: StockReservationScalarWhereWithAggregatesInput | StockReservationScalarWhereWithAggregatesInput[]
+    OR?: StockReservationScalarWhereWithAggregatesInput[]
+    NOT?: StockReservationScalarWhereWithAggregatesInput | StockReservationScalarWhereWithAggregatesInput[]
+    id?: StringWithAggregatesFilter<"StockReservation"> | string
+    creationId?: StringWithAggregatesFilter<"StockReservation"> | string
+    quantity?: IntWithAggregatesFilter<"StockReservation"> | number
+    orderId?: StringNullableWithAggregatesFilter<"StockReservation"> | string | null
+    expiresAt?: DateTimeWithAggregatesFilter<"StockReservation"> | Date | string
+    createdAt?: DateTimeWithAggregatesFilter<"StockReservation"> | Date | string
+  }
+
+  export type ProcessedWebhookEventWhereInput = {
+    AND?: ProcessedWebhookEventWhereInput | ProcessedWebhookEventWhereInput[]
+    OR?: ProcessedWebhookEventWhereInput[]
+    NOT?: ProcessedWebhookEventWhereInput | ProcessedWebhookEventWhereInput[]
+    id?: StringFilter<"ProcessedWebhookEvent"> | string
+    eventId?: StringFilter<"ProcessedWebhookEvent"> | string
+    eventType?: StringFilter<"ProcessedWebhookEvent"> | string
+    processed?: BoolFilter<"ProcessedWebhookEvent"> | boolean
+    createdAt?: DateTimeFilter<"ProcessedWebhookEvent"> | Date | string
+  }
+
+  export type ProcessedWebhookEventOrderByWithRelationInput = {
+    id?: SortOrder
+    eventId?: SortOrder
+    eventType?: SortOrder
+    processed?: SortOrder
+    createdAt?: SortOrder
+  }
+
+  export type ProcessedWebhookEventWhereUniqueInput = Prisma.AtLeast<{
+    id?: string
+    eventId?: string
+    AND?: ProcessedWebhookEventWhereInput | ProcessedWebhookEventWhereInput[]
+    OR?: ProcessedWebhookEventWhereInput[]
+    NOT?: ProcessedWebhookEventWhereInput | ProcessedWebhookEventWhereInput[]
+    eventType?: StringFilter<"ProcessedWebhookEvent"> | string
+    processed?: BoolFilter<"ProcessedWebhookEvent"> | boolean
+    createdAt?: DateTimeFilter<"ProcessedWebhookEvent"> | Date | string
+  }, "id" | "eventId">
+
+  export type ProcessedWebhookEventOrderByWithAggregationInput = {
+    id?: SortOrder
+    eventId?: SortOrder
+    eventType?: SortOrder
+    processed?: SortOrder
+    createdAt?: SortOrder
+    _count?: ProcessedWebhookEventCountOrderByAggregateInput
+    _max?: ProcessedWebhookEventMaxOrderByAggregateInput
+    _min?: ProcessedWebhookEventMinOrderByAggregateInput
+  }
+
+  export type ProcessedWebhookEventScalarWhereWithAggregatesInput = {
+    AND?: ProcessedWebhookEventScalarWhereWithAggregatesInput | ProcessedWebhookEventScalarWhereWithAggregatesInput[]
+    OR?: ProcessedWebhookEventScalarWhereWithAggregatesInput[]
+    NOT?: ProcessedWebhookEventScalarWhereWithAggregatesInput | ProcessedWebhookEventScalarWhereWithAggregatesInput[]
+    id?: StringWithAggregatesFilter<"ProcessedWebhookEvent"> | string
+    eventId?: StringWithAggregatesFilter<"ProcessedWebhookEvent"> | string
+    eventType?: StringWithAggregatesFilter<"ProcessedWebhookEvent"> | string
+    processed?: BoolWithAggregatesFilter<"ProcessedWebhookEvent"> | boolean
+    createdAt?: DateTimeWithAggregatesFilter<"ProcessedWebhookEvent"> | Date | string
+  }
+
   export type CreationCreateInput = {
     id?: string
     title: string
@@ -8991,6 +11506,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     orderItems?: OrderItemCreateNestedManyWithoutCreationInput
+    stockReservations?: StockReservationCreateNestedManyWithoutCreationInput
   }
 
   export type CreationUncheckedCreateInput = {
@@ -9009,6 +11525,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     orderItems?: OrderItemUncheckedCreateNestedManyWithoutCreationInput
+    stockReservations?: StockReservationUncheckedCreateNestedManyWithoutCreationInput
   }
 
   export type CreationUpdateInput = {
@@ -9027,6 +11544,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     orderItems?: OrderItemUpdateManyWithoutCreationNestedInput
+    stockReservations?: StockReservationUpdateManyWithoutCreationNestedInput
   }
 
   export type CreationUncheckedUpdateInput = {
@@ -9045,6 +11563,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     orderItems?: OrderItemUncheckedUpdateManyWithoutCreationNestedInput
+    stockReservations?: StockReservationUncheckedUpdateManyWithoutCreationNestedInput
   }
 
   export type CreationCreateManyInput = {
@@ -9115,6 +11634,7 @@ export namespace Prisma {
     country: string
     user?: UserCreateNestedOneWithoutOrdersInput
     items?: OrderItemCreateNestedManyWithoutOrderInput
+    stockReservation?: StockReservationCreateNestedOneWithoutOrderInput
   }
 
   export type OrderUncheckedCreateInput = {
@@ -9134,6 +11654,7 @@ export namespace Prisma {
     postalCode: string
     country: string
     items?: OrderItemUncheckedCreateNestedManyWithoutOrderInput
+    stockReservation?: StockReservationUncheckedCreateNestedOneWithoutOrderInput
   }
 
   export type OrderUpdateInput = {
@@ -9153,6 +11674,7 @@ export namespace Prisma {
     country?: StringFieldUpdateOperationsInput | string
     user?: UserUpdateOneWithoutOrdersNestedInput
     items?: OrderItemUpdateManyWithoutOrderNestedInput
+    stockReservation?: StockReservationUpdateOneWithoutOrderNestedInput
   }
 
   export type OrderUncheckedUpdateInput = {
@@ -9172,6 +11694,7 @@ export namespace Prisma {
     postalCode?: StringFieldUpdateOperationsInput | string
     country?: StringFieldUpdateOperationsInput | string
     items?: OrderItemUncheckedUpdateManyWithoutOrderNestedInput
+    stockReservation?: StockReservationUncheckedUpdateOneWithoutOrderNestedInput
   }
 
   export type OrderCreateManyInput = {
@@ -9512,6 +12035,123 @@ export namespace Prisma {
     lockUntil?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   }
 
+  export type StockReservationCreateInput = {
+    id?: string
+    quantity: number
+    expiresAt: Date | string
+    createdAt?: Date | string
+    creation: CreationCreateNestedOneWithoutStockReservationsInput
+    order?: OrderCreateNestedOneWithoutStockReservationInput
+  }
+
+  export type StockReservationUncheckedCreateInput = {
+    id?: string
+    creationId: string
+    quantity: number
+    orderId?: string | null
+    expiresAt: Date | string
+    createdAt?: Date | string
+  }
+
+  export type StockReservationUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    quantity?: IntFieldUpdateOperationsInput | number
+    expiresAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    creation?: CreationUpdateOneRequiredWithoutStockReservationsNestedInput
+    order?: OrderUpdateOneWithoutStockReservationNestedInput
+  }
+
+  export type StockReservationUncheckedUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    creationId?: StringFieldUpdateOperationsInput | string
+    quantity?: IntFieldUpdateOperationsInput | number
+    orderId?: NullableStringFieldUpdateOperationsInput | string | null
+    expiresAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type StockReservationCreateManyInput = {
+    id?: string
+    creationId: string
+    quantity: number
+    orderId?: string | null
+    expiresAt: Date | string
+    createdAt?: Date | string
+  }
+
+  export type StockReservationUpdateManyMutationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    quantity?: IntFieldUpdateOperationsInput | number
+    expiresAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type StockReservationUncheckedUpdateManyInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    creationId?: StringFieldUpdateOperationsInput | string
+    quantity?: IntFieldUpdateOperationsInput | number
+    orderId?: NullableStringFieldUpdateOperationsInput | string | null
+    expiresAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type ProcessedWebhookEventCreateInput = {
+    id?: string
+    eventId: string
+    eventType: string
+    processed?: boolean
+    createdAt?: Date | string
+  }
+
+  export type ProcessedWebhookEventUncheckedCreateInput = {
+    id?: string
+    eventId: string
+    eventType: string
+    processed?: boolean
+    createdAt?: Date | string
+  }
+
+  export type ProcessedWebhookEventUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    eventId?: StringFieldUpdateOperationsInput | string
+    eventType?: StringFieldUpdateOperationsInput | string
+    processed?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type ProcessedWebhookEventUncheckedUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    eventId?: StringFieldUpdateOperationsInput | string
+    eventType?: StringFieldUpdateOperationsInput | string
+    processed?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type ProcessedWebhookEventCreateManyInput = {
+    id?: string
+    eventId: string
+    eventType: string
+    processed?: boolean
+    createdAt?: Date | string
+  }
+
+  export type ProcessedWebhookEventUpdateManyMutationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    eventId?: StringFieldUpdateOperationsInput | string
+    eventType?: StringFieldUpdateOperationsInput | string
+    processed?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type ProcessedWebhookEventUncheckedUpdateManyInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    eventId?: StringFieldUpdateOperationsInput | string
+    eventType?: StringFieldUpdateOperationsInput | string
+    processed?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
   export type StringFilter<$PrismaModel = never> = {
     equals?: string | StringFieldRefInput<$PrismaModel>
     in?: string[] | ListStringFieldRefInput<$PrismaModel>
@@ -9589,12 +12229,22 @@ export namespace Prisma {
     none?: OrderItemWhereInput
   }
 
+  export type StockReservationListRelationFilter = {
+    every?: StockReservationWhereInput
+    some?: StockReservationWhereInput
+    none?: StockReservationWhereInput
+  }
+
   export type SortOrderInput = {
     sort: SortOrder
     nulls?: NullsOrder
   }
 
   export type OrderItemOrderByRelationAggregateInput = {
+    _count?: SortOrder
+  }
+
+  export type StockReservationOrderByRelationAggregateInput = {
     _count?: SortOrder
   }
 
@@ -9738,6 +12388,11 @@ export namespace Prisma {
   export type UserNullableScalarRelationFilter = {
     is?: UserWhereInput | null
     isNot?: UserWhereInput | null
+  }
+
+  export type StockReservationNullableScalarRelationFilter = {
+    is?: StockReservationWhereInput | null
+    isNot?: StockReservationWhereInput | null
   }
 
   export type OrderCountOrderByAggregateInput = {
@@ -10013,6 +12668,70 @@ export namespace Prisma {
     _max?: NestedDateTimeNullableFilter<$PrismaModel>
   }
 
+  export type OrderNullableScalarRelationFilter = {
+    is?: OrderWhereInput | null
+    isNot?: OrderWhereInput | null
+  }
+
+  export type StockReservationCountOrderByAggregateInput = {
+    id?: SortOrder
+    creationId?: SortOrder
+    quantity?: SortOrder
+    orderId?: SortOrder
+    expiresAt?: SortOrder
+    createdAt?: SortOrder
+  }
+
+  export type StockReservationAvgOrderByAggregateInput = {
+    quantity?: SortOrder
+  }
+
+  export type StockReservationMaxOrderByAggregateInput = {
+    id?: SortOrder
+    creationId?: SortOrder
+    quantity?: SortOrder
+    orderId?: SortOrder
+    expiresAt?: SortOrder
+    createdAt?: SortOrder
+  }
+
+  export type StockReservationMinOrderByAggregateInput = {
+    id?: SortOrder
+    creationId?: SortOrder
+    quantity?: SortOrder
+    orderId?: SortOrder
+    expiresAt?: SortOrder
+    createdAt?: SortOrder
+  }
+
+  export type StockReservationSumOrderByAggregateInput = {
+    quantity?: SortOrder
+  }
+
+  export type ProcessedWebhookEventCountOrderByAggregateInput = {
+    id?: SortOrder
+    eventId?: SortOrder
+    eventType?: SortOrder
+    processed?: SortOrder
+    createdAt?: SortOrder
+  }
+
+  export type ProcessedWebhookEventMaxOrderByAggregateInput = {
+    id?: SortOrder
+    eventId?: SortOrder
+    eventType?: SortOrder
+    processed?: SortOrder
+    createdAt?: SortOrder
+  }
+
+  export type ProcessedWebhookEventMinOrderByAggregateInput = {
+    id?: SortOrder
+    eventId?: SortOrder
+    eventType?: SortOrder
+    processed?: SortOrder
+    createdAt?: SortOrder
+  }
+
   export type CreationCreatecategoriesInput = {
     set: string[]
   }
@@ -10032,11 +12751,25 @@ export namespace Prisma {
     connect?: OrderItemWhereUniqueInput | OrderItemWhereUniqueInput[]
   }
 
+  export type StockReservationCreateNestedManyWithoutCreationInput = {
+    create?: XOR<StockReservationCreateWithoutCreationInput, StockReservationUncheckedCreateWithoutCreationInput> | StockReservationCreateWithoutCreationInput[] | StockReservationUncheckedCreateWithoutCreationInput[]
+    connectOrCreate?: StockReservationCreateOrConnectWithoutCreationInput | StockReservationCreateOrConnectWithoutCreationInput[]
+    createMany?: StockReservationCreateManyCreationInputEnvelope
+    connect?: StockReservationWhereUniqueInput | StockReservationWhereUniqueInput[]
+  }
+
   export type OrderItemUncheckedCreateNestedManyWithoutCreationInput = {
     create?: XOR<OrderItemCreateWithoutCreationInput, OrderItemUncheckedCreateWithoutCreationInput> | OrderItemCreateWithoutCreationInput[] | OrderItemUncheckedCreateWithoutCreationInput[]
     connectOrCreate?: OrderItemCreateOrConnectWithoutCreationInput | OrderItemCreateOrConnectWithoutCreationInput[]
     createMany?: OrderItemCreateManyCreationInputEnvelope
     connect?: OrderItemWhereUniqueInput | OrderItemWhereUniqueInput[]
+  }
+
+  export type StockReservationUncheckedCreateNestedManyWithoutCreationInput = {
+    create?: XOR<StockReservationCreateWithoutCreationInput, StockReservationUncheckedCreateWithoutCreationInput> | StockReservationCreateWithoutCreationInput[] | StockReservationUncheckedCreateWithoutCreationInput[]
+    connectOrCreate?: StockReservationCreateOrConnectWithoutCreationInput | StockReservationCreateOrConnectWithoutCreationInput[]
+    createMany?: StockReservationCreateManyCreationInputEnvelope
+    connect?: StockReservationWhereUniqueInput | StockReservationWhereUniqueInput[]
   }
 
   export type StringFieldUpdateOperationsInput = {
@@ -10096,6 +12829,20 @@ export namespace Prisma {
     deleteMany?: OrderItemScalarWhereInput | OrderItemScalarWhereInput[]
   }
 
+  export type StockReservationUpdateManyWithoutCreationNestedInput = {
+    create?: XOR<StockReservationCreateWithoutCreationInput, StockReservationUncheckedCreateWithoutCreationInput> | StockReservationCreateWithoutCreationInput[] | StockReservationUncheckedCreateWithoutCreationInput[]
+    connectOrCreate?: StockReservationCreateOrConnectWithoutCreationInput | StockReservationCreateOrConnectWithoutCreationInput[]
+    upsert?: StockReservationUpsertWithWhereUniqueWithoutCreationInput | StockReservationUpsertWithWhereUniqueWithoutCreationInput[]
+    createMany?: StockReservationCreateManyCreationInputEnvelope
+    set?: StockReservationWhereUniqueInput | StockReservationWhereUniqueInput[]
+    disconnect?: StockReservationWhereUniqueInput | StockReservationWhereUniqueInput[]
+    delete?: StockReservationWhereUniqueInput | StockReservationWhereUniqueInput[]
+    connect?: StockReservationWhereUniqueInput | StockReservationWhereUniqueInput[]
+    update?: StockReservationUpdateWithWhereUniqueWithoutCreationInput | StockReservationUpdateWithWhereUniqueWithoutCreationInput[]
+    updateMany?: StockReservationUpdateManyWithWhereWithoutCreationInput | StockReservationUpdateManyWithWhereWithoutCreationInput[]
+    deleteMany?: StockReservationScalarWhereInput | StockReservationScalarWhereInput[]
+  }
+
   export type OrderItemUncheckedUpdateManyWithoutCreationNestedInput = {
     create?: XOR<OrderItemCreateWithoutCreationInput, OrderItemUncheckedCreateWithoutCreationInput> | OrderItemCreateWithoutCreationInput[] | OrderItemUncheckedCreateWithoutCreationInput[]
     connectOrCreate?: OrderItemCreateOrConnectWithoutCreationInput | OrderItemCreateOrConnectWithoutCreationInput[]
@@ -10108,6 +12855,20 @@ export namespace Prisma {
     update?: OrderItemUpdateWithWhereUniqueWithoutCreationInput | OrderItemUpdateWithWhereUniqueWithoutCreationInput[]
     updateMany?: OrderItemUpdateManyWithWhereWithoutCreationInput | OrderItemUpdateManyWithWhereWithoutCreationInput[]
     deleteMany?: OrderItemScalarWhereInput | OrderItemScalarWhereInput[]
+  }
+
+  export type StockReservationUncheckedUpdateManyWithoutCreationNestedInput = {
+    create?: XOR<StockReservationCreateWithoutCreationInput, StockReservationUncheckedCreateWithoutCreationInput> | StockReservationCreateWithoutCreationInput[] | StockReservationUncheckedCreateWithoutCreationInput[]
+    connectOrCreate?: StockReservationCreateOrConnectWithoutCreationInput | StockReservationCreateOrConnectWithoutCreationInput[]
+    upsert?: StockReservationUpsertWithWhereUniqueWithoutCreationInput | StockReservationUpsertWithWhereUniqueWithoutCreationInput[]
+    createMany?: StockReservationCreateManyCreationInputEnvelope
+    set?: StockReservationWhereUniqueInput | StockReservationWhereUniqueInput[]
+    disconnect?: StockReservationWhereUniqueInput | StockReservationWhereUniqueInput[]
+    delete?: StockReservationWhereUniqueInput | StockReservationWhereUniqueInput[]
+    connect?: StockReservationWhereUniqueInput | StockReservationWhereUniqueInput[]
+    update?: StockReservationUpdateWithWhereUniqueWithoutCreationInput | StockReservationUpdateWithWhereUniqueWithoutCreationInput[]
+    updateMany?: StockReservationUpdateManyWithWhereWithoutCreationInput | StockReservationUpdateManyWithWhereWithoutCreationInput[]
+    deleteMany?: StockReservationScalarWhereInput | StockReservationScalarWhereInput[]
   }
 
   export type UserCreateNestedOneWithoutOrdersInput = {
@@ -10123,11 +12884,23 @@ export namespace Prisma {
     connect?: OrderItemWhereUniqueInput | OrderItemWhereUniqueInput[]
   }
 
+  export type StockReservationCreateNestedOneWithoutOrderInput = {
+    create?: XOR<StockReservationCreateWithoutOrderInput, StockReservationUncheckedCreateWithoutOrderInput>
+    connectOrCreate?: StockReservationCreateOrConnectWithoutOrderInput
+    connect?: StockReservationWhereUniqueInput
+  }
+
   export type OrderItemUncheckedCreateNestedManyWithoutOrderInput = {
     create?: XOR<OrderItemCreateWithoutOrderInput, OrderItemUncheckedCreateWithoutOrderInput> | OrderItemCreateWithoutOrderInput[] | OrderItemUncheckedCreateWithoutOrderInput[]
     connectOrCreate?: OrderItemCreateOrConnectWithoutOrderInput | OrderItemCreateOrConnectWithoutOrderInput[]
     createMany?: OrderItemCreateManyOrderInputEnvelope
     connect?: OrderItemWhereUniqueInput | OrderItemWhereUniqueInput[]
+  }
+
+  export type StockReservationUncheckedCreateNestedOneWithoutOrderInput = {
+    create?: XOR<StockReservationCreateWithoutOrderInput, StockReservationUncheckedCreateWithoutOrderInput>
+    connectOrCreate?: StockReservationCreateOrConnectWithoutOrderInput
+    connect?: StockReservationWhereUniqueInput
   }
 
   export type UserUpdateOneWithoutOrdersNestedInput = {
@@ -10154,6 +12927,16 @@ export namespace Prisma {
     deleteMany?: OrderItemScalarWhereInput | OrderItemScalarWhereInput[]
   }
 
+  export type StockReservationUpdateOneWithoutOrderNestedInput = {
+    create?: XOR<StockReservationCreateWithoutOrderInput, StockReservationUncheckedCreateWithoutOrderInput>
+    connectOrCreate?: StockReservationCreateOrConnectWithoutOrderInput
+    upsert?: StockReservationUpsertWithoutOrderInput
+    disconnect?: StockReservationWhereInput | boolean
+    delete?: StockReservationWhereInput | boolean
+    connect?: StockReservationWhereUniqueInput
+    update?: XOR<XOR<StockReservationUpdateToOneWithWhereWithoutOrderInput, StockReservationUpdateWithoutOrderInput>, StockReservationUncheckedUpdateWithoutOrderInput>
+  }
+
   export type OrderItemUncheckedUpdateManyWithoutOrderNestedInput = {
     create?: XOR<OrderItemCreateWithoutOrderInput, OrderItemUncheckedCreateWithoutOrderInput> | OrderItemCreateWithoutOrderInput[] | OrderItemUncheckedCreateWithoutOrderInput[]
     connectOrCreate?: OrderItemCreateOrConnectWithoutOrderInput | OrderItemCreateOrConnectWithoutOrderInput[]
@@ -10166,6 +12949,16 @@ export namespace Prisma {
     update?: OrderItemUpdateWithWhereUniqueWithoutOrderInput | OrderItemUpdateWithWhereUniqueWithoutOrderInput[]
     updateMany?: OrderItemUpdateManyWithWhereWithoutOrderInput | OrderItemUpdateManyWithWhereWithoutOrderInput[]
     deleteMany?: OrderItemScalarWhereInput | OrderItemScalarWhereInput[]
+  }
+
+  export type StockReservationUncheckedUpdateOneWithoutOrderNestedInput = {
+    create?: XOR<StockReservationCreateWithoutOrderInput, StockReservationUncheckedCreateWithoutOrderInput>
+    connectOrCreate?: StockReservationCreateOrConnectWithoutOrderInput
+    upsert?: StockReservationUpsertWithoutOrderInput
+    disconnect?: StockReservationWhereInput | boolean
+    delete?: StockReservationWhereInput | boolean
+    connect?: StockReservationWhereUniqueInput
+    update?: XOR<XOR<StockReservationUpdateToOneWithWhereWithoutOrderInput, StockReservationUpdateWithoutOrderInput>, StockReservationUncheckedUpdateWithoutOrderInput>
   }
 
   export type OrderCreateNestedOneWithoutItemsInput = {
@@ -10300,6 +13093,36 @@ export namespace Prisma {
 
   export type NullableDateTimeFieldUpdateOperationsInput = {
     set?: Date | string | null
+  }
+
+  export type CreationCreateNestedOneWithoutStockReservationsInput = {
+    create?: XOR<CreationCreateWithoutStockReservationsInput, CreationUncheckedCreateWithoutStockReservationsInput>
+    connectOrCreate?: CreationCreateOrConnectWithoutStockReservationsInput
+    connect?: CreationWhereUniqueInput
+  }
+
+  export type OrderCreateNestedOneWithoutStockReservationInput = {
+    create?: XOR<OrderCreateWithoutStockReservationInput, OrderUncheckedCreateWithoutStockReservationInput>
+    connectOrCreate?: OrderCreateOrConnectWithoutStockReservationInput
+    connect?: OrderWhereUniqueInput
+  }
+
+  export type CreationUpdateOneRequiredWithoutStockReservationsNestedInput = {
+    create?: XOR<CreationCreateWithoutStockReservationsInput, CreationUncheckedCreateWithoutStockReservationsInput>
+    connectOrCreate?: CreationCreateOrConnectWithoutStockReservationsInput
+    upsert?: CreationUpsertWithoutStockReservationsInput
+    connect?: CreationWhereUniqueInput
+    update?: XOR<XOR<CreationUpdateToOneWithWhereWithoutStockReservationsInput, CreationUpdateWithoutStockReservationsInput>, CreationUncheckedUpdateWithoutStockReservationsInput>
+  }
+
+  export type OrderUpdateOneWithoutStockReservationNestedInput = {
+    create?: XOR<OrderCreateWithoutStockReservationInput, OrderUncheckedCreateWithoutStockReservationInput>
+    connectOrCreate?: OrderCreateOrConnectWithoutStockReservationInput
+    upsert?: OrderUpsertWithoutStockReservationInput
+    disconnect?: OrderWhereInput | boolean
+    delete?: OrderWhereInput | boolean
+    connect?: OrderWhereUniqueInput
+    update?: XOR<XOR<OrderUpdateToOneWithWhereWithoutStockReservationInput, OrderUpdateWithoutStockReservationInput>, OrderUncheckedUpdateWithoutStockReservationInput>
   }
 
   export type NestedStringFilter<$PrismaModel = never> = {
@@ -10516,6 +13339,32 @@ export namespace Prisma {
     skipDuplicates?: boolean
   }
 
+  export type StockReservationCreateWithoutCreationInput = {
+    id?: string
+    quantity: number
+    expiresAt: Date | string
+    createdAt?: Date | string
+    order?: OrderCreateNestedOneWithoutStockReservationInput
+  }
+
+  export type StockReservationUncheckedCreateWithoutCreationInput = {
+    id?: string
+    quantity: number
+    orderId?: string | null
+    expiresAt: Date | string
+    createdAt?: Date | string
+  }
+
+  export type StockReservationCreateOrConnectWithoutCreationInput = {
+    where: StockReservationWhereUniqueInput
+    create: XOR<StockReservationCreateWithoutCreationInput, StockReservationUncheckedCreateWithoutCreationInput>
+  }
+
+  export type StockReservationCreateManyCreationInputEnvelope = {
+    data: StockReservationCreateManyCreationInput | StockReservationCreateManyCreationInput[]
+    skipDuplicates?: boolean
+  }
+
   export type OrderItemUpsertWithWhereUniqueWithoutCreationInput = {
     where: OrderItemWhereUniqueInput
     update: XOR<OrderItemUpdateWithoutCreationInput, OrderItemUncheckedUpdateWithoutCreationInput>
@@ -10541,6 +13390,34 @@ export namespace Prisma {
     creationId?: StringFilter<"OrderItem"> | string
     quantity?: IntFilter<"OrderItem"> | number
     price?: FloatFilter<"OrderItem"> | number
+  }
+
+  export type StockReservationUpsertWithWhereUniqueWithoutCreationInput = {
+    where: StockReservationWhereUniqueInput
+    update: XOR<StockReservationUpdateWithoutCreationInput, StockReservationUncheckedUpdateWithoutCreationInput>
+    create: XOR<StockReservationCreateWithoutCreationInput, StockReservationUncheckedCreateWithoutCreationInput>
+  }
+
+  export type StockReservationUpdateWithWhereUniqueWithoutCreationInput = {
+    where: StockReservationWhereUniqueInput
+    data: XOR<StockReservationUpdateWithoutCreationInput, StockReservationUncheckedUpdateWithoutCreationInput>
+  }
+
+  export type StockReservationUpdateManyWithWhereWithoutCreationInput = {
+    where: StockReservationScalarWhereInput
+    data: XOR<StockReservationUpdateManyMutationInput, StockReservationUncheckedUpdateManyWithoutCreationInput>
+  }
+
+  export type StockReservationScalarWhereInput = {
+    AND?: StockReservationScalarWhereInput | StockReservationScalarWhereInput[]
+    OR?: StockReservationScalarWhereInput[]
+    NOT?: StockReservationScalarWhereInput | StockReservationScalarWhereInput[]
+    id?: StringFilter<"StockReservation"> | string
+    creationId?: StringFilter<"StockReservation"> | string
+    quantity?: IntFilter<"StockReservation"> | number
+    orderId?: StringNullableFilter<"StockReservation"> | string | null
+    expiresAt?: DateTimeFilter<"StockReservation"> | Date | string
+    createdAt?: DateTimeFilter<"StockReservation"> | Date | string
   }
 
   export type UserCreateWithoutOrdersInput = {
@@ -10604,6 +13481,27 @@ export namespace Prisma {
     skipDuplicates?: boolean
   }
 
+  export type StockReservationCreateWithoutOrderInput = {
+    id?: string
+    quantity: number
+    expiresAt: Date | string
+    createdAt?: Date | string
+    creation: CreationCreateNestedOneWithoutStockReservationsInput
+  }
+
+  export type StockReservationUncheckedCreateWithoutOrderInput = {
+    id?: string
+    creationId: string
+    quantity: number
+    expiresAt: Date | string
+    createdAt?: Date | string
+  }
+
+  export type StockReservationCreateOrConnectWithoutOrderInput = {
+    where: StockReservationWhereUniqueInput
+    create: XOR<StockReservationCreateWithoutOrderInput, StockReservationUncheckedCreateWithoutOrderInput>
+  }
+
   export type UserUpsertWithoutOrdersInput = {
     update: XOR<UserUpdateWithoutOrdersInput, UserUncheckedUpdateWithoutOrdersInput>
     create: XOR<UserCreateWithoutOrdersInput, UserUncheckedCreateWithoutOrdersInput>
@@ -10663,6 +13561,33 @@ export namespace Prisma {
     data: XOR<OrderItemUpdateManyMutationInput, OrderItemUncheckedUpdateManyWithoutOrderInput>
   }
 
+  export type StockReservationUpsertWithoutOrderInput = {
+    update: XOR<StockReservationUpdateWithoutOrderInput, StockReservationUncheckedUpdateWithoutOrderInput>
+    create: XOR<StockReservationCreateWithoutOrderInput, StockReservationUncheckedCreateWithoutOrderInput>
+    where?: StockReservationWhereInput
+  }
+
+  export type StockReservationUpdateToOneWithWhereWithoutOrderInput = {
+    where?: StockReservationWhereInput
+    data: XOR<StockReservationUpdateWithoutOrderInput, StockReservationUncheckedUpdateWithoutOrderInput>
+  }
+
+  export type StockReservationUpdateWithoutOrderInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    quantity?: IntFieldUpdateOperationsInput | number
+    expiresAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    creation?: CreationUpdateOneRequiredWithoutStockReservationsNestedInput
+  }
+
+  export type StockReservationUncheckedUpdateWithoutOrderInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    creationId?: StringFieldUpdateOperationsInput | string
+    quantity?: IntFieldUpdateOperationsInput | number
+    expiresAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
   export type OrderCreateWithoutItemsInput = {
     id?: string
     total: number
@@ -10679,6 +13604,7 @@ export namespace Prisma {
     postalCode: string
     country: string
     user?: UserCreateNestedOneWithoutOrdersInput
+    stockReservation?: StockReservationCreateNestedOneWithoutOrderInput
   }
 
   export type OrderUncheckedCreateWithoutItemsInput = {
@@ -10697,6 +13623,7 @@ export namespace Prisma {
     city: string
     postalCode: string
     country: string
+    stockReservation?: StockReservationUncheckedCreateNestedOneWithoutOrderInput
   }
 
   export type OrderCreateOrConnectWithoutItemsInput = {
@@ -10719,6 +13646,7 @@ export namespace Prisma {
     stock?: number
     createdAt?: Date | string
     updatedAt?: Date | string
+    stockReservations?: StockReservationCreateNestedManyWithoutCreationInput
   }
 
   export type CreationUncheckedCreateWithoutOrderItemsInput = {
@@ -10736,6 +13664,7 @@ export namespace Prisma {
     stock?: number
     createdAt?: Date | string
     updatedAt?: Date | string
+    stockReservations?: StockReservationUncheckedCreateNestedManyWithoutCreationInput
   }
 
   export type CreationCreateOrConnectWithoutOrderItemsInput = {
@@ -10770,6 +13699,7 @@ export namespace Prisma {
     postalCode?: StringFieldUpdateOperationsInput | string
     country?: StringFieldUpdateOperationsInput | string
     user?: UserUpdateOneWithoutOrdersNestedInput
+    stockReservation?: StockReservationUpdateOneWithoutOrderNestedInput
   }
 
   export type OrderUncheckedUpdateWithoutItemsInput = {
@@ -10788,6 +13718,7 @@ export namespace Prisma {
     city?: StringFieldUpdateOperationsInput | string
     postalCode?: StringFieldUpdateOperationsInput | string
     country?: StringFieldUpdateOperationsInput | string
+    stockReservation?: StockReservationUncheckedUpdateOneWithoutOrderNestedInput
   }
 
   export type CreationUpsertWithoutOrderItemsInput = {
@@ -10816,6 +13747,7 @@ export namespace Prisma {
     stock?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    stockReservations?: StockReservationUpdateManyWithoutCreationNestedInput
   }
 
   export type CreationUncheckedUpdateWithoutOrderItemsInput = {
@@ -10833,6 +13765,7 @@ export namespace Prisma {
     stock?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    stockReservations?: StockReservationUncheckedUpdateManyWithoutCreationNestedInput
   }
 
   export type PasswordResetTokenCreateWithoutUserInput = {
@@ -10877,6 +13810,7 @@ export namespace Prisma {
     postalCode: string
     country: string
     items?: OrderItemCreateNestedManyWithoutOrderInput
+    stockReservation?: StockReservationCreateNestedOneWithoutOrderInput
   }
 
   export type OrderUncheckedCreateWithoutUserInput = {
@@ -10895,6 +13829,7 @@ export namespace Prisma {
     postalCode: string
     country: string
     items?: OrderItemUncheckedCreateNestedManyWithoutOrderInput
+    stockReservation?: StockReservationUncheckedCreateNestedOneWithoutOrderInput
   }
 
   export type OrderCreateOrConnectWithoutUserInput = {
@@ -11052,11 +13987,199 @@ export namespace Prisma {
     orders?: OrderUncheckedUpdateManyWithoutUserNestedInput
   }
 
+  export type CreationCreateWithoutStockReservationsInput = {
+    id?: string
+    title: string
+    description: string
+    categories?: CreationCreatecategoriesInput | string[]
+    image: string
+    images?: CreationCreateimagesInput | string[]
+    details?: CreationCreatedetailsInput | string[]
+    status: string
+    externalLink?: string | null
+    customMessage?: string | null
+    price?: number
+    stock?: number
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    orderItems?: OrderItemCreateNestedManyWithoutCreationInput
+  }
+
+  export type CreationUncheckedCreateWithoutStockReservationsInput = {
+    id?: string
+    title: string
+    description: string
+    categories?: CreationCreatecategoriesInput | string[]
+    image: string
+    images?: CreationCreateimagesInput | string[]
+    details?: CreationCreatedetailsInput | string[]
+    status: string
+    externalLink?: string | null
+    customMessage?: string | null
+    price?: number
+    stock?: number
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    orderItems?: OrderItemUncheckedCreateNestedManyWithoutCreationInput
+  }
+
+  export type CreationCreateOrConnectWithoutStockReservationsInput = {
+    where: CreationWhereUniqueInput
+    create: XOR<CreationCreateWithoutStockReservationsInput, CreationUncheckedCreateWithoutStockReservationsInput>
+  }
+
+  export type OrderCreateWithoutStockReservationInput = {
+    id?: string
+    total: number
+    status?: string
+    paymentId?: string | null
+    paymentMethod?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    firstName: string
+    lastName: string
+    email: string
+    address: string
+    city: string
+    postalCode: string
+    country: string
+    user?: UserCreateNestedOneWithoutOrdersInput
+    items?: OrderItemCreateNestedManyWithoutOrderInput
+  }
+
+  export type OrderUncheckedCreateWithoutStockReservationInput = {
+    id?: string
+    userId?: string | null
+    total: number
+    status?: string
+    paymentId?: string | null
+    paymentMethod?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    firstName: string
+    lastName: string
+    email: string
+    address: string
+    city: string
+    postalCode: string
+    country: string
+    items?: OrderItemUncheckedCreateNestedManyWithoutOrderInput
+  }
+
+  export type OrderCreateOrConnectWithoutStockReservationInput = {
+    where: OrderWhereUniqueInput
+    create: XOR<OrderCreateWithoutStockReservationInput, OrderUncheckedCreateWithoutStockReservationInput>
+  }
+
+  export type CreationUpsertWithoutStockReservationsInput = {
+    update: XOR<CreationUpdateWithoutStockReservationsInput, CreationUncheckedUpdateWithoutStockReservationsInput>
+    create: XOR<CreationCreateWithoutStockReservationsInput, CreationUncheckedCreateWithoutStockReservationsInput>
+    where?: CreationWhereInput
+  }
+
+  export type CreationUpdateToOneWithWhereWithoutStockReservationsInput = {
+    where?: CreationWhereInput
+    data: XOR<CreationUpdateWithoutStockReservationsInput, CreationUncheckedUpdateWithoutStockReservationsInput>
+  }
+
+  export type CreationUpdateWithoutStockReservationsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    title?: StringFieldUpdateOperationsInput | string
+    description?: StringFieldUpdateOperationsInput | string
+    categories?: CreationUpdatecategoriesInput | string[]
+    image?: StringFieldUpdateOperationsInput | string
+    images?: CreationUpdateimagesInput | string[]
+    details?: CreationUpdatedetailsInput | string[]
+    status?: StringFieldUpdateOperationsInput | string
+    externalLink?: NullableStringFieldUpdateOperationsInput | string | null
+    customMessage?: NullableStringFieldUpdateOperationsInput | string | null
+    price?: FloatFieldUpdateOperationsInput | number
+    stock?: IntFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    orderItems?: OrderItemUpdateManyWithoutCreationNestedInput
+  }
+
+  export type CreationUncheckedUpdateWithoutStockReservationsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    title?: StringFieldUpdateOperationsInput | string
+    description?: StringFieldUpdateOperationsInput | string
+    categories?: CreationUpdatecategoriesInput | string[]
+    image?: StringFieldUpdateOperationsInput | string
+    images?: CreationUpdateimagesInput | string[]
+    details?: CreationUpdatedetailsInput | string[]
+    status?: StringFieldUpdateOperationsInput | string
+    externalLink?: NullableStringFieldUpdateOperationsInput | string | null
+    customMessage?: NullableStringFieldUpdateOperationsInput | string | null
+    price?: FloatFieldUpdateOperationsInput | number
+    stock?: IntFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    orderItems?: OrderItemUncheckedUpdateManyWithoutCreationNestedInput
+  }
+
+  export type OrderUpsertWithoutStockReservationInput = {
+    update: XOR<OrderUpdateWithoutStockReservationInput, OrderUncheckedUpdateWithoutStockReservationInput>
+    create: XOR<OrderCreateWithoutStockReservationInput, OrderUncheckedCreateWithoutStockReservationInput>
+    where?: OrderWhereInput
+  }
+
+  export type OrderUpdateToOneWithWhereWithoutStockReservationInput = {
+    where?: OrderWhereInput
+    data: XOR<OrderUpdateWithoutStockReservationInput, OrderUncheckedUpdateWithoutStockReservationInput>
+  }
+
+  export type OrderUpdateWithoutStockReservationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    total?: FloatFieldUpdateOperationsInput | number
+    status?: StringFieldUpdateOperationsInput | string
+    paymentId?: NullableStringFieldUpdateOperationsInput | string | null
+    paymentMethod?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    firstName?: StringFieldUpdateOperationsInput | string
+    lastName?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    address?: StringFieldUpdateOperationsInput | string
+    city?: StringFieldUpdateOperationsInput | string
+    postalCode?: StringFieldUpdateOperationsInput | string
+    country?: StringFieldUpdateOperationsInput | string
+    user?: UserUpdateOneWithoutOrdersNestedInput
+    items?: OrderItemUpdateManyWithoutOrderNestedInput
+  }
+
+  export type OrderUncheckedUpdateWithoutStockReservationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    userId?: NullableStringFieldUpdateOperationsInput | string | null
+    total?: FloatFieldUpdateOperationsInput | number
+    status?: StringFieldUpdateOperationsInput | string
+    paymentId?: NullableStringFieldUpdateOperationsInput | string | null
+    paymentMethod?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    firstName?: StringFieldUpdateOperationsInput | string
+    lastName?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    address?: StringFieldUpdateOperationsInput | string
+    city?: StringFieldUpdateOperationsInput | string
+    postalCode?: StringFieldUpdateOperationsInput | string
+    country?: StringFieldUpdateOperationsInput | string
+    items?: OrderItemUncheckedUpdateManyWithoutOrderNestedInput
+  }
+
   export type OrderItemCreateManyCreationInput = {
     id?: string
     orderId: string
     quantity: number
     price: number
+  }
+
+  export type StockReservationCreateManyCreationInput = {
+    id?: string
+    quantity: number
+    orderId?: string | null
+    expiresAt: Date | string
+    createdAt?: Date | string
   }
 
   export type OrderItemUpdateWithoutCreationInput = {
@@ -11078,6 +14201,30 @@ export namespace Prisma {
     orderId?: StringFieldUpdateOperationsInput | string
     quantity?: IntFieldUpdateOperationsInput | number
     price?: FloatFieldUpdateOperationsInput | number
+  }
+
+  export type StockReservationUpdateWithoutCreationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    quantity?: IntFieldUpdateOperationsInput | number
+    expiresAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    order?: OrderUpdateOneWithoutStockReservationNestedInput
+  }
+
+  export type StockReservationUncheckedUpdateWithoutCreationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    quantity?: IntFieldUpdateOperationsInput | number
+    orderId?: NullableStringFieldUpdateOperationsInput | string | null
+    expiresAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type StockReservationUncheckedUpdateManyWithoutCreationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    quantity?: IntFieldUpdateOperationsInput | number
+    orderId?: NullableStringFieldUpdateOperationsInput | string | null
+    expiresAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type OrderItemCreateManyOrderInput = {
@@ -11173,6 +14320,7 @@ export namespace Prisma {
     postalCode?: StringFieldUpdateOperationsInput | string
     country?: StringFieldUpdateOperationsInput | string
     items?: OrderItemUpdateManyWithoutOrderNestedInput
+    stockReservation?: StockReservationUpdateOneWithoutOrderNestedInput
   }
 
   export type OrderUncheckedUpdateWithoutUserInput = {
@@ -11191,6 +14339,7 @@ export namespace Prisma {
     postalCode?: StringFieldUpdateOperationsInput | string
     country?: StringFieldUpdateOperationsInput | string
     items?: OrderItemUncheckedUpdateManyWithoutOrderNestedInput
+    stockReservation?: StockReservationUncheckedUpdateOneWithoutOrderNestedInput
   }
 
   export type OrderUncheckedUpdateManyWithoutUserInput = {

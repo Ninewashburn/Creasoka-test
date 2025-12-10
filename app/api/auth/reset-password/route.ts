@@ -3,6 +3,7 @@ import { prisma } from "@/lib/prisma";
 import { hashPassword } from "@/lib/auth";
 import { z } from "zod";
 import { logger } from "@/lib/sentry";
+import crypto from "crypto";
 
 const passwordSchema = z.string()
   .min(12, "Le mot de passe doit contenir au moins 12 caractères")
@@ -39,9 +40,12 @@ export async function POST(request: Request) {
       );
     }
 
-    // Rechercher le token
+    // Hash le token avant de le rechercher en DB (sécurité)
+    const tokenHash = crypto.createHash("sha256").update(token).digest("hex");
+
+    // Rechercher le token hashé
     const resetToken = await prisma.passwordResetToken.findUnique({
-      where: { token },
+      where: { token: tokenHash },
       include: { user: true },
     });
 

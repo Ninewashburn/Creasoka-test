@@ -1,6 +1,8 @@
 import { NextResponse } from "next/server";
 import { headers } from "next/headers";
 import { logger } from "@/lib/sentry";
+import { prisma } from "@/lib/prisma";
+import { sendEmail } from "@/lib/email";
 
 export async function POST(request: Request) {
     try {
@@ -40,13 +42,32 @@ export async function POST(request: Request) {
         // 3. Traiter l'événement
         const body = JSON.parse(bodyText);
         const eventType = body.event_type;
+        const eventId = body.id; // Event ID unique pour idempotence
         const resource = body.resource;
 
-        logger.info(`Webhook PayPal Validé: ${eventType}`);
+        logger.info(`Webhook PayPal Validé: ${eventType}`, { eventId });
 
+        // Vérifier si l'événement a déjà été traité (idempotence)
+        const existingEvent = await prisma.processedWebhookEvent.findUnique({
+            where: { eventId },
+        });
+
+        if (existingEvent) {
+            logger.info("Événement déjà traité (idempotent)", { eventId });
+            return NextResponse.json({ received: true, alreadyProcessed: true });
+        }
+
+        // Traiter selon le type d'événement
         if (eventType === "PAYMENT.CAPTURE.COMPLETED") {
-            // Traitement (déjà géré synchronement, mais bon pour backup)
-            logger.info("Capture confirmée par webhook", { resourceId: resource.id });
+            await handlePaymentCaptureCompleted(resource, eventId);
+        } else if (eventType === "PAYMENT.CAPTURE.DENIED" || eventType === "PAYMENT.CAPTURE.FAILED") {
+            await handlePaymentCaptureFailed(resource, eventId);
+        } else {
+            logger.info(`Type d'événement non géré: ${eventType}`);
+            // Marquer comme traité quand même pour éviter les retraitements
+            await prisma.processedWebhookEvent.create({
+                data: { eventId, eventType, processed: true },
+            });
         }
 
         return NextResponse.json({ received: true });
@@ -107,4 +128,100 @@ async function verifyPayPalSignature(
 
     const verifyData = await verifyResponse.json();
     return verifyData.verification_status === "SUCCESS";
+}
+
+/**
+ * Traite un paiement capturé avec succès
+ */
+async function handlePaymentCaptureCompleted(resource: any, eventId: string) {
+    const captureId = resource.id;
+
+    try {
+        // Trouver la commande par payment ID
+        const order = await prisma.order.findFirst({
+            where: { paymentId: captureId },
+            include: { items: { include: { creation: true } } },
+        });
+
+        if (!order) {
+            logger.warn("Commande introuvable pour capture PayPal", { captureId });
+            // Marquer quand même comme traité
+            await prisma.processedWebhookEvent.create({
+                data: { eventId, eventType: "PAYMENT.CAPTURE.COMPLETED", processed: true },
+            });
+            return;
+        }
+
+        // Mettre à jour le statut de la commande
+        await prisma.order.update({
+            where: { id: order.id },
+            data: { status: "paid" },
+        });
+
+        // Envoyer email de confirmation
+        const itemsList = order.items
+            .map((item) => `- ${item.creation.title} x${item.quantity} = ${item.price}€`)
+            .join("\n");
+
+        await sendEmail({
+            to: order.email,
+            subject: "Confirmation de commande - Crea'Soka",
+            html: `
+                <h2>Merci pour votre commande !</h2>
+                <p>Bonjour ${order.firstName},</p>
+                <p>Votre paiement a été confirmé.</p>
+                <h3>Détails de la commande :</h3>
+                <pre>${itemsList}</pre>
+                <p><strong>Total : ${order.total}€</strong></p>
+                <p>Votre commande sera expédiée prochainement à l'adresse :</p>
+                <address>
+                    ${order.firstName} ${order.lastName}<br>
+                    ${order.address}<br>
+                    ${order.postalCode} ${order.city}<br>
+                    ${order.country}
+                </address>
+            `,
+            text: `Merci pour votre commande !\n\nDétails :\n${itemsList}\n\nTotal : ${order.total}€`,
+        });
+
+        // Marquer l'événement comme traité
+        await prisma.processedWebhookEvent.create({
+            data: { eventId, eventType: "PAYMENT.CAPTURE.COMPLETED", processed: true },
+        });
+
+        logger.info("Paiement traité avec succès", { orderId: order.id, captureId });
+    } catch (error) {
+        logger.error("Erreur traitement PAYMENT.CAPTURE.COMPLETED", error);
+        throw error;
+    }
+}
+
+/**
+ * Traite un paiement échoué ou refusé
+ */
+async function handlePaymentCaptureFailed(resource: any, eventId: string) {
+    const captureId = resource.id;
+
+    try {
+        const order = await prisma.order.findFirst({
+            where: { paymentId: captureId },
+        });
+
+        if (order) {
+            await prisma.order.update({
+                where: { id: order.id },
+                data: { status: "payment_failed" },
+            });
+
+            logger.warn("Paiement échoué", { orderId: order.id, captureId });
+        }
+
+        // Marquer comme traité
+        await prisma.processedWebhookEvent.create({
+            data: { eventId, eventType: "PAYMENT.CAPTURE.FAILED", processed: true },
+        });
+    } catch (error) {
+        logger.error("Erreur traitement PAYMENT.CAPTURE.FAILED", error);
+        throw error;
+    }
 }

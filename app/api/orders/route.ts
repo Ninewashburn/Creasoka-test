@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { z } from "zod";
-import { verifyAuth, validateOrigin } from "@/lib/auth";
+import { verifyAuth, validateOrigin, checkLoginAttempts } from "@/lib/auth";
 import { headers } from "next/headers";
 import { logger } from "@/lib/sentry";
 
@@ -100,6 +100,18 @@ export async function POST(request: Request) {
     try {
         const headersList = await headers();
 
+        // Rate limiting: Prevent order spam (5 orders per 15 minutes per IP)
+        const forwardedFor = headersList.get("x-forwarded-for");
+        const clientIp = forwardedFor ? forwardedFor.split(",")[0] : "unknown";
+
+        const attemptCheck = await checkLoginAttempts(clientIp);
+        if (!attemptCheck.allowed) {
+            return NextResponse.json(
+                { error: attemptCheck.message || "Trop de tentatives. Veuillez réessayer plus tard." },
+                { status: 429 }
+            );
+        }
+
         // CSRF Protection
         if (!validateOrigin(headersList)) {
             return NextResponse.json({ error: "Origine non autorisée" }, { status: 403 });
@@ -132,7 +144,7 @@ export async function POST(request: Request) {
                 });
 
                 if (!creation) {
-                    throw new Error(`Création introuvable: ${item.creationId}`);
+                    throw new Error(`Création introuvable: ${item.creationId} `);
                 }
 
                 // 2. Décrémenter le stock de manière atomique (évite race condition)
@@ -148,7 +160,7 @@ export async function POST(request: Request) {
 
                 // Si aucune ligne n'a été mise à jour, c'est que le stock est insuffisant
                 if (updateResult.count === 0) {
-                    throw new Error(`Stock insuffisant pour: ${creation.title}`);
+                    throw new Error(`Stock insuffisant pour: ${creation.title} `);
                 }
 
                 // Utiliser le prix réel de la base de données (pas celui du client)

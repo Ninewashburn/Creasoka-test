@@ -17,21 +17,22 @@ datasource db {
 }
 
 model Creation {
-  id            String      @id @default(uuid())
-  title         String
-  description   String
-  categories    String[]
-  image         String
-  images        String[]
-  details       String[]
-  status        String
-  externalLink  String?
-  customMessage String?
-  price         Float       @default(0)
-  stock         Int         @default(0)
-  createdAt     DateTime    @default(now())
-  updatedAt     DateTime    @updatedAt
-  orderItems    OrderItem[]
+  id                String             @id @default(uuid())
+  title             String
+  description       String
+  categories        String[]
+  image             String
+  images            String[]
+  details           String[]
+  status            String
+  externalLink      String?
+  customMessage     String?
+  price             Float              @default(0)
+  stock             Int                @default(0)
+  createdAt         DateTime           @default(now())
+  updatedAt         DateTime           @updatedAt
+  orderItems        OrderItem[]
+  stockReservations StockReservation[]
 }
 
 model Order {
@@ -54,6 +55,8 @@ model Order {
   city       String
   postalCode String
   country    String
+
+  stockReservation StockReservation?
 }
 
 model OrderItem {
@@ -102,4 +105,32 @@ model RateLimit {
   count       Int       @default(0)
   lastAttempt DateTime  @default(now())
   lockUntil   DateTime?
+}
+
+// Stock Reservation for preventing race conditions in PayPal payments
+model StockReservation {
+  id         String   @id @default(uuid())
+  creationId String
+  quantity   Int
+  orderId    String?  @unique
+  expiresAt  DateTime
+  createdAt  DateTime @default(now())
+
+  creation Creation @relation(fields: [creationId], references: [id], onDelete: Cascade)
+  order    Order?   @relation(fields: [orderId], references: [id], onDelete: Cascade)
+
+  @@index([creationId])
+  @@index([expiresAt])
+  @@index([orderId])
+}
+
+// Webhook Event Processing for idempotency
+model ProcessedWebhookEvent {
+  id        String   @id @default(uuid())
+  eventId   String   @unique // PayPal webhook event ID
+  eventType String // PAYMENT.CAPTURE.COMPLETED, etc.
+  processed Boolean  @default(true)
+  createdAt DateTime @default(now())
+
+  @@index([eventId])
 }

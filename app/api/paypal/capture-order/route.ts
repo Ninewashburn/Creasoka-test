@@ -42,43 +42,49 @@ export async function POST(request: Request) {
         const captureData = await captureResponse.json();
 
         if (captureData.status === "COMPLETED") {
-            // 3. Mettre à jour la commande locale et décrémenter le stock
+            // 3. Mettre à jour la commande locale (le stock a déjà été décrémenté lors de create-order)
 
             // Retrouver la commande locale via paymentId (le orderID PayPal)
             const localOrder = await prisma.order.findFirst({
-                where: { paymentId: orderID },
-                include: { items: true }
+                where: { paymentId: orderID }
             });
 
             if (localOrder) {
-                // Transaction pour mettre à jour le statut et décrémenter le stock
-                await prisma.$transaction(async (tx) => {
-                    // Update statut
-                    await tx.order.update({
-                        where: { id: localOrder.id },
-                        data: { status: "paid" }
-                    });
-
-                    // Décrémenter les stocks avec vérification atomique
-                    for (const item of localOrder.items) {
-                        const updateResult = await tx.creation.updateMany({
-                            where: {
-                                id: item.creationId,
-                                stock: { gte: item.quantity } // Condition atomique
-                            },
-                            data: { stock: { decrement: item.quantity } }
-                        });
-
-                        // Si aucune ligne n'a été mise à jour, c'est que le stock est insuffisant
-                        if (updateResult.count === 0) {
-                            throw new Error(`Stock insuffisant pour l'article ${item.creationId}`);
-                        }
-                    }
+                // Mettre à jour seulement le statut (le stock a déjà été décrémenté dans create-order)
+                await prisma.order.update({
+                    where: { id: localOrder.id },
+                    data: { status: "paid" }
                 });
             }
 
             return NextResponse.json({ status: "COMPLETED", details: captureData, orderId: localOrder?.id });
         } else {
+            // Si le paiement échoue, restaurer le stock immédiatement
+            const localOrder = await prisma.order.findFirst({
+                where: { paymentId: orderID },
+                include: { items: true }
+            });
+
+            if (localOrder && localOrder.status === "pending") {
+                await prisma.$transaction(async (tx) => {
+                    // Restaurer le stock
+                    for (const item of localOrder.items) {
+                        await tx.creation.update({
+                            where: { id: item.creationId },
+                            data: { stock: { increment: item.quantity } }
+                        });
+                    }
+
+                    // Marquer la commande comme payment_failed
+                    await tx.order.update({
+                        where: { id: localOrder.id },
+                        data: { status: "payment_failed" }
+                    });
+                });
+
+                logger.info(`Stock restauré pour paiement échoué: ${localOrder.id}`);
+            }
+
             return NextResponse.json({ status: "FAILED", details: captureData }, { status: 500 });
         }
 

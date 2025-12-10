@@ -12,55 +12,69 @@ export async function POST(request: Request) {
 
     const { items, shipping } = await request.json(); // On reçoit items + shipping pour créer la commande locale
 
-    // 1. Calculer le total et vérifier le stock côté serveur
-    let calculatedTotal = 0;
-    const orderItems = [];
+    // 1. Calculer le total et décrémenter le stock de manière atomique (évite race condition)
+    // Utiliser une transaction pour garantir l'intégrité (stock + création commande)
+    const localOrder = await prisma.$transaction(async (tx) => {
+        let calculatedTotal = 0;
+        const orderItems = [];
 
-    for (const item of items) {
-        const creation = await prisma.creation.findUnique({
-            where: { id: item.creationId },
-            select: { id: true, title: true, price: true, stock: true }
+        for (const item of items) {
+            const creation = await tx.creation.findUnique({
+                where: { id: item.creationId },
+                select: { id: true, title: true, price: true, stock: true }
+            });
+
+            if (!creation) {
+                throw new Error(`Article introuvable: ${item.creationId}`);
+            }
+
+            // Décrémenter le stock de manière atomique (évite race condition)
+            // Le stock est réservé immédiatement lors de la création de la commande PayPal
+            const updateResult = await tx.creation.updateMany({
+                where: {
+                    id: item.creationId,
+                    stock: { gte: item.quantity } // Condition atomique
+                },
+                data: {
+                    stock: { decrement: item.quantity }
+                }
+            });
+
+            // Si aucune ligne n'a été mise à jour, c'est que le stock est insuffisant
+            if (updateResult.count === 0) {
+                throw new Error(`Stock insuffisant pour: ${creation.title}`);
+            }
+
+            calculatedTotal += creation.price * item.quantity;
+            orderItems.push({
+                creationId: creation.id,
+                quantity: item.quantity,
+                price: creation.price
+            });
+        }
+
+        // 2. Créer la commande locale en statut "pending" (en attente de paiement PayPal)
+        // Le stock est déjà décrémenté, donc réservé pour cette commande
+        const newOrder = await tx.order.create({
+            data: {
+                userId: auth.user.id,
+                total: calculatedTotal,
+                status: "pending", // En attente de confirmation PayPal
+                firstName: shipping.firstName,
+                lastName: shipping.lastName,
+                email: shipping.email,
+                address: shipping.address,
+                city: shipping.city,
+                postalCode: shipping.postalCode,
+                country: shipping.country,
+                items: {
+                    create: orderItems
+                },
+                paymentMethod: "paypal"
+            }
         });
 
-        if (!creation) {
-            return NextResponse.json({ error: `Article introuvable: ${item.creationId}` }, { status: 400 });
-        }
-
-        if (creation.stock < item.quantity) {
-             return NextResponse.json({ error: `Stock insuffisant pour: ${creation.title}` }, { status: 400 });
-        }
-
-        calculatedTotal += creation.price * item.quantity;
-        orderItems.push({
-            creationId: creation.id,
-            quantity: item.quantity,
-            price: creation.price
-        });
-    }
-
-    // 2. Créer la commande locale en statut "pending_payment"
-    // Note: pending_payment n'est pas dans l'enum schema par défaut (souvent 'pending'), 
-    // assurons-nous que 'pending' est utilisé si l'enum est strict, ou modifions le code pour utiliser 'pending' 
-    // et différencier via paymentId null vs rempli.
-    // Le schema dit: @default("pending") // pending, paid, shipped, delivered, cancelled
-    
-    const localOrder = await prisma.order.create({
-        data: {
-            userId: auth.user.id, // Lier à l'utilisateur
-            total: calculatedTotal,
-            status: "pending", // On garde pending pour l'instant
-            firstName: shipping.firstName,
-            lastName: shipping.lastName,
-            email: shipping.email,
-            address: shipping.address,
-            city: shipping.city,
-            postalCode: shipping.postalCode,
-            country: shipping.country,
-            items: {
-                create: orderItems
-            },
-            paymentMethod: "paypal"
-        }
+        return newOrder;
     });
 
     const PAYPAL_CLIENT_ID = process.env.NEXT_PUBLIC_PAYPAL_CLIENT_ID;

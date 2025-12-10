@@ -63,8 +63,11 @@ export async function POST(request: Request) {
       },
     });
 
-    // Générer un token sécurisé
+    // Générer un token sécurisé (plain text pour l'email)
     const resetToken = crypto.randomBytes(32).toString("hex");
+
+    // Hash le token avec SHA-256 avant stockage (sécurité)
+    const tokenHash = crypto.createHash("sha256").update(resetToken).digest("hex");
 
     // Créer le token de réinitialisation (expire dans 1 heure)
     const expiresAt = new Date();
@@ -72,7 +75,7 @@ export async function POST(request: Request) {
 
     await prisma.passwordResetToken.create({
       data: {
-        token: resetToken,
+        token: tokenHash, // Stocker le hash, pas le token plain
         userId: user.id,
         expiresAt,
       },
