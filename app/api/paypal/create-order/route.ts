@@ -12,8 +12,12 @@ export async function POST(request: Request) {
 
     const { items, shipping } = await request.json(); // On reçoit items + shipping pour créer la commande locale
 
-    // 1. Calculer le total et décrémenter le stock de manière atomique (évite race condition)
-    // Utiliser une transaction pour garantir l'intégrité (stock + création commande)
+    // 1. CREATE STOCK RESERVATIONS (15 min expiry) to prevent race conditions
+    const reservationIds: string[] = [];
+    const reservationExpiry = new Date(Date.now() + 15 * 60 * 1000);
+
+    // 2. Calculer le total et réserver le stock de manière atomique
+    // Utiliser une transaction pour garantir l'intégrité (reservations + stock lock + création commande)
     const localOrder = await prisma.$transaction(async (tx) => {
         let calculatedTotal = 0;
         const orderItems = [];
@@ -40,10 +44,20 @@ export async function POST(request: Request) {
                 }
             });
 
-            // Si aucune ligne n'a été mise à jour, c'est que le stock est insuffisant
+            // If updateMany returns 0, stock is insufficient
             if (updateResult.count === 0) {
                 throw new Error(`Stock insuffisant pour: ${creation.title}`);
             }
+
+            // Create stock reservation
+            const reservation = await tx.stockReservation.create({
+                data: {
+                    creationId: creation.id,
+                    quantity: item.quantity,
+                    expiresAt: reservationExpiry,
+                },
+            });
+            reservationIds.push(reservation.id);
 
             calculatedTotal += creation.price * item.quantity;
             orderItems.push({
@@ -114,7 +128,8 @@ export async function POST(request: Request) {
                         currency_code: "EUR",
                         value: calculatedTotal.toFixed(2),
                     },
-                    description: `CreaSoka Order #${localOrder.id}`
+                    description: `CreaSoka Order #${localOrder.id}`,
+                    custom_id: JSON.stringify({ orderId: localOrder.id, reservations: reservationIds }), // Store reservation IDs
                 },
             ],
         }),

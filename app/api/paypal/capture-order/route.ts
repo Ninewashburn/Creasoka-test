@@ -50,10 +50,38 @@ export async function POST(request: Request) {
             });
 
             if (localOrder) {
-                // Mettre à jour seulement le statut (le stock a déjà été décrémenté dans create-order)
-                await prisma.order.update({
+                // Parse custom_id to get reservation IDs
+                const orderData = await prisma.order.findUnique({
                     where: { id: localOrder.id },
-                    data: { status: "paid" }
+                });
+
+                // Extract reservation IDs from PayPal custom_id
+                const purchaseUnit = captureData.purchase_units?.[0];
+                let reservationIds: string[] = [];
+                if (purchaseUnit?.custom_id) {
+                    try {
+                        const customData = JSON.parse(purchaseUnit.custom_id);
+                        reservationIds = customData.reservations || [];
+                    } catch (error) {
+                        logger.error("Failed to parse custom_id", error);
+                    }
+                }
+
+                // Update order status AND link reservations
+                await prisma.$transaction(async (tx) => {
+                    // Mark order as paid
+                    await tx.order.update({
+                        where: { id: localOrder.id },
+                        data: { status: "paid" },
+                    });
+
+                    // Link reservations to this order (confirm them)
+                    if (reservationIds.length > 0) {
+                        await tx.stockReservation.updateMany({
+                            where: { id: { in: reservationIds } },
+                            data: { orderId: localOrder.id },
+                        });
+                    }
                 });
             }
 
@@ -66,12 +94,31 @@ export async function POST(request: Request) {
             });
 
             if (localOrder && localOrder.status === "pending") {
+                // Extract reservation IDs to delete them
+                const purchaseUnit = captureData.purchase_units?.[0];
+                let reservationIds: string[] = [];
+                if (purchaseUnit?.custom_id) {
+                    try {
+                        const customData = JSON.parse(purchaseUnit.custom_id);
+                        reservationIds = customData.reservations || [];
+                    } catch (error) {
+                        logger.error("Failed to parse custom_id for rollback", error);
+                    }
+                }
+
                 await prisma.$transaction(async (tx) => {
-                    // Restaurer le stock
+                    // Restore stock
                     for (const item of localOrder.items) {
                         await tx.creation.update({
                             where: { id: item.creationId },
-                            data: { stock: { increment: item.quantity } }
+                            data: { stock: { increment: item.quantity } },
+                        });
+                    }
+
+                    // Delete reservations (failed payment)
+                    if (reservationIds.length > 0) {
+                        await tx.stockReservation.deleteMany({
+                            where: { id: { in: reservationIds } },
                         });
                     }
 
