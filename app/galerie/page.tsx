@@ -286,52 +286,26 @@ export default function GalleryPage() {
           filteredCreations.map((creation, index) => (
             <div
               key={creation.id}
-              className="relative overflow-hidden rounded-lg group"
+              className="relative overflow-hidden rounded-lg group cursor-pointer"
             >
-              {creation.status === "nouveau" && (
-                <Badge className="absolute top-2 left-2 z-10 bg-green-500">
-                  Nouveau
-                </Badge>
-              )}
-              {creation.status === "vedette" && (
-                <Badge className="absolute top-2 left-2 z-10 bg-creasoka">
-                  Vedette
-                </Badge>
-              )}
-              {creation.status === "précommande" && (
-                <Badge className="absolute top-2 left-2 z-10 bg-blue-500">
-                  Précommande
-                </Badge>
-              )}
-              {creation.status === "adopté" && (
-                <Badge className="absolute top-2 left-2 z-10 bg-red-500">
-                  Adopté
-                </Badge>
-              )}
-
-              <div className="relative">
-                <ZoomableImage
-                  src={creation.image || "/placeholder.svg"}
-                  alt={creation.title}
-                  width={400}
-                  height={400}
-                  className={cn(
-                    "w-full h-72 object-cover transition-transform duration-300 group-hover:scale-105",
-                    creation.status === "adopté" && "brightness-90 grayscale-[0.5]"
-                  )}
-                  galleryImages={galleryImages}
-                  galleryIndex={index}
-                  galleryItems={galleryItems}
-                  priority={index < 3}
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent flex flex-col justify-end p-4 text-white pointer-events-none group-hover:opacity-100 transition-opacity">
-                  <h3 className="font-semibold text-lg">{creation.title}</h3>
-                  <p className="text-sm text-gray-200 capitalize mb-3">
-                    {creation.categories && creation.categories.length > 0
-                      ? creation.categories[0]
-                      : ""}
-                  </p>
-                </div>
+              <ZoomableImage
+                src={creation.image || "/placeholder.svg"}
+                alt={creation.title}
+                width={400}
+                height={400}
+                className={cn(
+                  "w-full h-72 object-cover transition-all duration-300 group-hover:scale-105 group-hover:brightness-90",
+                  creation.status === "adopté" && "brightness-75 grayscale-[0.5]"
+                )}
+                galleryImages={galleryImages}
+                galleryIndex={index}
+                galleryItems={galleryItems}
+                priority={index < 3}
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end p-4 pointer-events-none">
+                <h3 className="text-white font-semibold text-lg drop-shadow-lg">
+                  {creation.title}
+                </h3>
               </div>
             </div>
           ))

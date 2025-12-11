@@ -70,9 +70,41 @@ export async function POST(request: NextRequest) {
   }
 }
 
-export async function GET() {
+export async function GET(request: NextRequest) {
   try {
-    // Utiliser le cache serveur pour optimiser les performances
+    // Parse pagination query params
+    const { searchParams } = new URL(request.url);
+    const page = parseInt(searchParams.get('page') || '1');
+    const limit = parseInt(searchParams.get('limit') || '50'); // Default 50 for gallery, but client can request all
+    const skip = (page - 1) * limit;
+
+    // If limit is very high (e.g., 999), fetch all (for backward compatibility)
+    const shouldPaginate = limit < 100;
+
+    if (shouldPaginate) {
+      // Paginated response
+      const [creations, total] = await Promise.all([
+        prisma.creation.findMany({
+          skip,
+          take: limit,
+          orderBy: { createdAt: "desc" },
+        }),
+        prisma.creation.count(),
+      ]);
+
+      return NextResponse.json({
+        creations,
+        pagination: {
+          page,
+          limit,
+          total,
+          totalPages: Math.ceil(total / limit),
+          hasMore: skip + limit < total,
+        },
+      });
+    }
+
+    // Legacy: fetch all (with cache)
     const creations = await serverCache.get(
       "all-creations",
       async () => {

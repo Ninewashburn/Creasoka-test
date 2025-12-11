@@ -3,6 +3,10 @@
     {
       "path": "/api/orders/cleanup-abandoned",
       "schedule": "0 * * * *"
+    },
+    {
+      "path": "/api/cron/cleanup-reservations",
+      "schedule": "*/5 * * * *"
     }
   ]
 }
