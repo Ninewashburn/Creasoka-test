@@ -18,6 +18,7 @@ import { getFromCache } from "@/lib/clientCache";
 import type { Creation } from "@/types/creation";
 import { useCart } from "@/lib/cart-context";
 import { useAuth } from "@/lib/auth-context";
+import DynamicHead from "@/components/seo/dynamic-head";
 
 export default function CreationDetailPage() {
   const params = useParams();
