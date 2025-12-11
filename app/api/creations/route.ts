@@ -75,10 +75,10 @@ export async function GET(request: NextRequest) {
     // Parse pagination query params
     const { searchParams } = new URL(request.url);
     const page = parseInt(searchParams.get('page') || '1');
-    const limit = parseInt(searchParams.get('limit') || '50'); // Default 50 for gallery, but client can request all
+    const limit = parseInt(searchParams.get('limit') || '999'); // Default 999 = fetch all for backward compatibility
     const skip = (page - 1) * limit;
 
-    // If limit is very high (e.g., 999), fetch all (for backward compatibility)
+    // Only paginate if explicitly requested (limit < 100)
     const shouldPaginate = limit < 100;
 
     if (shouldPaginate) {
@@ -104,7 +104,7 @@ export async function GET(request: NextRequest) {
       });
     }
 
-    // Legacy: fetch all (with cache)
+    // Default: fetch all (with cache) - backward compatible
     const creations = await serverCache.get(
       "all-creations",
       async () => {
